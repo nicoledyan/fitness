@@ -9,13 +9,12 @@ import {
   Flame,
   HeartPulse,
   Home,
-  Leaf,
   LineChart,
   Moon,
   RotateCcw,
   Search,
   Settings,
-  Sprout,
+  Sparkles,
   Upload,
   Utensils,
   X
@@ -44,7 +43,7 @@ const navItems: Array<{ route: Route; label: string; icon: typeof Home }> = [
   { route: 'dashboard', label: 'Today', icon: Home },
   { route: 'plan', label: 'Plan', icon: CalendarDays },
   { route: 'exercises', label: 'Moves', icon: Dumbbell },
-  { route: 'progress', label: 'Proof', icon: LineChart },
+  { route: 'progress', label: 'Progress', icon: LineChart },
   { route: 'nutrition', label: 'Food', icon: Utensils },
   { route: 'settings', label: 'Settings', icon: Settings }
 ];
@@ -66,7 +65,7 @@ export default function App() {
 
   return (
     <div className={data.settings.darkMode ? 'dark min-h-screen' : 'min-h-screen'}>
-      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 pb-28 pt-5 text-garden-text dark:text-[#EDF7EB] sm:px-6 lg:pb-8">
+      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 pb-28 pt-5 text-moon-text dark:text-[#FFF8FD] sm:px-6 lg:pb-8">
         <Header route={route} />
         <main className="mt-5 flex-1">
           {route === 'dashboard' && <Dashboard {...data} currentWeek={week} />}
@@ -86,25 +85,25 @@ export default function App() {
 
 function Header({ route }: { route: Route }) {
   const subtitles: Record<Route, string> = {
-    dashboard: 'Build strength gently. Keep proof.',
+    dashboard: 'Gentle strength, clearly planned.',
     plan: 'Twenty-four weeks, one kind choice at a time.',
     exercises: 'Pain-free options before pride.',
-    progress: 'Tiny receipts count too.',
+    progress: 'Small changes, clearly tracked.',
     nutrition: 'Simple food math, no courtroom energy.',
     settings: 'Your app, your local data.'
   };
   return (
     <header className="flex items-start justify-between gap-4">
       <div>
-        <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-garden-muted dark:text-[#BFD4BD]">
-          <Sprout size={18} aria-hidden="true" />
+        <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-moon-muted dark:text-[#EADDF7]">
+          <Moon size={18} aria-hidden="true" />
           Grow Strong
         </div>
         <h1 className="mt-2 font-display text-4xl leading-tight sm:text-5xl">{route === 'dashboard' ? 'Today' : titleForRoute(route)}</h1>
-        <p className="mt-2 max-w-xl text-base text-garden-muted dark:text-[#BFD4BD]">{subtitles[route]}</p>
+        <p className="mt-2 max-w-xl text-base text-moon-muted dark:text-[#EADDF7]">{subtitles[route]}</p>
       </div>
-      <div className="hidden rounded-full border border-garden-border bg-white/80 px-4 py-2 text-sm font-semibold text-garden-muted shadow-soft dark:border-[#405840] dark:bg-[#1C301C] dark:text-[#CFE3CD] sm:block">
-        🌿 private planner
+      <div className="hidden rounded-full border border-moon-border bg-white/80 px-4 py-2 text-sm font-semibold text-moon-muted shadow-soft dark:border-[#5B456B] dark:bg-[#32253C] dark:text-[#F3E9FB] sm:block">
+        ✦ quiet planner
       </div>
     </header>
   );
@@ -112,7 +111,7 @@ function Header({ route }: { route: Route }) {
 
 function BottomNav({ route, setRoute }: { route: Route; setRoute: (route: Route) => void }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-garden-border bg-[#F8FCF7]/95 px-2 pb-[env(safe-area-inset-bottom)] pt-2 shadow-[0_-12px_32px_rgba(30,48,30,0.08)] backdrop-blur dark:border-[#405840] dark:bg-[#152515]/95 lg:left-1/2 lg:max-w-3xl lg:-translate-x-1/2 lg:rounded-t-3xl lg:border-x">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-moon-border bg-[#FFFCF4]/95 px-2 pb-[env(safe-area-inset-bottom)] pt-2 shadow-[0_-12px_32px_rgba(71,44,89,0.08)] backdrop-blur dark:border-[#5B456B] dark:bg-[#21182A]/95 lg:left-1/2 lg:max-w-3xl lg:-translate-x-1/2 lg:rounded-t-3xl lg:border-x">
       <div className="grid grid-cols-6 gap-1">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -123,7 +122,7 @@ function BottomNav({ route, setRoute }: { route: Route; setRoute: (route: Route)
               type="button"
               onClick={() => setRoute(item.route)}
               className={`flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl px-1 text-xs font-semibold transition ${
-                active ? 'bg-garden-surface text-garden-text dark:bg-[#2D472D] dark:text-white' : 'text-garden-muted dark:text-[#BFD4BD]'
+                active ? 'bg-moon-surface text-moon-text dark:bg-[#BFA2DC] dark:text-white' : 'text-moon-muted dark:text-[#EADDF7]'
               }`}
               aria-current={active ? 'page' : undefined}
             >
@@ -151,19 +150,19 @@ function Dashboard({
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-      <section className="rounded-[2rem] border border-garden-border bg-white p-5 shadow-soft dark:border-[#405840] dark:bg-[#1A2A1A]">
+      <section className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
         <div className="flex items-center justify-between gap-3">
-          <Pill icon={Leaf} text={`Week ${currentWeek} · ${phase.name}`} />
+          <Pill icon={Sparkles} text={`Week ${currentWeek} · ${phase.name}`} />
           <ProgressRing percent={progress.percent} />
         </div>
         <h2 className="mt-5 font-display text-3xl leading-tight">{today?.type ?? 'Plan loading'}</h2>
-        <p className="mt-2 text-garden-muted dark:text-[#BFD4BD]">{today?.focus}</p>
+        <p className="mt-2 text-moon-muted dark:text-[#EADDF7]">{today?.focus}</p>
         {today && (
           <>
-            <div className="mt-5 rounded-3xl bg-garden-bg p-4 dark:bg-[#102010]">
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-garden-muted dark:text-[#BFD4BD]">{today.day}</p>
+            <div className="mt-5 rounded-3xl bg-moon-bg p-4 dark:bg-[#1D1424]">
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-moon-muted dark:text-[#EADDF7]">{today.day}</p>
               <p className="mt-2 text-lg font-semibold">{today.setsReps}</p>
-              {today.effortTarget && <p className="mt-2 text-sm font-semibold text-garden-muted dark:text-[#BFD4BD]">{today.effortTarget}</p>}
+              {today.effortTarget && <p className="mt-2 text-sm font-semibold text-moon-muted dark:text-[#EADDF7]">{today.effortTarget}</p>}
               <ExerciseChips ids={today.exercises} />
             </div>
             <QuickLog workout={today} refresh={refresh} />
@@ -174,14 +173,14 @@ function Dashboard({
       <section className="grid gap-4">
         <MetricCard icon={Flame} label="Streak" value={`${streak} day${streak === 1 ? '' : 's'}`} detail="Today’s win does not have to be dramatic." />
         <MetricCard icon={Activity} label="Weekly progress" value={`${progress.completed}/${progress.total}`} detail={`${progress.percent}% of planned training complete.`} />
-        <div className="rounded-[2rem] border border-garden-border bg-garden-surface p-5 shadow-soft dark:border-[#405840] dark:bg-[#213821]">
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-garden-muted dark:text-[#BFD4BD]">Next action</p>
+        <div className="rounded-[2rem] border border-moon-border bg-moon-surface p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#3A2A46]">
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-moon-muted dark:text-[#EADDF7]">Next action</p>
           <h3 className="mt-2 text-xl font-bold">{progress.percent === 100 ? 'Let recovery do its work.' : today?.completed ? 'Log a tiny note.' : 'Start the first set gently.'}</h3>
-          <p className="mt-2 text-garden-muted dark:text-[#CFE3CD]">No sharp elbow pain. We are building strength, not collecting injuries.</p>
+          <p className="mt-2 text-moon-muted dark:text-[#F3E9FB]">No sharp elbow pain. We are building strength, not collecting injuries.</p>
         </div>
         {milestone && (
-          <div className="rounded-[2rem] border border-garden-border bg-white p-5 shadow-soft dark:border-[#405840] dark:bg-[#1A2A1A]">
-            <Pill icon={Sprout} text="Milestone earned" />
+          <div className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
+            <Pill icon={Moon} text="Milestone earned" />
             <h3 className="mt-3 font-display text-2xl">{milestone.label}</h3>
           </div>
         )}
@@ -198,8 +197,8 @@ function Plan({ workouts, currentWeek, refresh }: { workouts: WorkoutDay[]; curr
 
   return (
     <div className="grid gap-4 lg:grid-cols-[20rem_1fr]">
-      <aside className="rounded-[2rem] border border-garden-border bg-white p-5 shadow-soft dark:border-[#405840] dark:bg-[#1A2A1A] lg:sticky lg:top-4 lg:self-start">
-        <label className="text-sm font-semibold text-garden-muted dark:text-[#BFD4BD]" htmlFor="week-select">
+      <aside className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033] lg:sticky lg:top-4 lg:self-start">
+        <label className="text-sm font-semibold text-moon-muted dark:text-[#EADDF7]" htmlFor="week-select">
           Week
         </label>
         <div className="relative mt-2">
@@ -207,7 +206,7 @@ function Plan({ workouts, currentWeek, refresh }: { workouts: WorkoutDay[]; curr
             id="week-select"
             value={week}
             onChange={(event) => setWeek(Number(event.target.value))}
-            className="min-h-12 w-full appearance-none rounded-2xl border border-garden-border bg-garden-bg px-4 text-base font-semibold dark:border-[#405840] dark:bg-[#102010]"
+            className="min-h-12 w-full appearance-none rounded-2xl border border-moon-border bg-moon-bg px-4 text-base font-semibold dark:border-[#5B456B] dark:bg-[#1D1424]"
           >
             {Array.from({ length: 24 }, (_, index) => index + 1).map((weekNumber) => (
               <option key={weekNumber} value={weekNumber}>
@@ -215,12 +214,12 @@ function Plan({ workouts, currentWeek, refresh }: { workouts: WorkoutDay[]; curr
               </option>
             ))}
           </select>
-          <ChevronDown className="pointer-events-none absolute right-4 top-3.5 text-garden-muted" size={20} aria-hidden="true" />
+          <ChevronDown className="pointer-events-none absolute right-4 top-3.5 text-moon-muted" size={20} aria-hidden="true" />
         </div>
         <div className="mt-5">
           <ProgressRing percent={progress.percent} />
           <h2 className="mt-4 font-display text-3xl">{phase.name}</h2>
-          <p className="mt-2 text-garden-muted dark:text-[#BFD4BD]">{phase.focus}</p>
+          <p className="mt-2 text-moon-muted dark:text-[#EADDF7]">{phase.focus}</p>
         </div>
       </aside>
       <section className="grid gap-4">
@@ -241,25 +240,25 @@ function WorkoutCard({ workout, refresh }: { workout: WorkoutDay; refresh: () =>
   };
 
   return (
-    <article className="rounded-[2rem] border border-garden-border bg-white p-5 shadow-soft dark:border-[#405840] dark:bg-[#1A2A1A]">
+    <article className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="font-semibold text-garden-muted dark:text-[#BFD4BD]">{workout.day}</p>
+          <p className="font-semibold text-moon-muted dark:text-[#EADDF7]">{workout.day}</p>
           <h3 className="mt-1 text-2xl font-bold">{workout.type}</h3>
-          <p className="mt-2 text-garden-muted dark:text-[#BFD4BD]">{workout.focus}</p>
+          <p className="mt-2 text-moon-muted dark:text-[#EADDF7]">{workout.focus}</p>
         </div>
         <button
           type="button"
           onClick={() => update({ completed: !workout.completed, completedAt: workout.completed ? undefined : new Date().toISOString() })}
           className={`grid min-h-12 min-w-12 place-items-center rounded-2xl border ${
-            workout.completed ? 'border-garden-accent bg-garden-accent text-white' : 'border-garden-border bg-garden-bg text-garden-text'
+            workout.completed ? 'border-moon-accent bg-moon-accent text-white' : 'border-moon-border bg-moon-bg text-moon-text'
           }`}
           aria-label={workout.completed ? 'Mark incomplete' : 'Mark complete'}
         >
           <Check size={23} aria-hidden="true" />
         </button>
       </div>
-      <p className="mt-4 rounded-2xl bg-garden-bg p-3 font-semibold dark:bg-[#102010]">{workout.setsReps}</p>
+      <p className="mt-4 rounded-2xl bg-moon-bg p-3 font-semibold dark:bg-[#1D1424]">{workout.setsReps}</p>
       <WorkoutGuide workout={workout} />
       <ExerciseChips ids={workout.exercises} />
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -267,7 +266,7 @@ function WorkoutCard({ workout, refresh }: { workout: WorkoutDay; refresh: () =>
         <NumberInput label="Elbow pain" min={0} max={10} value={workout.elbowPain} onChange={(value) => update({ elbowPain: value })} />
       </div>
       <ElbowNote value={workout.elbowPain} />
-      <label className="mt-4 block text-sm font-semibold text-garden-muted dark:text-[#BFD4BD]" htmlFor={`${workout.id}-notes`}>
+      <label className="mt-4 block text-sm font-semibold text-moon-muted dark:text-[#EADDF7]" htmlFor={`${workout.id}-notes`}>
         Notes
       </label>
       <textarea
@@ -276,7 +275,7 @@ function WorkoutCard({ workout, refresh }: { workout: WorkoutDay; refresh: () =>
         onChange={(event) => setNotes(event.target.value)}
         onBlur={() => update({ notes })}
         rows={3}
-        className="mt-2 w-full rounded-2xl border border-garden-border bg-garden-bg p-3 text-base dark:border-[#405840] dark:bg-[#102010]"
+        className="mt-2 w-full rounded-2xl border border-moon-border bg-moon-bg p-3 text-base dark:border-[#5B456B] dark:bg-[#1D1424]"
         placeholder="What felt steady, spicy, or worth repeating?"
       />
     </article>
@@ -294,7 +293,7 @@ function QuickLog({ workout, refresh }: { workout: WorkoutDay; refresh: () => vo
       <button
         type="button"
         onClick={() => update({ completed: !workout.completed, completedAt: workout.completed ? undefined : new Date().toISOString() })}
-        className="min-h-14 rounded-2xl bg-garden-accent px-5 text-base font-bold text-white shadow-soft"
+        className="min-h-14 rounded-2xl bg-moon-accent px-5 text-base font-bold text-white shadow-soft"
       >
         {workout.completed ? 'Completed today' : 'Complete workout'}
       </button>
@@ -307,8 +306,8 @@ function QuickLog({ workout, refresh }: { workout: WorkoutDay; refresh: () => vo
         onChange={(event) => setNote(event.target.value)}
         onBlur={() => update({ notes: note })}
         rows={3}
-        className="w-full rounded-2xl border border-garden-border bg-garden-bg p-3 text-base dark:border-[#405840] dark:bg-[#102010]"
-        placeholder="Keep proof. Your future self gets receipts."
+        className="w-full rounded-2xl border border-moon-border bg-moon-bg p-3 text-base dark:border-[#5B456B] dark:bg-[#1D1424]"
+        placeholder="What felt clear, steady, or worth adjusting?"
       />
     </div>
   );
@@ -328,14 +327,14 @@ function ExerciseLibrary() {
 
   return (
     <>
-      <div className="grid gap-3 rounded-[2rem] border border-garden-border bg-white p-4 shadow-soft dark:border-[#405840] dark:bg-[#1A2A1A] sm:grid-cols-3">
+      <div className="grid gap-3 rounded-[2rem] border border-moon-border bg-white p-4 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033] sm:grid-cols-3">
         <label className="relative sm:col-span-1">
           <span className="sr-only">Search exercises</span>
-          <Search className="absolute left-4 top-3.5 text-garden-muted" size={20} aria-hidden="true" />
+          <Search className="absolute left-4 top-3.5 text-moon-muted" size={20} aria-hidden="true" />
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            className="min-h-12 w-full rounded-2xl border border-garden-border bg-garden-bg pl-11 pr-4 text-base dark:border-[#405840] dark:bg-[#102010]"
+            className="min-h-12 w-full rounded-2xl border border-moon-border bg-moon-bg pl-11 pr-4 text-base dark:border-[#5B456B] dark:bg-[#1D1424]"
             placeholder="Search moves"
           />
         </label>
@@ -348,11 +347,11 @@ function ExerciseLibrary() {
             key={exercise.id}
             type="button"
             onClick={() => setSelected(exercise)}
-            className="min-h-40 rounded-[2rem] border border-garden-border bg-white p-5 text-left shadow-soft transition hover:-translate-y-0.5 dark:border-[#405840] dark:bg-[#1A2A1A]"
+            className="min-h-40 rounded-[2rem] border border-moon-border bg-white p-5 text-left shadow-soft transition hover:-translate-y-0.5 dark:border-[#5B456B] dark:bg-[#2A2033]"
           >
             <Pill icon={HeartPulse} text={exercise.elbowLoad} />
             <h2 className="mt-4 text-xl font-bold">{exercise.name}</h2>
-            <p className="mt-2 text-garden-muted dark:text-[#BFD4BD]">{exercise.category} · {exercise.difficulty}</p>
+            <p className="mt-2 text-moon-muted dark:text-[#EADDF7]">{exercise.category} · {exercise.difficulty}</p>
           </button>
         ))}
       </div>
@@ -363,14 +362,14 @@ function ExerciseLibrary() {
 
 function ExerciseModal({ exercise, onClose }: { exercise: Exercise; onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 grid place-items-end bg-[#102010]/45 p-3 sm:place-items-center" role="dialog" aria-modal="true" aria-label={exercise.name}>
-      <div className="max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-[2rem] bg-white p-5 shadow-soft dark:bg-[#1A2A1A]">
+    <div className="fixed inset-0 z-50 grid place-items-end bg-[#1D1424]/45 p-3 sm:place-items-center" role="dialog" aria-modal="true" aria-label={exercise.name}>
+      <div className="max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-[2rem] bg-white p-5 shadow-soft dark:bg-[#2A2033]">
         <div className="flex items-start justify-between gap-3">
           <div>
             <Pill icon={HeartPulse} text={`Elbow load: ${exercise.elbowLoad}`} />
             <h2 className="mt-3 font-display text-3xl">{exercise.name}</h2>
           </div>
-          <button type="button" onClick={onClose} className="grid min-h-12 min-w-12 place-items-center rounded-2xl bg-garden-bg dark:bg-[#102010]" aria-label="Close">
+          <button type="button" onClick={onClose} className="grid min-h-12 min-w-12 place-items-center rounded-2xl bg-moon-bg dark:bg-[#1D1424]" aria-label="Close">
             <X aria-hidden="true" />
           </button>
         </div>
@@ -413,33 +412,33 @@ function Progress({
         <ChartCard title="Weight trend">
           <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={chartData}>
-              <CartesianGrid stroke="#C8E0B8" strokeDasharray="3 3" />
+              <CartesianGrid stroke="#E4D5F1" strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis width={36} />
               <Tooltip />
-              <Area type="monotone" dataKey="weight" stroke="#6F9F6A" fill="#D8EDD0" />
+              <Area type="monotone" dataKey="weight" stroke="#BFA2DC" fill="#EFE3FA" />
             </AreaChart>
           </ResponsiveContainer>
         </ChartCard>
         <ChartCard title="Waist trend">
           <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={chartData}>
-              <CartesianGrid stroke="#C8E0B8" strokeDasharray="3 3" />
+              <CartesianGrid stroke="#E4D5F1" strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis width={36} />
               <Tooltip />
-              <Area type="monotone" dataKey="waist" stroke="#486848" fill="#D8EDD0" />
+              <Area type="monotone" dataKey="waist" stroke="#6E5D78" fill="#EFE3FA" />
             </AreaChart>
           </ResponsiveContainer>
         </ChartCard>
         <ChartCard title="Completed workouts">
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={completionData}>
-              <CartesianGrid stroke="#C8E0B8" strokeDasharray="3 3" />
+              <CartesianGrid stroke="#E4D5F1" strokeDasharray="3 3" />
               <XAxis dataKey="week" interval={2} />
               <YAxis width={32} />
               <Tooltip />
-              <Bar dataKey="completed" fill="#6F9F6A" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="completed" fill="#BFA2DC" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -469,7 +468,7 @@ function MeasurementForm({ refresh }: { refresh: () => void }) {
     refresh();
   };
   return (
-    <div className="rounded-[2rem] border border-garden-border bg-white p-5 shadow-soft dark:border-[#405840] dark:bg-[#1A2A1A]">
+    <div className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
       <h2 className="text-2xl font-bold">Measurements</h2>
       <div className="mt-4 grid gap-3">
         <TextInput label="Date" type="date" value={form.date} onChange={(value) => setForm({ ...form, date: value })} />
@@ -479,11 +478,11 @@ function MeasurementForm({ refresh }: { refresh: () => void }) {
         <textarea
           value={form.notes}
           onChange={(event) => setForm({ ...form, notes: event.target.value })}
-          className="w-full rounded-2xl border border-garden-border bg-garden-bg p-3 text-base dark:border-[#405840] dark:bg-[#102010]"
+          className="w-full rounded-2xl border border-moon-border bg-moon-bg p-3 text-base dark:border-[#5B456B] dark:bg-[#1D1424]"
           placeholder="Photo note, cycle context, or tiny win"
         />
-        <button type="button" onClick={save} className="min-h-12 rounded-2xl bg-garden-accent px-4 font-bold text-white">
-          Save proof
+        <button type="button" onClick={save} className="min-h-12 rounded-2xl bg-moon-accent px-4 font-bold text-white">
+          Save entry
         </button>
       </div>
     </div>
@@ -506,13 +505,13 @@ function ReflectionForm({ currentWeek, reflections, refresh }: { currentWeek: nu
     refresh();
   };
   return (
-    <div className="rounded-[2rem] border border-garden-border bg-white p-5 shadow-soft dark:border-[#405840] dark:bg-[#1A2A1A]">
+    <div className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
       <h2 className="text-2xl font-bold">Week {currentWeek} reflection</h2>
       <div className="mt-4 grid gap-3">
         <TextArea label="Biggest win" value={win} onChange={setWin} placeholder="Today’s win does not have to be dramatic." />
         <TextArea label="What felt hard" value={hard} onChange={setHard} placeholder="Name it without making it your personality." />
         <TextArea label="Next week focus" value={focus} onChange={setFocus} placeholder="Repeat, regress, or gently reach." />
-        <button type="button" onClick={save} className="min-h-12 rounded-2xl bg-garden-accent px-4 font-bold text-white">
+        <button type="button" onClick={save} className="min-h-12 rounded-2xl bg-moon-accent px-4 font-bold text-white">
           Save reflection
         </button>
       </div>
@@ -523,7 +522,7 @@ function ReflectionForm({ currentWeek, reflections, refresh }: { currentWeek: nu
 function Nutrition() {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <section className="rounded-[2rem] border border-garden-border bg-white p-5 shadow-soft dark:border-[#405840] dark:bg-[#1A2A1A]">
+      <section className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
         <Pill icon={Utensils} text="Starting targets" />
         <h2 className="mt-3 font-display text-3xl">Enough protein. Enough life.</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -535,12 +534,12 @@ function Nutrition() {
       <GuideCard title="Grocery list" items={nutritionGuide.groceries} />
       <GuideCard title="Snack ideas" items={nutritionGuide.snacks} />
       <GuideCard title="Restaurant tips" items={nutritionGuide.restaurants} />
-      <section className="rounded-[2rem] border border-garden-border bg-garden-surface p-5 shadow-soft dark:border-[#405840] dark:bg-[#213821]">
+      <section className="rounded-[2rem] border border-moon-border bg-moon-surface p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#3A2A46]">
         <h2 className="text-2xl font-bold">Simple checklist</h2>
         <div className="mt-4 grid gap-3">
           {['Protein at breakfast', 'Protein at lunch', 'Protein at dinner', 'One fruit or vegetable before scrolling', 'Water bottle visible'].map((item) => (
-            <label key={item} className="flex min-h-12 items-center gap-3 rounded-2xl bg-white/75 px-4 dark:bg-[#102010]">
-              <input type="checkbox" className="h-5 w-5 accent-garden-accent" />
+            <label key={item} className="flex min-h-12 items-center gap-3 rounded-2xl bg-white/75 px-4 dark:bg-[#1D1424]">
+              <input type="checkbox" className="h-5 w-5 accent-moon-accent" />
               <span className="font-semibold">{item}</span>
             </label>
           ))}
@@ -583,24 +582,24 @@ function SettingsPage({ settings, refresh }: { settings: ReturnType<typeof useLi
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <section className="rounded-[2rem] border border-garden-border bg-white p-5 shadow-soft dark:border-[#405840] dark:bg-[#1A2A1A]">
+      <section className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
         <h2 className="text-2xl font-bold">Plan start</h2>
         <TextInput label="Start date" type="date" value={startDate} onChange={setStartDate} />
-        <button type="button" onClick={saveSettings} className="mt-4 min-h-12 w-full rounded-2xl bg-garden-accent px-4 font-bold text-white">
+        <button type="button" onClick={saveSettings} className="mt-4 min-h-12 w-full rounded-2xl bg-moon-accent px-4 font-bold text-white">
           Save start date
         </button>
       </section>
-      <section className="rounded-[2rem] border border-garden-border bg-white p-5 shadow-soft dark:border-[#405840] dark:bg-[#1A2A1A]">
+      <section className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
         <h2 className="text-2xl font-bold">Local data</h2>
         <div className="mt-4 grid gap-3">
-          <button type="button" onClick={handleExport} className="flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-garden-bg px-4 font-bold dark:bg-[#102010]">
+          <button type="button" onClick={handleExport} className="flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-moon-bg px-4 font-bold dark:bg-[#1D1424]">
             <Download size={20} aria-hidden="true" /> Export JSON backup
           </button>
-          <label className="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-garden-bg px-4 font-bold dark:bg-[#102010]">
+          <label className="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-moon-bg px-4 font-bold dark:bg-[#1D1424]">
             <Upload size={20} aria-hidden="true" /> Import JSON backup
             <input type="file" accept="application/json" className="sr-only" onChange={(event) => handleImport(event.target.files?.[0])} />
           </label>
-          <button type="button" onClick={handleReset} className="flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-garden-border px-4 font-bold text-garden-muted dark:border-[#405840] dark:text-[#BFD4BD]">
+          <button type="button" onClick={handleReset} className="flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-moon-border px-4 font-bold text-moon-muted dark:border-[#5B456B] dark:text-[#EADDF7]">
             <RotateCcw size={20} aria-hidden="true" /> Reset data
           </button>
           <button
@@ -609,16 +608,16 @@ function SettingsPage({ settings, refresh }: { settings: ReturnType<typeof useLi
               await db.settings.put({ ...settings, darkMode: !settings.darkMode });
               refresh();
             }}
-            className="flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-garden-border px-4 font-bold text-garden-muted dark:border-[#405840] dark:text-[#BFD4BD]"
+            className="flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-moon-border px-4 font-bold text-moon-muted dark:border-[#5B456B] dark:text-[#EADDF7]"
           >
             <Moon size={20} aria-hidden="true" /> {settings.darkMode ? 'Use light theme' : 'Use dark theme'}
           </button>
         </div>
-        {message && <p className="mt-4 rounded-2xl bg-garden-surface p-3 font-semibold dark:bg-[#213821]">{message}</p>}
+        {message && <p className="mt-4 rounded-2xl bg-moon-surface p-3 font-semibold dark:bg-[#3A2A46]">{message}</p>}
       </section>
-      <section className="rounded-[2rem] border border-garden-border bg-garden-surface p-5 shadow-soft dark:border-[#405840] dark:bg-[#213821] lg:col-span-2">
+      <section className="rounded-[2rem] border border-moon-border bg-moon-surface p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#3A2A46] lg:col-span-2">
         <h2 className="text-2xl font-bold">GitHub Pages note</h2>
-        <p className="mt-2 text-garden-muted dark:text-[#CFE3CD]">
+        <p className="mt-2 text-moon-muted dark:text-[#F3E9FB]">
           This repo publishes with GitHub Actions. In GitHub, choose Settings, Pages, then GitHub Actions as the source.
         </p>
       </section>
@@ -645,7 +644,7 @@ function ExerciseChips({ ids }: { ids: string[] }) {
   return (
     <div className="mt-4 flex flex-wrap gap-2">
       {ids.map((id) => (
-        <span key={id} className="rounded-full border border-garden-border bg-white px-3 py-2 text-sm font-semibold text-garden-muted dark:border-[#405840] dark:bg-[#102010] dark:text-[#BFD4BD]">
+        <span key={id} className="rounded-full border border-moon-border bg-white px-3 py-2 text-sm font-semibold text-moon-muted dark:border-[#5B456B] dark:bg-[#1D1424] dark:text-[#EADDF7]">
           {exerciseById.get(id)?.name ?? id}
         </span>
       ))}
@@ -660,7 +659,7 @@ function namesForIds(ids: string[]) {
 function ElbowNote({ value }: { value?: number }) {
   const rule = value === undefined ? elbowRules[0] : value <= 2 ? elbowRules[0] : value <= 4 ? elbowRules[1] : elbowRules[2];
   return (
-    <div className="mt-4 rounded-2xl bg-garden-surface p-3 text-sm font-semibold text-garden-text dark:bg-[#213821] dark:text-[#EDF7EB]">
+    <div className="mt-4 rounded-2xl bg-moon-surface p-3 text-sm font-semibold text-moon-text dark:bg-[#3A2A46] dark:text-[#FFF8FD]">
       {rule}
     </div>
   );
@@ -669,14 +668,14 @@ function ElbowNote({ value }: { value?: number }) {
 function NumberInput({ label, min, max, value, onChange }: { label: string; min: number; max: number; value?: number; onChange: (value?: number) => void }) {
   return (
     <label className="block">
-      <span className="text-sm font-semibold text-garden-muted dark:text-[#BFD4BD]">{label}</span>
+      <span className="text-sm font-semibold text-moon-muted dark:text-[#EADDF7]">{label}</span>
       <input
         type="number"
         min={min}
         max={max}
         value={value ?? ''}
         onChange={(event) => onChange(event.target.value === '' ? undefined : Number(event.target.value))}
-        className="mt-2 min-h-12 w-full rounded-2xl border border-garden-border bg-garden-bg px-4 text-base font-semibold dark:border-[#405840] dark:bg-[#102010]"
+        className="mt-2 min-h-12 w-full rounded-2xl border border-moon-border bg-moon-bg px-4 text-base font-semibold dark:border-[#5B456B] dark:bg-[#1D1424]"
       />
     </label>
   );
@@ -685,12 +684,12 @@ function NumberInput({ label, min, max, value, onChange }: { label: string; min:
 function TextInput({ label, type, value, onChange }: { label: string; type: string; value: string; onChange: (value: string) => void }) {
   return (
     <label className="block">
-      <span className="text-sm font-semibold text-garden-muted dark:text-[#BFD4BD]">{label}</span>
+      <span className="text-sm font-semibold text-moon-muted dark:text-[#EADDF7]">{label}</span>
       <input
         type={type}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="mt-2 min-h-12 w-full rounded-2xl border border-garden-border bg-garden-bg px-4 text-base dark:border-[#405840] dark:bg-[#102010]"
+        className="mt-2 min-h-12 w-full rounded-2xl border border-moon-border bg-moon-bg px-4 text-base dark:border-[#5B456B] dark:bg-[#1D1424]"
       />
     </label>
   );
@@ -699,13 +698,13 @@ function TextInput({ label, type, value, onChange }: { label: string; type: stri
 function TextArea({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (value: string) => void; placeholder: string }) {
   return (
     <label className="block">
-      <span className="text-sm font-semibold text-garden-muted dark:text-[#BFD4BD]">{label}</span>
+      <span className="text-sm font-semibold text-moon-muted dark:text-[#EADDF7]">{label}</span>
       <textarea
         value={value}
         onChange={(event) => onChange(event.target.value)}
         rows={3}
         placeholder={placeholder}
-        className="mt-2 w-full rounded-2xl border border-garden-border bg-garden-bg p-3 text-base dark:border-[#405840] dark:bg-[#102010]"
+        className="mt-2 w-full rounded-2xl border border-moon-border bg-moon-bg p-3 text-base dark:border-[#5B456B] dark:bg-[#1D1424]"
       />
     </label>
   );
@@ -718,7 +717,7 @@ function Select({ label, value, options, onChange }: { label: string; value: str
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="min-h-12 w-full rounded-2xl border border-garden-border bg-garden-bg px-4 text-base font-semibold dark:border-[#405840] dark:bg-[#102010]"
+        className="min-h-12 w-full rounded-2xl border border-moon-border bg-moon-bg px-4 text-base font-semibold dark:border-[#5B456B] dark:bg-[#1D1424]"
       >
         {options.map((option) => (
           <option key={option}>{option}</option>
@@ -728,9 +727,9 @@ function Select({ label, value, options, onChange }: { label: string; value: str
   );
 }
 
-function Pill({ icon: Icon, text }: { icon: typeof Leaf; text: string }) {
+function Pill({ icon: Icon, text }: { icon: typeof Sparkles; text: string }) {
   return (
-    <span className="inline-flex items-center gap-2 rounded-full bg-garden-surface px-3 py-2 text-sm font-bold text-garden-muted dark:bg-[#213821] dark:text-[#CFE3CD]">
+    <span className="inline-flex items-center gap-2 rounded-full bg-moon-surface px-3 py-2 text-sm font-bold text-moon-muted dark:bg-[#3A2A46] dark:text-[#F3E9FB]">
       <Icon size={16} aria-hidden="true" />
       {text}
     </span>
@@ -741,27 +740,27 @@ function ProgressRing({ percent }: { percent: number }) {
   return (
     <div
       className="grid h-16 w-16 place-items-center rounded-full text-sm font-black"
-      style={{ background: `conic-gradient(#6F9F6A ${percent}%, #D8EDD0 ${percent}%)` }}
+      style={{ background: `conic-gradient(#BFA2DC ${percent}%, #EFE3FA ${percent}%)` }}
       aria-label={`${percent}% complete`}
     >
-      <div className="grid h-12 w-12 place-items-center rounded-full bg-white dark:bg-[#102010]">{percent}%</div>
+      <div className="grid h-12 w-12 place-items-center rounded-full bg-white dark:bg-[#1D1424]">{percent}%</div>
     </div>
   );
 }
 
 function MetricCard({ icon: Icon, label, value, detail }: { icon: typeof Flame; label: string; value: string; detail: string }) {
   return (
-    <div className="rounded-[2rem] border border-garden-border bg-white p-5 shadow-soft dark:border-[#405840] dark:bg-[#1A2A1A]">
+    <div className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
       <Pill icon={Icon} text={label} />
       <h3 className="mt-3 text-3xl font-black">{value}</h3>
-      <p className="mt-2 text-garden-muted dark:text-[#BFD4BD]">{detail}</p>
+      <p className="mt-2 text-moon-muted dark:text-[#EADDF7]">{detail}</p>
     </div>
   );
 }
 
 function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-[2rem] border border-garden-border bg-white p-5 shadow-soft dark:border-[#405840] dark:bg-[#1A2A1A]">
+    <section className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
       <h2 className="text-2xl font-bold">{title}</h2>
       <div className="mt-4 h-[240px] w-full">{children}</div>
     </section>
@@ -770,11 +769,11 @@ function ChartCard({ title, children }: { title: string; children: React.ReactNo
 
 function GuideCard({ title, items }: { title: string; items: string[] }) {
   return (
-    <section className="rounded-[2rem] border border-garden-border bg-white p-5 shadow-soft dark:border-[#405840] dark:bg-[#1A2A1A]">
+    <section className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
       <h2 className="text-2xl font-bold">{title}</h2>
       <ul className="mt-4 grid gap-3">
         {items.map((item) => (
-          <li key={item} className="rounded-2xl bg-garden-bg p-3 font-semibold text-garden-muted dark:bg-[#102010] dark:text-[#BFD4BD]">
+          <li key={item} className="rounded-2xl bg-moon-bg p-3 font-semibold text-moon-muted dark:bg-[#1D1424] dark:text-[#EADDF7]">
             {item}
           </li>
         ))}
@@ -787,7 +786,7 @@ function DetailBlock({ title, body }: { title: string; body: string }) {
   return (
     <section className="mt-5">
       <h3 className="font-bold">{title}</h3>
-      <p className="mt-2 text-garden-muted dark:text-[#BFD4BD]">{body}</p>
+      <p className="mt-2 text-moon-muted dark:text-[#EADDF7]">{body}</p>
     </section>
   );
 }
@@ -798,7 +797,7 @@ function DetailList({ title, items }: { title: string; items: string[] }) {
       <h3 className="font-bold">{title}</h3>
       <ul className="mt-2 grid gap-2">
         {items.map((item) => (
-          <li key={item} className="rounded-2xl bg-garden-bg p-3 text-garden-muted dark:bg-[#102010] dark:text-[#BFD4BD]">
+          <li key={item} className="rounded-2xl bg-moon-bg p-3 text-moon-muted dark:bg-[#1D1424] dark:text-[#EADDF7]">
             {item}
           </li>
         ))}
@@ -809,8 +808,8 @@ function DetailList({ title, items }: { title: string; items: string[] }) {
 
 function MiniBlock({ title, body }: { title: string; body: string }) {
   return (
-    <div className="rounded-2xl bg-garden-bg p-4 dark:bg-[#102010]">
-      <p className="text-sm font-bold text-garden-muted dark:text-[#BFD4BD]">{title}</p>
+    <div className="rounded-2xl bg-moon-bg p-4 dark:bg-[#1D1424]">
+      <p className="text-sm font-bold text-moon-muted dark:text-[#EADDF7]">{title}</p>
       <p className="mt-1 font-semibold">{body}</p>
     </div>
   );
@@ -821,7 +820,7 @@ function titleForRoute(route: Route) {
     dashboard: 'Today',
     plan: 'Plan',
     exercises: 'Moves',
-    progress: 'Proof',
+    progress: 'Progress',
     nutrition: 'Food',
     settings: 'Settings'
   };

@@ -12,8 +12,8 @@ export default defineConfig({
         name: 'Grow Strong',
         short_name: 'Grow Strong',
         description: 'A private 24-week fitness planner for gentle strength.',
-        theme_color: '#D8EDD0',
-        background_color: '#F4FAF4',
+        theme_color: '#BFA2DC',
+        background_color: '#FFFCF4',
         display: 'standalone',
         start_url: './',
         icons: [

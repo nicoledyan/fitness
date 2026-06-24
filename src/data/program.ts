@@ -15,7 +15,7 @@ export const milestones = [
   { week: 8, label: 'Momentum' },
   { week: 12, label: 'Stronger Than You Think' },
   { week: 16, label: 'Built Different' },
-  { week: 20, label: 'Visible Proof' },
+  { week: 20, label: 'Visible Strength' },
   { week: 24, label: 'Grow Strong' }
 ];
 

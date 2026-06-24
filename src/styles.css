@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  color: #1e301e;
-  background: #f4faf4;
+  color: #2b2232;
+  background: #fffcf4;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -17,7 +17,7 @@
 
 html {
   min-height: 100%;
-  background: #f4faf4;
+  background: #fffcf4;
 }
 
 body {
@@ -25,8 +25,8 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgba(216, 237, 208, 0.9), transparent 36rem),
-    linear-gradient(180deg, #f4faf4 0%, #eef8ee 100%);
+    radial-gradient(circle at top left, rgba(191, 162, 220, 0.28), transparent 34rem),
+    linear-gradient(180deg, #fffcf4 0%, #fbf4ff 100%);
 }
 
 button,
@@ -41,18 +41,18 @@ input:focus-visible,
 textarea:focus-visible,
 select:focus-visible,
 a:focus-visible {
-  outline: 3px solid rgba(111, 159, 106, 0.45);
+  outline: 3px solid rgba(191, 162, 220, 0.45);
   outline-offset: 3px;
 }
 
 .dark {
-  color: #edf7eb;
-  background: #102010;
+  color: #fff8fd;
+  background: #1D1424;
 }
 
 .dark body,
 .dark #root {
   background:
-    radial-gradient(circle at top left, rgba(72, 104, 72, 0.35), transparent 34rem),
-    linear-gradient(180deg, #102010 0%, #172617 100%);
+    radial-gradient(circle at top left, rgba(191, 162, 220, 0.18), transparent 34rem),
+    linear-gradient(180deg, #1D1424 0%, #21182a 100%);
 }

@@ -4,18 +4,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        garden: {
-          bg: '#F4FAF4',
-          surface: '#D8EDD0',
+        moon: {
+          bg: '#FFFCF4',
+          surface: '#EFE3FA',
           card: '#FFFFFF',
-          accent: '#6F9F6A',
-          text: '#1E301E',
-          muted: '#486848',
-          border: '#C8E0B8'
+          accent: '#BFA2DC',
+          text: '#2B2232',
+          muted: '#6E5D78',
+          border: '#E4D5F1'
         }
       },
       boxShadow: {
-        soft: '0 16px 40px rgba(30, 48, 30, 0.08)'
+        soft: '0 16px 40px rgba(71, 44, 89, 0.08)'
       },
       fontFamily: {
         display: ['Georgia', 'serif'],
