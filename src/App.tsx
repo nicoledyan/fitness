@@ -974,18 +974,18 @@ function Nutrition() {
     : 0;
 
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-4">
       <section className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
-        <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-5 sm:p-6">
+        <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-4 sm:p-6">
           <Pill icon={Utensils} text="Food coach" />
-          <h2 className="mt-3 font-display text-3xl leading-tight tracking-[-0.01em] sm:text-4xl">What should I eat next?</h2>
-          <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-moon-muted/70">
-            Protein first. No weighing. No guilt. Just practical ideas from someone who wants you to feel good and stay full.
+          <h2 className="mt-2 font-display text-2xl leading-tight tracking-[-0.01em] sm:text-4xl">What should I eat next?</h2>
+          <p className="mt-1.5 max-w-xl text-[13px] leading-relaxed text-moon-muted/70">
+            Protein first. No weighing. No guilt. Practical ideas to keep you full.
           </p>
         </div>
       </section>
 
-      <div className="flex gap-2 overflow-x-auto pb-1">
+      <div className="flex gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {(['browse', 'build', 'restaurants'] as const).map((tab) => (
           <button
             key={tab}
@@ -1006,14 +1006,14 @@ function Nutrition() {
       {activeTab === 'browse' && (
         <>
           <section>
-            <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">What are you craving?</h2>
-            <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+            <h2 className="font-display text-xl leading-tight tracking-[-0.01em] sm:text-2xl">What are you craving?</h2>
+            <div className="mt-2.5 flex gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {CRAVING_TAGS.map((tag) => (
                 <button
                   key={tag.id}
                   type="button"
                   onClick={() => { setActiveCraving(activeCraving === tag.id ? null : tag.id); setActiveFilter(null); }}
-                  className={`no-active-scale flex shrink-0 items-center gap-1.5 rounded-2xl border px-3.5 py-2 text-[12px] font-semibold transition-all duration-200 ${
+                  className={`no-active-scale flex min-h-11 shrink-0 items-center gap-1.5 rounded-2xl border px-3.5 text-[12px] font-semibold transition-all duration-200 ${
                     activeCraving === tag.id
                       ? 'border-moon-accent bg-moon-accent text-white'
                       : 'border-moon-border/40 bg-white text-moon-muted/70'
@@ -1027,14 +1027,14 @@ function Nutrition() {
           </section>
 
           <section>
-            <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Browse by</h2>
-            <div className="mt-3 flex flex-wrap gap-2">
+            <h2 className="font-display text-xl leading-tight tracking-[-0.01em] sm:text-2xl">Browse by</h2>
+            <div className="mt-2.5 flex flex-wrap gap-2">
               {FILTER_TAGS.map((tag) => (
                 <button
                   key={tag.id}
                   type="button"
                   onClick={() => { setActiveFilter(activeFilter === tag.id ? null : tag.id); setActiveCraving(null); }}
-                  className={`no-active-scale flex items-center gap-1.5 rounded-2xl border px-3.5 py-2 text-[12px] font-semibold transition-all duration-200 ${
+                  className={`no-active-scale flex min-h-11 items-center gap-1.5 rounded-2xl border px-3.5 text-[12px] font-semibold transition-all duration-200 ${
                     activeFilter === tag.id
                       ? 'border-moon-accent bg-moon-accent text-white'
                       : 'border-moon-border/40 bg-white text-moon-muted/70'
@@ -1049,11 +1049,30 @@ function Nutrition() {
 
           <section>
             {(activeFilter || activeCraving) && (
-              <p className="mb-3 text-[13px] text-moon-muted/55">
+              <p className="mb-2 text-[13px] text-moon-muted/55">
                 {filteredMeals.length} idea{filteredMeals.length !== 1 ? 's' : ''} found
               </p>
             )}
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Mobile: horizontal swipe carousel */}
+            <div className="flex gap-3 overflow-x-auto pb-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:hidden">
+              {filteredMeals.map((meal) => (
+                <div key={meal.id} className="w-[300px] shrink-0">
+                  <MealCard
+                    meal={meal}
+                    expanded={expandedMeal === meal.id}
+                    onToggle={() => setExpandedMeal(expandedMeal === meal.id ? null : meal.id)}
+                  />
+                </div>
+              ))}
+              {filteredMeals.length === 0 && (
+                <div className="w-full rounded-[2rem] border border-moon-border/35 bg-moon-surface/40 p-8 text-center">
+                  <p className="font-display text-xl">No matches</p>
+                  <p className="mt-2 text-[13px] text-moon-muted/60">Try a different filter or craving.</p>
+                </div>
+              )}
+            </div>
+            {/* Desktop: grid */}
+            <div className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
               {filteredMeals.map((meal) => (
                 <MealCard
                   key={meal.id}
@@ -1062,13 +1081,13 @@ function Nutrition() {
                   onToggle={() => setExpandedMeal(expandedMeal === meal.id ? null : meal.id)}
                 />
               ))}
+              {filteredMeals.length === 0 && (
+                <div className="col-span-full rounded-[2rem] border border-moon-border/35 bg-moon-surface/40 p-8 text-center">
+                  <p className="font-display text-xl">No matches</p>
+                  <p className="mt-2 text-[13px] text-moon-muted/60">Try a different filter or craving.</p>
+                </div>
+              )}
             </div>
-            {filteredMeals.length === 0 && (
-              <div className="rounded-[2rem] border border-moon-border/35 bg-moon-surface/40 p-8 text-center">
-                <p className="font-display text-xl">No matches</p>
-                <p className="mt-2 text-[13px] text-moon-muted/60">Try a different filter or craving.</p>
-              </div>
-            )}
           </section>
         </>
       )}
@@ -1095,31 +1114,33 @@ function Nutrition() {
 function MealCard({ meal, expanded, onToggle }: { meal: Meal; expanded: boolean; onToggle: () => void }) {
   return (
     <article className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft transition-all duration-200 hover:shadow-[0_20px_48px_rgba(71,44,89,0.11)]">
-      <div className="bg-gradient-to-br from-moon-surface/45 to-[#EDE0FA]/25 p-5">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-4xl shadow-soft">
+      <div className="bg-gradient-to-br from-moon-surface/45 to-[#EDE0FA]/25 p-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-3xl shadow-soft">
             {meal.emoji}
           </div>
-          <div className="text-right">
-            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-moon-muted/50">Protein</p>
-            <p className="font-display text-2xl leading-none text-moon-text">~{meal.protein}g</p>
+          <div className="min-w-0 flex-1">
+            <h3 className="font-display text-lg leading-tight tracking-[-0.01em]">{meal.name}</h3>
+            <p className="mt-0.5 text-[11px] text-moon-muted/60">{meal.bestFor}</p>
+          </div>
+          <div className="shrink-0 text-right">
+            <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-moon-muted/50">Protein</p>
+            <p className="font-display text-xl leading-none text-moon-text">~{meal.protein}g</p>
           </div>
         </div>
-        <h3 className="mt-3 font-display text-xl leading-tight tracking-[-0.01em]">{meal.name}</h3>
-        <p className="mt-1 text-[12px] text-moon-muted/60">{meal.bestFor}</p>
       </div>
 
-      <div className="p-5">
-        <div className="flex items-center gap-2">
+      <div className="p-4">
+        <div className="flex items-center gap-1.5">
           <NutriPill label="Fullness" value={`${meal.fullness}/5`} />
           <NutriPill label="~Cal" value={`${meal.calories}`} />
           <NutriPill label="Time" value={meal.prepTime} />
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-2">
+        <div className="mt-3 grid grid-cols-2 gap-1.5">
           {(Object.entries(meal.portions) as Array<[string, string]>).map(([key, value]) => (
-            <div key={key} className="rounded-xl bg-moon-bg/60 px-3 py-2">
-              <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-moon-muted/45">
+            <div key={key} className="rounded-xl bg-moon-bg/60 px-2.5 py-2">
+              <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-moon-muted/45">
                 {PORTION_LABELS[key] ?? key}
               </p>
               <p className="mt-0.5 text-[11px] font-semibold leading-snug">{value}</p>
@@ -1130,20 +1151,20 @@ function MealCard({ meal, expanded, onToggle }: { meal: Meal; expanded: boolean;
         <button
           type="button"
           onClick={onToggle}
-          className="no-active-scale mt-4 flex w-full items-center justify-between rounded-2xl bg-moon-bg/55 px-4 py-2.5 text-left text-[12px] font-semibold text-moon-muted/65 transition hover:bg-moon-bg"
+          className="no-active-scale mt-3 flex w-full items-center justify-between rounded-2xl bg-moon-bg/55 px-4 py-2.5 text-left text-[12px] font-semibold text-moon-muted/65 transition hover:bg-moon-bg"
         >
           <span>Swaps &amp; boosts</span>
           <ChevronDown size={14} className={`transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} aria-hidden="true" />
         </button>
 
         {expanded && (
-          <div className="mt-3 grid gap-2">
+          <div className="mt-2.5 grid gap-2">
             <div className="rounded-2xl border border-moon-accent/20 bg-moon-surface/30 p-3">
-              <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-moon-muted/50">Protein boost</p>
+              <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-moon-muted/50">Protein boost</p>
               <p className="mt-1 text-[12px] font-semibold">{meal.proteinBoost}</p>
             </div>
             <div className="rounded-2xl border border-moon-border/30 bg-moon-bg/60 p-3">
-              <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-moon-muted/50">Easy swap</p>
+              <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-moon-muted/50">Easy swap</p>
               <p className="mt-1 text-[12px] font-semibold">{meal.swap}</p>
             </div>
           </div>
@@ -1176,13 +1197,13 @@ function BuildMyPlate({
   const plateItems = [protein, carb, veg, fat, extra].filter(Boolean) as PlateItem[];
 
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-3">
       <section className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
-        <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-5">
+        <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-4 sm:p-5">
           <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Build My Plate</h2>
           <p className="mt-1.5 text-[13px] text-moon-muted/70">Choose one from each category. See your meal take shape.</p>
         </div>
-        <div className="p-5">
+        <div className="p-4 sm:p-5">
           <div className="flex justify-center">
             <div
               className="relative flex h-44 w-44 items-center justify-center rounded-full border-4 border-moon-border/20 bg-gradient-to-br from-moon-bg to-moon-surface/40"
@@ -1233,9 +1254,9 @@ function BuildMyPlate({
 
       <PlateSection title="🤚 Protein" subtitle="Palm-sized" items={PLATE_PROTEINS} selected={protein} onSelect={(item) => onProtein(protein?.id === item.id ? null : item)} />
       <PlateSection title="✊ Carbs" subtitle="Fist-sized" items={PLATE_CARBS} selected={carb} onSelect={(item) => onCarb(carb?.id === item.id ? null : item)} />
-      <PlateSection title="🤲 Vegetables" subtitle="Two handfuls" items={PLATE_VEGS} selected={veg} onSelect={(item) => onVeg(veg?.id === item.id ? null : item)} />
+      <PlateSection title="🤲 Veg" subtitle="Two handfuls" items={PLATE_VEGS} selected={veg} onSelect={(item) => onVeg(veg?.id === item.id ? null : item)} />
       <PlateSection title="👍 Fat" subtitle="Thumb-sized" items={PLATE_FATS} selected={fat} onSelect={(item) => onFat(fat?.id === item.id ? null : item)} />
-      <PlateSection title="🫴 Add-on" subtitle="Optional fruit or sauce" items={PLATE_EXTRAS} selected={extra} onSelect={(item) => onExtra(extra?.id === item.id ? null : item)} optional />
+      <PlateSection title="🫴 Add-on" subtitle="Optional" items={PLATE_EXTRAS} selected={extra} onSelect={(item) => onExtra(extra?.id === item.id ? null : item)} optional />
     </div>
   );
 }
@@ -1247,19 +1268,18 @@ function PlateSection({
   selected: PlateItem | null; onSelect: (item: PlateItem) => void; optional?: boolean;
 }) {
   return (
-    <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
+    <section className="rounded-[2rem] border border-moon-border/40 bg-white p-4 shadow-soft sm:p-5">
       <div className="flex items-baseline gap-2">
-        <h3 className="font-display text-xl leading-tight tracking-[-0.01em]">{title}</h3>
-        {optional && <span className="text-[11px] text-moon-muted/45">optional</span>}
+        <h3 className="font-display text-lg leading-tight tracking-[-0.01em] sm:text-xl">{title}</h3>
+        <span className="text-[11px] text-moon-muted/45">{optional ? 'optional · ' : ''}{subtitle}</span>
       </div>
-      <p className="mt-0.5 text-[12px] text-moon-muted/55">{subtitle}</p>
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className="mt-2.5 flex flex-wrap gap-2">
         {items.map((item) => (
           <button
             key={item.id}
             type="button"
             onClick={() => onSelect(item)}
-            className={`no-active-scale flex items-center gap-1.5 rounded-2xl border px-3 py-2 text-[12px] font-semibold transition-all duration-200 ${
+            className={`no-active-scale flex min-h-10 items-center gap-1.5 rounded-2xl border px-3 py-1.5 text-[12px] font-semibold transition-all duration-200 ${
               selected?.id === item.id
                 ? 'border-moon-accent bg-moon-accent text-white'
                 : 'border-moon-border/40 bg-moon-bg text-moon-muted/70 hover:bg-moon-surface/40'
@@ -1277,25 +1297,25 @@ function PlateSection({
 
 function RestaurantGuide() {
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-3">
       <section className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
-        <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-5">
+        <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-4 sm:p-5">
           <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Ordering out?</h2>
           <p className="mt-1.5 text-[13px] text-moon-muted/70">
             Treat meals are allowed. We're just making choices easier.
           </p>
         </div>
       </section>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2">
         {RESTAURANTS.map((r) => (
-          <article key={r.name} className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
+          <article key={r.name} className="rounded-[2rem] border border-moon-border/40 bg-white p-4 shadow-soft sm:p-5">
             <div className="flex items-center gap-3">
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-moon-surface/50 text-2xl">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-moon-surface/50 text-xl">
                 {r.emoji}
               </span>
-              <h3 className="font-display text-xl leading-tight tracking-[-0.01em]">{r.name}</h3>
+              <h3 className="font-display text-lg leading-tight tracking-[-0.01em] sm:text-xl">{r.name}</h3>
             </div>
-            <div className="mt-4 grid gap-2">
+            <div className="mt-3 grid gap-2">
               <RestaurantChoice label="Best choice" body={r.best} color="green" />
               <RestaurantChoice label="Balanced enough" body={r.balanced} color="purple" />
               <RestaurantChoice label="Treat yourself" body={r.treat} color="neutral" />
