@@ -165,12 +165,12 @@ export const exercises: Exercise[] = [
     formCues: ['Hips back', 'Long spine', 'Shins mostly vertical'],
     commonMistakes: ['Squatting instead of hinging', 'Rounding the back'],
     easier: 'Practice with hands on hips.',
-    harder: 'Kickstand RDL',
+    harder: 'Kickstand hip hinge',
     substitute: 'Glute bridge'
   },
   {
     id: 'kickstand-rdl',
-    name: 'Kickstand RDL',
+    name: 'Kickstand hip hinge',
     category: 'Lower body',
     difficulty: 'Medium',
     elbowLoad: 'Low',
@@ -205,7 +205,7 @@ export const exercises: Exercise[] = [
     commonMistakes: ['Dropping hips', 'Moving too fast'],
     easier: 'Glute bridge',
     harder: 'Single-leg glute bridge',
-    substitute: 'Kickstand RDL'
+    substitute: 'Kickstand hip hinge'
   },
   {
     id: 'single-leg-glute-bridge',
@@ -244,7 +244,7 @@ export const exercises: Exercise[] = [
     commonMistakes: ['Shrugging shoulders', 'Locking elbows hard'],
     easier: 'Wall push-up',
     harder: 'Incline push-up',
-    substitute: 'Standing Y-T-W'
+    substitute: 'Standing shoulder raises'
   },
   {
     id: 'incline-push-up',
@@ -268,13 +268,13 @@ export const exercises: Exercise[] = [
     howTo: 'Hold a lightly loaded backpack, hinge, and row toward your ribs.',
     formCues: ['Shoulder blade moves first', 'Neutral wrist', 'Light load'],
     commonMistakes: ['Yanking with the arm', 'Too much weight'],
-    easier: 'Standing Y-T-W',
+    easier: 'Standing shoulder raises',
     harder: 'Add reps before adding weight.',
     substitute: 'Scapular wall slide'
   },
   {
     id: 'standing-ytw',
-    name: 'Standing Y-T-W',
+    name: 'Standing shoulder raises',
     category: 'Upper body',
     difficulty: 'Beginner',
     elbowLoad: 'Low',
@@ -296,7 +296,7 @@ export const exercises: Exercise[] = [
     commonMistakes: ['Forcing arms flat', 'Shrugging'],
     easier: 'Reduce range.',
     harder: 'Add a pause overhead.',
-    substitute: 'Standing Y-T-W'
+    substitute: 'Standing shoulder raises'
   },
   {
     id: 'isometric-wall-press',
@@ -507,6 +507,175 @@ export const exercises: Exercise[] = [
     substitute: 'Recovery walk'
   },
   {
+    id: 'worlds-greatest-stretch',
+    name: 'World’s greatest stretch',
+    category: 'Mobility',
+    difficulty: 'Beginner',
+    elbowLoad: 'Low',
+    howTo: 'Step into a comfortable lunge, place hands where they feel supported, and rotate through the upper back.',
+    formCues: ['Use blocks or a chair if needed', 'Move slowly', 'Keep breath easy'],
+    commonMistakes: ['Forcing the front hip', 'Dumping weight into the hands'],
+    easier: 'Do the rotation from a high lunge with hands on a chair.',
+    harder: 'Pause for two breaths in the rotation.',
+    substitute: 'Thoracic open book'
+  },
+  {
+    id: 'hip-circles',
+    name: 'Hip circles',
+    category: 'Mobility',
+    difficulty: 'Beginner',
+    elbowLoad: 'None',
+    howTo: 'Stand tall and draw slow circles with one hip at a time, using a wall for balance if useful.',
+    formCues: ['Small circles first', 'Quiet ribs', 'No pinching'],
+    commonMistakes: ['Moving too fast', 'Arching the low back'],
+    easier: 'Hold a chair or wall.',
+    harder: 'Add a slow marching reset between sides.',
+    substitute: 'Marching'
+  },
+  {
+    id: 'arm-circles',
+    name: 'Arm circles',
+    category: 'Mobility',
+    difficulty: 'Beginner',
+    elbowLoad: 'Low',
+    howTo: 'Make small, slow arm circles forward and backward with relaxed shoulders.',
+    formCues: ['Small range', 'Soft elbows', 'Shoulders away from ears'],
+    commonMistakes: ['Swinging fast', 'Locking elbows'],
+    easier: 'Bend elbows more.',
+    harder: 'Make slightly larger circles if pain-free.',
+    substitute: 'Shoulder controlled circles'
+  },
+  {
+    id: 'shoulder-cars',
+    name: 'Shoulder controlled circles',
+    category: 'Mobility',
+    difficulty: 'Beginner',
+    elbowLoad: 'Low',
+    howTo: 'Move one arm through the largest comfortable shoulder circle you can control.',
+    formCues: ['Slow control', 'Ribs stay down', 'Pain-free range only'],
+    commonMistakes: ['Chasing range', 'Shrugging'],
+    easier: 'Use a smaller circle.',
+    harder: 'Pause at sticky spots without forcing.',
+    substitute: 'Scapular wall slide'
+  },
+  {
+    id: 'marching',
+    name: 'Marching',
+    category: 'Mobility',
+    difficulty: 'Beginner',
+    elbowLoad: 'None',
+    howTo: 'March in place with tall posture and quiet, steady breathing.',
+    formCues: ['Stand tall', 'Foot lands quietly', 'Arms relaxed'],
+    commonMistakes: ['Leaning back', 'Rushing'],
+    easier: 'Hold a chair lightly.',
+    harder: 'Slow the lowering foot.',
+    substitute: 'Walking'
+  },
+  {
+    id: 'walking',
+    name: 'Walking',
+    category: 'Cardio',
+    difficulty: 'Beginner',
+    elbowLoad: 'None',
+    howTo: 'Walk at a pace that lets you breathe easily and finish feeling clearer, not drained.',
+    formCues: ['Tall posture', 'Relaxed shoulders', 'Easy pace before fast pace'],
+    commonMistakes: ['Turning every walk into a test', 'Increasing pace before duration'],
+    easier: 'Take a shorter walk or split it into two walks.',
+    harder: 'Add time before adding speed.',
+    substitute: 'Bike, swimming, elliptical, or easy hike'
+  },
+  {
+    id: 'walking-lunge',
+    name: 'Walking lunge',
+    category: 'Lower body',
+    difficulty: 'Harder',
+    elbowLoad: 'None',
+    howTo: 'Step forward into a short lunge, stand tall, and repeat only if knees and hips feel good.',
+    formCues: ['Short step', 'Front knee tracks toes', 'Tall chest'],
+    commonMistakes: ['Taking giant steps', 'Dropping into the bottom'],
+    easier: 'Reverse lunge',
+    harder: 'Slow lowering.',
+    substitute: 'Step-up'
+  },
+  {
+    id: 'single-leg-balance',
+    name: 'Single-leg balance',
+    category: 'Balance',
+    difficulty: 'Beginner',
+    elbowLoad: 'None',
+    howTo: 'Stand on one foot near a wall or chair and hold steady without gripping the floor.',
+    formCues: ['Soft knee', 'Tall posture', 'Use support before wobbling hard'],
+    commonMistakes: ['Locking the knee', 'Holding breath'],
+    easier: 'Keep toes of the free foot on the floor.',
+    harder: 'Add a slow reach or longer hold.',
+    substitute: 'Step-up'
+  },
+  {
+    id: 'farmer-carry',
+    name: 'Backpack farmer carry',
+    category: 'Carry',
+    difficulty: 'Medium',
+    elbowLoad: 'Low',
+    howTo: 'Carry a loaded backpack at your side or hugged to your chest while walking slowly.',
+    formCues: ['Tall posture', 'Shoulders level', 'Light enough to stay smooth'],
+    commonMistakes: ['Leaning away from the load', 'Gripping through elbow pain'],
+    easier: 'Carry the backpack hugged to your chest.',
+    harder: 'Walk farther before adding weight.',
+    substitute: 'Single-leg balance'
+  },
+  {
+    id: 'doorway-pec-stretch',
+    name: 'Doorway pec stretch',
+    category: 'Mobility',
+    difficulty: 'Beginner',
+    elbowLoad: 'Low',
+    howTo: 'Place forearm on a doorway and gently turn away until the chest opens.',
+    formCues: ['Gentle stretch', 'Shoulder down', 'No tingling'],
+    commonMistakes: ['Cranking the shoulder', 'Holding numbness or tingling'],
+    easier: 'Lower the arm angle.',
+    harder: 'Take two slow breaths in the stretch.',
+    substitute: 'Thoracic open book'
+  },
+  {
+    id: 'calf-stretch',
+    name: 'Calf stretch',
+    category: 'Mobility',
+    difficulty: 'Beginner',
+    elbowLoad: 'None',
+    howTo: 'Step one foot back, press the heel down gently, and breathe into the calf.',
+    formCues: ['Heel heavy', 'Toes forward', 'Gentle pressure'],
+    commonMistakes: ['Turning the foot out', 'Forcing the heel'],
+    easier: 'Use a smaller step.',
+    harder: 'Bend the back knee slightly to change the stretch.',
+    substitute: 'Hamstring floss'
+  },
+  {
+    id: 'neck-mobility',
+    name: 'Neck mobility',
+    category: 'Mobility',
+    difficulty: 'Beginner',
+    elbowLoad: 'None',
+    howTo: 'Move the neck through slow nods, turns, and gentle side bends.',
+    formCues: ['Tiny range', 'No stretching into symptoms', 'Jaw relaxed'],
+    commonMistakes: ['Pulling on the head', 'Moving quickly'],
+    easier: 'Do only slow turns.',
+    harder: 'Add slow breath holds at comfortable end ranges.',
+    substitute: 'Deep breathing'
+  },
+  {
+    id: 'deep-breathing',
+    name: 'Deep breathing',
+    category: 'Mobility',
+    difficulty: 'Beginner',
+    elbowLoad: 'None',
+    howTo: 'Breathe slowly through the nose or relaxed mouth, letting the ribs move without forcing a huge breath.',
+    formCues: ['Jaw relaxed', 'Shoulders heavy', 'Slow exhale'],
+    commonMistakes: ['Forcing breath', 'Shrugging the shoulders'],
+    easier: 'Lie on your back with knees bent.',
+    harder: 'Add a longer exhale.',
+    substitute: 'Child’s pose'
+  },
+  {
     id: 'mace-halo',
     name: 'Mace halo',
     category: 'Optional mace',
@@ -517,7 +686,7 @@ export const exercises: Exercise[] = [
     commonMistakes: ['Using too much weight', 'Pushing through elbow symptoms'],
     easier: 'Mace offset hold.',
     harder: 'Do not progress unless elbows feel perfect.',
-    substitute: 'Standing Y-T-W'
+    substitute: 'Standing shoulder raises'
   },
   {
     id: 'mace-360-prep',
@@ -559,40 +728,166 @@ const schedule: Array<{ day: string; type: WorkoutType }> = [
 
 const phaseForWeek = (week: number) => phases[Math.floor((week - 1) / 4)].name;
 
-const weekLevel = (week: number) => {
-  if (week <= 4) return { sets: '2 sets', reps: '6-8 reps', hold: '15-20 sec' };
-  if (week <= 8) return { sets: '2-3 sets', reps: '8-10 reps', hold: '20-25 sec' };
-  if (week <= 12) return { sets: '3 sets', reps: '8-12 reps', hold: '25-30 sec' };
-  if (week <= 16) return { sets: '3 sets', reps: '10-12 reps or 3-count tempo', hold: '30 sec' };
-  if (week <= 20) return { sets: '3 rounds', reps: '10-14 controlled reps', hold: '30-35 sec' };
-  return { sets: '3-4 rounds', reps: 'strongest pain-free variation', hold: '35-40 sec' };
+const warmUpLibrary = [
+  'cat-cow',
+  'worlds-greatest-stretch',
+  'hip-circles',
+  'arm-circles',
+  'shoulder-cars',
+  'glute-bridge',
+  'walking-lunge',
+  'marching',
+  'open-book',
+  'deep-breathing'
+];
+
+const coolDownLibrary = [
+  'hamstring-floss',
+  'hip-flexor-stretch',
+  'childs-pose',
+  'figure-four',
+  'doorway-pec-stretch',
+  'open-book',
+  'calf-stretch',
+  'neck-mobility'
+];
+
+const choose = (items: string[], start: number, count: number) =>
+  Array.from({ length: count }, (_, index) => items[(start + index) % items.length]);
+
+const isDeloadWeek = (week: number) => week % 4 === 0;
+
+const phaseRules = (week: number) => {
+  if (week <= 4) {
+    return {
+      effort: 'Easy effort: 5-6 out of 10. Finish feeling like one more set was available.',
+      rest: 'Rest 60-90 seconds between sets.',
+      note: 'Create the habit. No soreness should last longer than 48 hours.',
+      walk: 'Aim for 7,000 daily steps if that feels realistic. Add duration before pace.'
+    };
+  }
+  if (week <= 8) {
+    return {
+      effort: 'Moderate effort: about 6 out of 10. Smooth reps matter more than harder versions.',
+      rest: 'Rest 60-75 seconds between sets.',
+      note: 'Increase total work gently. Add repetitions before adding another set.',
+      walk: 'Aim for 7,500-8,500 daily steps. Easy walking is the main cardio.'
+    };
+  }
+  if (week <= 12) {
+    return {
+      effort: 'Moderate effort: 6-7 out of 10. You should still have a clean rep left.',
+      rest: 'Rest 60-75 seconds between sets.',
+      note: 'This phase builds muscle with tempo, single-leg work, posture, and carries.',
+      walk: 'Aim for 8,000-9,000 daily steps. Longer walks beat rushed walks.'
+    };
+  }
+  if (week <= 16) {
+    return {
+      effort: 'Moderately hard effort: about 7 out of 10. Strong, never wrecked.',
+      rest: 'Rest 60 seconds between sets.',
+      note: 'Strength comes from better control, slower tempo, and confident single-leg work.',
+      walk: 'Aim for 8,500-9,500 daily steps. Keep one walk conversational and easy.'
+    };
+  }
+  if (week <= 20) {
+    return {
+      effort: 'Moderately hard effort: 7 out of 10. Shorter rests are optional, form is not.',
+      rest: 'Rest 45-60 seconds between sets.',
+      note: 'Higher density can support definition, but never trade posture for speed.',
+      walk: 'Aim for 9,000-10,000 daily steps when recovery feels good.'
+    };
+  }
+  return {
+    effort: 'Confident effort: 7 out of 10. Use your strongest pain-free version.',
+    rest: 'Rest 45-75 seconds between sets.',
+    note: 'You should feel noticeably stronger now. Keep the plan sustainable.',
+    walk: 'Aim for 9,000-10,000 daily steps, with one longer relaxed walk most weeks.'
+  };
 };
 
-const strengthExercises = (type: WorkoutType, week: number) => {
-  const push = week <= 4 ? 'wall-push-up' : week <= 8 ? 'counter-push-up' : 'incline-push-up';
-  const squat = week <= 4 ? 'chair-squat' : week <= 12 ? 'bodyweight-squat' : 'tempo-squat';
-  const bridge = week <= 8 ? 'glute-bridge' : week <= 16 ? 'marching-glute-bridge' : 'single-leg-glute-bridge';
-  if (type === 'Strength A') return [squat, bridge, push, 'dead-bug', 'calf-raise'];
-  if (type === 'Strength B') return ['romanian-deadlift', week <= 8 ? 'step-up' : 'reverse-lunge', 'backpack-row', 'bird-dog', 'side-plank-knees'];
-  return [week <= 12 ? 'wall-sit' : 'tempo-squat', week <= 16 ? 'kickstand-rdl' : 'reverse-lunge', 'standing-ytw', 'elevated-plank', 'pallof-no-band'];
+const progression = (week: number) => {
+  const weekInPhase = ((week - 1) % 4) + 1;
+  const deload = isDeloadWeek(week);
+  if (deload) {
+    return {
+      sets: '2 sets',
+      reps: week <= 4 ? '8 easy reps' : '8-10 easy reps',
+      hold: week <= 8 ? '15-20 seconds' : '20-25 seconds',
+      carry: '2 short carries',
+      finisher: 'Skip the finisher this week.',
+      note: 'Deload week: reduce volume by about 30 percent and do not chase personal records.'
+    };
+  }
+  if (weekInPhase === 1) {
+    return { sets: '2 sets', reps: '8 reps', hold: '20 seconds', carry: '2 carries of 30 seconds', finisher: 'Optional 4-minute easy circuit.' };
+  }
+  if (weekInPhase === 2) {
+    return { sets: '2 sets', reps: '10 reps', hold: '25 seconds', carry: '2 carries of 40 seconds', finisher: 'Optional 5-minute easy circuit.' };
+  }
+  return { sets: '3 sets', reps: '10 reps', hold: '30 seconds', carry: '3 carries of 30 seconds', finisher: 'Optional 6-minute controlled circuit.' };
 };
 
-const mobilityExercises = ['cat-cow', 'thread-needle', 'hip-flexor-stretch', 'hamstring-floss', 'figure-four', 'open-book'];
+const phaseExercisePlan = (week: number, type: WorkoutType) => {
+  const phaseIndex = Math.floor((week - 1) / 4);
+  const push = ['wall-push-up', 'counter-push-up', 'counter-push-up', 'incline-push-up', 'incline-push-up', 'incline-push-up'][phaseIndex];
+  const squat = ['chair-squat', 'bodyweight-squat', 'tempo-squat', 'tempo-squat', 'tempo-squat', 'tempo-squat'][phaseIndex];
+  const hinge = ['glute-bridge', 'romanian-deadlift', 'kickstand-rdl', 'kickstand-rdl', 'kickstand-rdl', 'kickstand-rdl'][phaseIndex];
+  const pull = phaseIndex === 0 ? 'standing-ytw' : 'backpack-row';
+  const core = ['dead-bug', 'bird-dog', 'elevated-plank', 'forearm-plank', 'forearm-plank', 'side-plank-knees'][phaseIndex];
+  const balance = phaseIndex <= 1 ? 'single-leg-balance' : phaseIndex <= 3 ? 'step-up' : 'reverse-lunge';
+  const carry = phaseIndex >= 2 ? 'farmer-carry' : 'calf-raise';
+
+  if (type === 'Strength A') return [squat, hinge, pull, push, core, balance];
+  if (type === 'Strength B') return [phaseIndex <= 1 ? 'step-up' : 'reverse-lunge', hinge, pull, 'scapular-wall-slide', 'bird-dog', carry];
+  return [squat, phaseIndex >= 4 ? 'single-leg-glute-bridge' : 'marching-glute-bridge', pull, push, core, balance, carry];
+};
+
+const strengthPrescription = (week: number, type: WorkoutType) => {
+  const dose = progression(week);
+  const rules = phaseRules(week);
+  const prefix = `${dose.sets} of ${dose.reps}`;
+  const carryText = type === 'Strength B' || type === 'Strength C' ? ` Carries or balance: ${dose.carry}.` : '';
+  const deloadText = isDeloadWeek(week) ? ` ${dose.note}` : '';
+  return `${prefix}. Core holds: ${dose.hold}. ${rules.rest}${carryText} ${dose.finisher}${deloadText}`;
+};
+
+const nonStrengthPrescription = (week: number, type: WorkoutType) => {
+  const deloadText = isDeloadWeek(week) ? ' Keep it especially easy because this is a deload week.' : '';
+  if (type === 'Yoga + Walk') return `Walk 25-40 minutes, then easy yoga or mobility for 15-25 minutes.${deloadText}`;
+  if (type === 'Recovery Walk') return `Recovery walk 25-45 minutes plus 10 minutes of mobility.${deloadText}`;
+  if (type === 'Optional') {
+    if (week >= 21) return 'Optional long walk, easy hike, yoga, or very light steel mace practice only if the elbow feels calm.';
+    return 'Optional yoga, easy hike, longer walk, or full rest. Choose the option that protects next week.';
+  }
+  return 'Complete rest. Walking is optional and should feel restorative.';
+};
+
+const dayFocus = (week: number, type: WorkoutType) => {
+  const rules = phaseRules(week);
+  if (type.startsWith('Strength')) return `${rules.note} Prioritize technique, posture, and leaving one clean set in reserve.`;
+  if (type === 'Yoga + Walk') return 'Yoga is recovery, not punishment. Keep the walk conversational.';
+  if (type === 'Recovery Walk') return 'Move blood, loosen hips and upper back, and finish fresher than you started.';
+  if (type === 'Optional') return 'Optional means optional. Long-term consistency beats proving a point.';
+  return 'Complete rest is part of the program.';
+};
+
+const dayExercises = (week: number, type: WorkoutType) => {
+  if (type.startsWith('Strength')) return phaseExercisePlan(week, type);
+  if (type === 'Yoga + Walk') return ['cat-cow', 'worlds-greatest-stretch', 'hip-flexor-stretch', 'hamstring-floss', 'figure-four', 'open-book'];
+  if (type === 'Recovery Walk') return ['cat-cow', 'thread-needle', 'hip-circles', 'calf-stretch', 'neck-mobility'];
+  if (type === 'Optional') return week >= 21 ? ['gentle-yoga-flow', 'mace-offset-hold', 'mace-halo', 'mace-360-prep'] : ['gentle-yoga-flow', 'open-book', 'figure-four'];
+  return [];
+};
 
 export const generateWorkoutPlan = (): WorkoutDay[] => {
   const days: WorkoutDay[] = [];
   for (let week = 1; week <= 24; week += 1) {
-    const level = weekLevel(week);
     for (const item of schedule) {
       const isStrength = item.type.startsWith('Strength');
-      const isMobility = item.type === 'Yoga + Walk' || item.type === 'Recovery Walk';
-      const exercisesForDay = isStrength
-        ? strengthExercises(item.type, week)
-        : isMobility
-          ? mobilityExercises
-          : item.type === 'Optional'
-            ? ['gentle-yoga-flow', 'mace-offset-hold', 'mace-halo', 'mace-360-prep']
-            : [];
+      const rules = phaseRules(week);
+      const warmUpStart = (week + schedule.findIndex((day) => day.day === item.day)) % warmUpLibrary.length;
+      const coolDownStart = (week + schedule.findIndex((day) => day.day === item.day)) % coolDownLibrary.length;
 
       days.push({
         id: `week-${week}-${item.day.toLowerCase()}`,
@@ -600,23 +895,16 @@ export const generateWorkoutPlan = (): WorkoutDay[] => {
         day: item.day,
         phase: phaseForWeek(week),
         type: item.type,
-        focus: isStrength
-          ? 'Build strength gently. Keep every rep pain-free and controlled.'
-          : item.type === 'Rest'
-            ? 'Recover on purpose. Repeat this week if your body says not yet.'
-            : item.type === 'Optional'
-              ? 'Optional movement only. A walk, yoga, hike, or full rest all count.'
-              : 'Move blood, open hips and upper back, and keep the habit alive.',
-        exercises: exercisesForDay,
-        setsReps: isStrength
-          ? `${level.sets} of ${level.reps}. Rest 45-75 seconds.`
-          : item.type === 'Yoga + Walk'
-            ? '15-25 min gentle flow + 20-30 min walk.'
-            : item.type === 'Recovery Walk'
-              ? '25-40 min easy walk. You should finish fresher.'
-              : item.type === 'Optional'
-                ? '20-60 min easy movement, or take the rest.'
-                : 'Full rest day.',
+        focus: dayFocus(week, item.type),
+        exercises: dayExercises(week, item.type),
+        setsReps: isStrength ? strengthPrescription(week, item.type) : nonStrengthPrescription(week, item.type),
+        warmUp: item.type === 'Rest' ? [] : choose(warmUpLibrary, warmUpStart, 5),
+        coolDown: item.type === 'Rest' ? [] : choose(coolDownLibrary, coolDownStart, 4),
+        effortTarget: item.type.startsWith('Strength') ? rules.effort : 'Easy effort. You should be able to breathe through your nose or hold a conversation.',
+        walkingTarget: rules.walk,
+        coachNote: isDeloadWeek(week)
+          ? 'Coach note: this is a deload week. Reduce volume, keep quality high, and leave the workout feeling better than when you started.'
+          : 'Coach note: do not increase everything at once. Technique first, then repetitions, then sets, then harder variations, then load.',
         completed: false
       });
     }

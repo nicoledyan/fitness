@@ -2,6 +2,10 @@
 
 A private, static, mobile-first fitness planner for a 24-week body recomposition plan. Built with React, TypeScript, Vite, Tailwind, Dexie, Recharts, and PWA support.
 
+## Programming approach
+
+The 168 workout days are generated from a fixed coaching specification, not random workout suggestions. Every strength workout includes a squat pattern, hinge pattern, pull, elbow-safe push option, core, balance work, warm-up, cool-down, walking target, effort target, and coach note. Every fourth week is a deload week with reduced volume.
+
 ## Run locally
 
 ```bash

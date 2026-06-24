@@ -16,6 +16,11 @@ export type WorkoutDay = {
   focus: string;
   exercises: string[];
   setsReps: string;
+  warmUp?: string[];
+  coolDown?: string[];
+  effortTarget?: string;
+  walkingTarget?: string;
+  coachNote?: string;
   completed: boolean;
   rpe?: number;
   elbowPain?: number;
@@ -64,6 +69,7 @@ export type AppSettings = {
   id: 'settings';
   startDate: string;
   darkMode: boolean;
+  programVersion?: number;
 };
 
 export type BackupPayload = {

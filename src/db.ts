@@ -2,6 +2,8 @@ import Dexie, { type Table } from 'dexie';
 import type { AppSettings, BackupPayload, Measurement, WeeklyReflection, WorkoutDay } from './types';
 import { generateWorkoutPlan } from './data/program';
 
+const PROGRAM_VERSION = 2;
+
 export class GrowStrongDb extends Dexie {
   workouts!: Table<WorkoutDay, string>;
   measurements!: Table<Measurement, string>;
@@ -26,7 +28,8 @@ const todayIso = () => new Date().toISOString().slice(0, 10);
 export const defaultSettings = (): AppSettings => ({
   id: 'settings',
   startDate: todayIso(),
-  darkMode: false
+  darkMode: false,
+  programVersion: PROGRAM_VERSION
 });
 
 export const seedIfNeeded = async () => {
@@ -37,6 +40,28 @@ export const seedIfNeeded = async () => {
   }
   if (workoutCount === 0) {
     await db.workouts.bulkPut(generateWorkoutPlan());
+    return;
+  }
+  if ((settings?.programVersion ?? 1) < PROGRAM_VERSION) {
+    const currentWorkouts = await db.workouts.toArray();
+    const currentById = new Map(currentWorkouts.map((workout) => [workout.id, workout]));
+    const migratedWorkouts = generateWorkoutPlan().map((workout) => {
+      const current = currentById.get(workout.id);
+      if (!current) return workout;
+      return {
+        ...workout,
+        completed: current.completed,
+        rpe: current.rpe,
+        elbowPain: current.elbowPain,
+        notes: current.notes,
+        completedAt: current.completedAt
+      };
+    });
+    await db.transaction('rw', db.workouts, db.settings, async () => {
+      await db.workouts.clear();
+      await db.workouts.bulkPut(migratedWorkouts);
+      await db.settings.put({ ...(settings ?? defaultSettings()), programVersion: PROGRAM_VERSION });
+    });
   }
 };
 

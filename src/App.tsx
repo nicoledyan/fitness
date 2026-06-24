@@ -163,6 +163,7 @@ function Dashboard({
             <div className="mt-5 rounded-3xl bg-garden-bg p-4 dark:bg-[#102010]">
               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-garden-muted dark:text-[#BFD4BD]">{today.day}</p>
               <p className="mt-2 text-lg font-semibold">{today.setsReps}</p>
+              {today.effortTarget && <p className="mt-2 text-sm font-semibold text-garden-muted dark:text-[#BFD4BD]">{today.effortTarget}</p>}
               <ExerciseChips ids={today.exercises} />
             </div>
             <QuickLog workout={today} refresh={refresh} />
@@ -259,9 +260,10 @@ function WorkoutCard({ workout, refresh }: { workout: WorkoutDay; refresh: () =>
         </button>
       </div>
       <p className="mt-4 rounded-2xl bg-garden-bg p-3 font-semibold dark:bg-[#102010]">{workout.setsReps}</p>
+      <WorkoutGuide workout={workout} />
       <ExerciseChips ids={workout.exercises} />
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <NumberInput label="RPE" min={1} max={10} value={workout.rpe} onChange={(value) => update({ rpe: value })} />
+        <NumberInput label="Effort rating" min={1} max={10} value={workout.rpe} onChange={(value) => update({ rpe: value })} />
         <NumberInput label="Elbow pain" min={0} max={10} value={workout.elbowPain} onChange={(value) => update({ elbowPain: value })} />
       </div>
       <ElbowNote value={workout.elbowPain} />
@@ -297,7 +299,7 @@ function QuickLog({ workout, refresh }: { workout: WorkoutDay; refresh: () => vo
         {workout.completed ? 'Completed today' : 'Complete workout'}
       </button>
       <div className="grid gap-3 sm:grid-cols-2">
-        <NumberInput label="RPE" min={1} max={10} value={workout.rpe} onChange={(value) => update({ rpe: value })} />
+        <NumberInput label="Effort rating" min={1} max={10} value={workout.rpe} onChange={(value) => update({ rpe: value })} />
         <NumberInput label="Elbow pain" min={0} max={10} value={workout.elbowPain} onChange={(value) => update({ elbowPain: value })} />
       </div>
       <textarea
@@ -617,9 +619,23 @@ function SettingsPage({ settings, refresh }: { settings: ReturnType<typeof useLi
       <section className="rounded-[2rem] border border-garden-border bg-garden-surface p-5 shadow-soft dark:border-[#405840] dark:bg-[#213821] lg:col-span-2">
         <h2 className="text-2xl font-bold">GitHub Pages note</h2>
         <p className="mt-2 text-garden-muted dark:text-[#CFE3CD]">
-          Before deploying, edit the <span className="font-semibold">homepage</span> field in package.json to match your GitHub username and repo name. Then run npm run deploy.
+          This repo publishes with GitHub Actions. In GitHub, choose Settings, Pages, then GitHub Actions as the source.
         </p>
       </section>
+    </div>
+  );
+}
+
+function WorkoutGuide({ workout }: { workout: WorkoutDay }) {
+  const warmUpNames = namesForIds(workout.warmUp ?? []);
+  const coolDownNames = namesForIds(workout.coolDown ?? []);
+  return (
+    <div className="mt-4 grid gap-3">
+      {workout.effortTarget && <MiniBlock title="Effort target" body={workout.effortTarget} />}
+      {workout.coachNote && <MiniBlock title="Coach’s note" body={workout.coachNote} />}
+      {workout.walkingTarget && <MiniBlock title="Walking target" body={workout.walkingTarget} />}
+      {warmUpNames.length > 0 && <MiniBlock title="Warm-up, 5-8 minutes" body={warmUpNames.join(', ')} />}
+      {coolDownNames.length > 0 && <MiniBlock title="Cool-down, 5-10 minutes" body={coolDownNames.join(', ')} />}
     </div>
   );
 }
@@ -635,6 +651,10 @@ function ExerciseChips({ ids }: { ids: string[] }) {
       ))}
     </div>
   );
+}
+
+function namesForIds(ids: string[]) {
+  return ids.map((id) => exerciseById.get(id)?.name ?? id);
 }
 
 function ElbowNote({ value }: { value?: number }) {
