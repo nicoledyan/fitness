@@ -908,6 +908,7 @@ export const workoutPrescriptionFor = (id: string, week: number): string => {
 
 export const mobilityPrescriptionFor = (id: string): string => {
   const map: Record<string, string> = {
+    'walking': '25-45 minutes, easy conversational pace',
     'cat-cow': '8 slow reps',
     'worlds-greatest-stretch': '5 each side',
     'hip-flexor-stretch': 'Hold 30-45 seconds each side',
@@ -1001,8 +1002,8 @@ const dayFocus = (week: number, type: WorkoutType) => {
 
 const dayExercises = (week: number, type: WorkoutType) => {
   if (type.startsWith('Strength')) return phaseExercisePlan(week, type);
-  if (type === 'Yoga + Walk') return ['cat-cow', 'worlds-greatest-stretch', 'hip-flexor-stretch', 'hamstring-floss', 'figure-four', 'open-book'];
-  if (type === 'Recovery Walk') return ['cat-cow', 'thread-needle', 'hip-circles', 'calf-stretch', 'neck-mobility'];
+  if (type === 'Yoga + Walk') return ['walking', 'cat-cow', 'worlds-greatest-stretch', 'hip-flexor-stretch', 'hamstring-floss', 'figure-four', 'open-book'];
+  if (type === 'Recovery Walk') return ['walking', 'cat-cow', 'thread-needle', 'hip-circles', 'calf-stretch', 'neck-mobility'];
   if (type === 'Optional') return week >= 21 ? ['gentle-yoga-flow', 'mace-offset-hold', 'mace-halo', 'mace-360-prep'] : ['gentle-yoga-flow', 'open-book', 'figure-four'];
   return [];
 };
