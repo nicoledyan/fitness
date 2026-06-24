@@ -1014,6 +1014,8 @@ function Nutrition() {
         </div>
       </section>
 
+      <NutritionTargets />
+
       <div className="flex gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {(['browse', 'build', 'restaurants'] as const).map((tab) => (
           <button
@@ -1363,6 +1365,122 @@ function RestaurantChoice({ label, body, color }: { label: string; body: string;
     <div className={`rounded-2xl border p-3 ${styles[color]}`}>
       <p className="text-[9px] font-bold uppercase tracking-[0.13em] opacity-60">{label}</p>
       <p className="mt-1 text-[12px] font-medium leading-relaxed">{body}</p>
+    </div>
+  );
+}
+
+function NutritionTargets() {
+  const [open, setOpen] = useState(false);
+
+  const zones = [
+    { label: 'Protein', green: '120–130g', yellow: '100–120g', note: 'Focus here first' },
+    { label: 'Calories', green: '1,850–2,000', yellow: '1,700–2,150', note: '' },
+    { label: 'Carbs', green: '180–220g', yellow: '', note: '' },
+    { label: 'Fat', green: '55–70g', yellow: '', note: '' },
+    { label: 'Fiber', green: '25–35g', yellow: '', note: '' },
+    { label: 'Water', green: '80–100 oz', yellow: '', note: '' },
+  ];
+
+  const plateGoals = [
+    { emoji: '🤚', label: 'Protein', amount: '4–5 palms' },
+    { emoji: '✊', label: 'Carbs', amount: '3–4 fists' },
+    { emoji: '🤲', label: 'Veg', amount: '5+ handfuls' },
+    { emoji: '👍', label: 'Healthy fat', amount: '3–4 thumbs' },
+    { emoji: '🍎', label: 'Fruit', amount: '2 cupped handfuls' },
+  ];
+
+  const mealRhythm = [
+    { emoji: '🍳', label: 'Breakfast', target: '25–30g protein' },
+    { emoji: '🥗', label: 'Lunch', target: '30–35g protein' },
+    { emoji: '🍝', label: 'Dinner', target: '30–35g protein' },
+    { emoji: '🥤', label: 'Snack', target: '20–30g protein' },
+  ];
+
+  return (
+    <div className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="no-active-scale flex w-full items-center justify-between gap-3 p-4"
+        aria-expanded={open}
+      >
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-moon-surface/60">
+            <Sparkles size={14} className="text-moon-accent" aria-hidden="true" />
+          </span>
+          <div className="text-left">
+            <p className="text-[13px] font-bold text-moon-text">Your targets</p>
+            {!open && (
+              <p className="text-[11px] text-moon-muted/55">120g protein · 1,850–2,000 cal/day</p>
+            )}
+          </div>
+        </div>
+        <ChevronDown
+          size={16}
+          className={`shrink-0 text-moon-muted/40 transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
+          aria-hidden="true"
+        />
+      </button>
+
+      {open && (
+        <div className="border-t border-moon-border/25 px-4 pb-5 pt-4">
+          <div className="rounded-2xl bg-moon-surface/50 p-3.5">
+            <p className="text-[12px] font-semibold leading-relaxed text-moon-text">
+              If you only track one thing, track{' '}
+              <span className="text-moon-accent">protein</span>. Aim for 120g/day.
+              Everything else can be estimated.
+            </p>
+          </div>
+
+          <p className="mt-4 text-[10px] font-black uppercase tracking-[0.18em] text-moon-muted/50">Daily green zones</p>
+          <div className="mt-2 grid gap-1.5">
+            {zones.map((row) => (
+              <div key={row.label} className="flex items-center gap-2 rounded-xl bg-moon-bg/60 px-3 py-2">
+                <span className="w-14 shrink-0 text-[11px] font-bold text-moon-muted/60">{row.label}</span>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="rounded-lg bg-[#EFF9F0] px-2 py-0.5 text-[11px] font-semibold text-[#3a7d44]">
+                    🟢 {row.green}
+                  </span>
+                  {row.yellow && (
+                    <span className="rounded-lg bg-[#FFFBEA] px-2 py-0.5 text-[11px] font-semibold text-[#8a6a00]">
+                      🟡 {row.yellow}
+                    </span>
+                  )}
+                </div>
+                {row.note && (
+                  <span className="ml-auto shrink-0 text-[10px] font-semibold text-moon-accent">{row.note}</span>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-5 text-[10px] font-black uppercase tracking-[0.18em] text-moon-muted/50">Today's plate</p>
+          <div className="mt-2 grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+            {plateGoals.map((item) => (
+              <div key={item.label} className="rounded-xl bg-moon-bg/60 px-3 py-2.5">
+                <p className="text-xl">{item.emoji}</p>
+                <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.1em] text-moon-muted/50">{item.label}</p>
+                <p className="mt-0.5 text-[12px] font-semibold">{item.amount}</p>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-5 text-[10px] font-black uppercase tracking-[0.18em] text-moon-muted/50">Meal rhythm</p>
+          <div className="mt-2 grid gap-1.5">
+            {mealRhythm.map((meal) => (
+              <div key={meal.label} className="flex items-center gap-3 rounded-xl bg-moon-bg/60 px-3 py-2.5">
+                <span className="text-lg">{meal.emoji}</span>
+                <span className="text-[12px] font-semibold text-moon-text">{meal.label}</span>
+                <span className="ml-auto text-[12px] font-semibold text-moon-accent">{meal.target}</span>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-4 text-[11px] leading-relaxed text-moon-muted/50">
+            You don't need to hit exact numbers every day to make progress. The green zone is a range, not a report card.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
