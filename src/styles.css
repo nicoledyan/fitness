@@ -19,17 +19,26 @@
 
 html {
   min-height: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
   background: #fffcf4;
 }
 
 body {
   min-width: 320px;
   min-height: 100vh;
+  max-width: 100%;
+  overflow-x: hidden;
   margin: 0;
   background:
     radial-gradient(ellipse 80% 40% at 10% 0%, rgba(191, 162, 220, 0.22), transparent),
     radial-gradient(ellipse 60% 30% at 90% 100%, rgba(191, 162, 220, 0.10), transparent),
     linear-gradient(180deg, #fffcf4 0%, #faf4ff 100%);
+}
+
+#root {
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 button,
@@ -148,4 +157,13 @@ button:active {
 /* Prevent active scale on nav/checklist buttons that have their own transforms */
 .no-active-scale:active {
   transform: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }

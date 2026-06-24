@@ -1003,7 +1003,7 @@ function Nutrition() {
     : 0;
 
   return (
-    <div className="grid gap-4">
+    <div className="grid min-w-0 max-w-full gap-4 overflow-x-hidden">
       <section className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
         <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-4 sm:p-6">
           <Pill icon={Utensils} text="Food coach" />
@@ -1016,13 +1016,13 @@ function Nutrition() {
 
       <NutritionTargets />
 
-      <div className="flex gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="no-scrollbar -mx-4 flex max-w-[100vw] gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:max-w-full sm:px-0">
         {(['browse', 'build', 'restaurants'] as const).map((tab) => (
           <button
             key={tab}
             type="button"
             onClick={() => setActiveTab(tab)}
-            className={`no-active-scale shrink-0 rounded-2xl px-4 py-2.5 text-[13px] font-semibold transition-all duration-200 ${
+            className={`no-active-scale min-h-10 shrink-0 rounded-2xl px-3.5 py-2 text-[12px] font-semibold transition-all duration-200 sm:px-4 sm:py-2.5 sm:text-[13px] ${
               activeTab === tab
                 ? 'bg-moon-accent text-white'
                 : 'border border-moon-border/40 bg-white text-moon-muted/70'
@@ -1037,13 +1037,13 @@ function Nutrition() {
       {activeTab === 'browse' && (
         <>
           {/* Meal-time category filter */}
-          <div className="flex gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="no-scrollbar -mx-4 flex max-w-[100vw] gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:max-w-full sm:px-0">
             {(['all', 'breakfast', 'lunch', 'dinner', 'snack'] as const).map((cat) => (
               <button
                 key={cat}
                 type="button"
                 onClick={() => setActiveCategory(cat)}
-                className={`no-active-scale min-h-11 shrink-0 rounded-2xl border px-4 text-[13px] font-semibold transition-all duration-200 ${
+                className={`no-active-scale min-h-10 shrink-0 rounded-2xl border px-3.5 text-[12px] font-semibold transition-all duration-200 sm:min-h-11 sm:px-4 sm:text-[13px] ${
                   activeCategory === cat
                     ? 'border-moon-text bg-moon-text text-white'
                     : 'border-moon-border/40 bg-white text-moon-muted/70'
@@ -1056,13 +1056,13 @@ function Nutrition() {
 
           <section>
             <h2 className="font-display text-xl leading-tight tracking-[-0.01em] sm:text-2xl">What are you craving?</h2>
-            <div className="mt-2.5 flex gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="no-scrollbar -mx-4 mt-2.5 flex max-w-[100vw] gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:max-w-full sm:px-0">
               {CRAVING_TAGS.map((tag) => (
                 <button
                   key={tag.id}
                   type="button"
                   onClick={() => { setActiveCraving(activeCraving === tag.id ? null : tag.id); setActiveFilter(null); }}
-                  className={`no-active-scale flex min-h-11 shrink-0 items-center gap-1.5 rounded-2xl border px-3.5 text-[12px] font-semibold transition-all duration-200 ${
+                  className={`no-active-scale flex min-h-10 shrink-0 items-center gap-1.5 rounded-2xl border px-3 text-[12px] font-semibold transition-all duration-200 sm:min-h-11 sm:px-3.5 ${
                     activeCraving === tag.id
                       ? 'border-moon-accent bg-moon-accent text-white'
                       : 'border-moon-border/40 bg-white text-moon-muted/70'
@@ -1077,13 +1077,13 @@ function Nutrition() {
 
           <section>
             <h2 className="font-display text-xl leading-tight tracking-[-0.01em] sm:text-2xl">Browse by</h2>
-            <div className="mt-2.5 flex gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="no-scrollbar -mx-4 mt-2.5 flex max-w-[100vw] gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:max-w-full sm:px-0">
               {FILTER_TAGS.map((tag) => (
                 <button
                   key={tag.id}
                   type="button"
                   onClick={() => { setActiveFilter(activeFilter === tag.id ? null : tag.id); setActiveCraving(null); }}
-                  className={`no-active-scale flex min-h-11 shrink-0 items-center gap-1.5 rounded-2xl border px-3.5 text-[12px] font-semibold transition-all duration-200 ${
+                  className={`no-active-scale flex min-h-10 shrink-0 items-center gap-1.5 rounded-2xl border px-3 text-[12px] font-semibold transition-all duration-200 sm:min-h-11 sm:px-3.5 ${
                     activeFilter === tag.id
                       ? 'border-moon-accent bg-moon-accent text-white'
                       : 'border-moon-border/40 bg-white text-moon-muted/70'
@@ -1100,7 +1100,7 @@ function Nutrition() {
             <p className="mb-3 text-[12px] text-moon-muted/50">
               {filteredMeals.length} idea{filteredMeals.length !== 1 ? 's' : ''}
             </p>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {filteredMeals.map((meal) => (
                 <MealCard
                   key={meal.id}
@@ -1141,37 +1141,37 @@ function Nutrition() {
 
 function MealCard({ meal, expanded, onToggle }: { meal: Meal; expanded: boolean; onToggle: () => void }) {
   return (
-    <article className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft transition-all duration-200 hover:shadow-[0_20px_48px_rgba(71,44,89,0.11)]">
+    <article className="min-w-0 max-w-full overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft transition-all duration-200 hover:shadow-[0_20px_48px_rgba(71,44,89,0.11)]">
       <div className="bg-gradient-to-br from-moon-surface/45 to-[#EDE0FA]/25 p-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-3xl shadow-soft">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-2xl shadow-soft sm:h-12 sm:w-12 sm:text-3xl">
             {meal.emoji}
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="font-display text-lg leading-tight tracking-[-0.01em]">{meal.name}</h3>
             <p className="mt-0.5 text-[11px] text-moon-muted/60">{meal.bestFor}</p>
           </div>
-          <div className="shrink-0 text-right">
+          <div className="shrink-0 rounded-2xl bg-white/65 px-2.5 py-1.5 text-right">
             <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-moon-muted/50">Protein</p>
-            <p className="font-display text-xl leading-none text-moon-text">~{meal.protein}g</p>
+            <p className="font-display text-lg leading-none text-moon-text sm:text-xl">~{meal.protein}g</p>
           </div>
         </div>
       </div>
 
       <div className="p-4">
-        <div className="flex items-center gap-1.5">
+        <div className="grid grid-cols-3 gap-1.5">
           <NutriPill label="Fullness" value={`${meal.fullness}/5`} />
           <NutriPill label="~Cal" value={`${meal.calories}`} />
           <NutriPill label="Time" value={meal.prepTime} />
         </div>
 
-        <div className="mt-3 grid grid-cols-2 gap-1.5">
+        <div className="mt-3 grid grid-cols-1 gap-1.5 min-[380px]:grid-cols-2">
           {(Object.entries(meal.portions) as Array<[string, string]>).map(([key, value]) => (
-            <div key={key} className="rounded-xl bg-moon-bg/60 px-2.5 py-2">
+            <div key={key} className="min-w-0 rounded-xl bg-moon-bg/60 px-2.5 py-2">
               <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-moon-muted/45">
                 {PORTION_LABELS[key] ?? key}
               </p>
-              <p className="mt-0.5 text-[11px] font-semibold leading-snug">{value}</p>
+              <p className="mt-0.5 break-words text-[11px] font-semibold leading-snug">{value}</p>
             </div>
           ))}
         </div>
@@ -1204,9 +1204,9 @@ function MealCard({ meal, expanded, onToggle }: { meal: Meal; expanded: boolean;
 
 function NutriPill({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col items-center gap-0.5 rounded-xl bg-moon-bg/65 px-2.5 py-2">
-      <span className="text-[9px] font-bold uppercase tracking-[0.1em] text-moon-muted/45">{label}</span>
-      <span className="text-[11px] font-bold text-moon-text">{value}</span>
+    <div className="min-w-0 rounded-xl bg-moon-bg/65 px-2 py-2 text-center sm:px-2.5">
+      <span className="block truncate text-[9px] font-bold uppercase tracking-[0.08em] text-moon-muted/45 sm:tracking-[0.1em]">{label}</span>
+      <span className="mt-0.5 block truncate text-[11px] font-bold text-moon-text">{value}</span>
     </div>
   );
 }
@@ -1225,8 +1225,8 @@ function BuildMyPlate({
   const plateItems = [protein, carb, veg, fat, extra].filter(Boolean) as PlateItem[];
 
   return (
-    <div className="grid gap-3">
-      <section className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
+    <div className="grid min-w-0 max-w-full gap-3 overflow-x-hidden">
+      <section className="min-w-0 overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
         <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-4 sm:p-5">
           <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Build My Plate</h2>
           <p className="mt-1.5 text-[13px] text-moon-muted/70">Choose one from each category. See your meal take shape.</p>
@@ -1252,18 +1252,18 @@ function BuildMyPlate({
           </div>
 
           {plateItems.length > 0 && (
-            <div className="mt-5 grid grid-cols-3 gap-3">
+            <div className="mt-5 grid grid-cols-3 gap-1.5 sm:gap-3">
               <div className="rounded-2xl bg-moon-surface/50 p-3 text-center">
                 <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-moon-muted/50">Protein</p>
-                <p className="mt-1 font-display text-2xl">~{proteinTotal}g</p>
+                <p className="mt-1 font-display text-xl sm:text-2xl">~{proteinTotal}g</p>
               </div>
               <div className="rounded-2xl bg-moon-bg/70 p-3 text-center">
                 <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-moon-muted/50">Calories</p>
-                <p className="mt-1 font-display text-2xl">~{calTotal}</p>
+                <p className="mt-1 font-display text-xl sm:text-2xl">~{calTotal}</p>
               </div>
               <div className="rounded-2xl bg-moon-bg/70 p-3 text-center">
                 <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-moon-muted/50">Fullness</p>
-                <p className="mt-1 font-display text-2xl">{fullness > 0 ? `${fullness}/5` : '–'}</p>
+                <p className="mt-1 font-display text-xl sm:text-2xl">{fullness > 0 ? `${fullness}/5` : '–'}</p>
               </div>
             </div>
           )}
@@ -1296,18 +1296,18 @@ function PlateSection({
   selected: PlateItem | null; onSelect: (item: PlateItem) => void; optional?: boolean;
 }) {
   return (
-    <section className="rounded-[2rem] border border-moon-border/40 bg-white p-4 shadow-soft sm:p-5">
-      <div className="flex items-baseline gap-2">
+    <section className="min-w-0 rounded-[2rem] border border-moon-border/40 bg-white p-4 shadow-soft sm:p-5">
+      <div className="flex flex-wrap items-baseline gap-2">
         <h3 className="font-display text-lg leading-tight tracking-[-0.01em] sm:text-xl">{title}</h3>
         <span className="text-[11px] text-moon-muted/45">{optional ? 'optional · ' : ''}{subtitle}</span>
       </div>
-      <div className="mt-2.5 flex flex-wrap gap-2">
+      <div className="mt-2.5 flex min-w-0 flex-wrap gap-2">
         {items.map((item) => (
           <button
             key={item.id}
             type="button"
             onClick={() => onSelect(item)}
-            className={`no-active-scale flex min-h-10 items-center gap-1.5 rounded-2xl border px-3 py-1.5 text-[12px] font-semibold transition-all duration-200 ${
+            className={`no-active-scale flex min-h-10 max-w-full items-center gap-1.5 rounded-2xl border px-3 py-1.5 text-[12px] font-semibold transition-all duration-200 ${
               selected?.id === item.id
                 ? 'border-moon-accent bg-moon-accent text-white'
                 : 'border-moon-border/40 bg-moon-bg text-moon-muted/70 hover:bg-moon-surface/40'
@@ -1315,7 +1315,7 @@ function PlateSection({
             style={selected?.id === item.id ? { boxShadow: '0 2px 10px rgba(191, 162, 220, 0.35)' } : undefined}
           >
             <span aria-hidden="true">{item.emoji}</span>
-            {item.name}
+            <span className="truncate">{item.name}</span>
           </button>
         ))}
       </div>
@@ -1325,8 +1325,8 @@ function PlateSection({
 
 function RestaurantGuide() {
   return (
-    <div className="grid gap-3">
-      <section className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
+    <div className="grid min-w-0 max-w-full gap-3 overflow-x-hidden">
+      <section className="min-w-0 overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
         <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-4 sm:p-5">
           <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Ordering out?</h2>
           <p className="mt-1.5 text-[13px] text-moon-muted/70">
@@ -1336,7 +1336,7 @@ function RestaurantGuide() {
       </section>
       <div className="grid gap-3 sm:grid-cols-2">
         {RESTAURANTS.map((r) => (
-          <article key={r.name} className="rounded-[2rem] border border-moon-border/40 bg-white p-4 shadow-soft sm:p-5">
+          <article key={r.name} className="min-w-0 rounded-[2rem] border border-moon-border/40 bg-white p-4 shadow-soft sm:p-5">
             <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-moon-surface/50 text-xl">
                 {r.emoji}
@@ -1362,9 +1362,9 @@ function RestaurantChoice({ label, body, color }: { label: string; body: string;
     neutral: 'bg-moon-bg/70 border-moon-border/30 text-moon-muted/70',
   };
   return (
-    <div className={`rounded-2xl border p-3 ${styles[color]}`}>
+    <div className={`min-w-0 rounded-2xl border p-3 ${styles[color]}`}>
       <p className="text-[9px] font-bold uppercase tracking-[0.13em] opacity-60">{label}</p>
-      <p className="mt-1 text-[12px] font-medium leading-relaxed">{body}</p>
+      <p className="mt-1 break-words text-[12px] font-medium leading-relaxed">{body}</p>
     </div>
   );
 }
@@ -1397,21 +1397,21 @@ function NutritionTargets() {
   ];
 
   return (
-    <div className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
+    <div className="min-w-0 max-w-full overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
       <button
         type="button"
         onClick={() => setOpen(!open)}
         className="no-active-scale flex w-full items-center justify-between gap-3 p-4"
         aria-expanded={open}
       >
-        <div className="flex items-center gap-2.5">
+        <div className="min-w-0 flex items-center gap-2.5">
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-moon-surface/60">
             <Sparkles size={14} className="text-moon-accent" aria-hidden="true" />
           </span>
-          <div className="text-left">
+          <div className="min-w-0 text-left">
             <p className="text-[13px] font-bold text-moon-text">Your targets</p>
             {!open && (
-              <p className="text-[11px] text-moon-muted/55">120g protein · 1,850–2,000 cal/day</p>
+              <p className="truncate text-[11px] text-moon-muted/55">120g protein · 1,850–2,000 cal/day</p>
             )}
           </div>
         </div>
@@ -1423,7 +1423,7 @@ function NutritionTargets() {
       </button>
 
       {open && (
-        <div className="border-t border-moon-border/25 px-4 pb-5 pt-4">
+        <div className="min-w-0 border-t border-moon-border/25 px-4 pb-5 pt-4">
           <div className="rounded-2xl bg-moon-surface/50 p-3.5">
             <p className="text-[12px] font-semibold leading-relaxed text-moon-text">
               If you only track one thing, track{' '}
@@ -1435,9 +1435,9 @@ function NutritionTargets() {
           <p className="mt-4 text-[10px] font-black uppercase tracking-[0.18em] text-moon-muted/50">Daily green zones</p>
           <div className="mt-2 grid gap-1.5">
             {zones.map((row) => (
-              <div key={row.label} className="flex items-center gap-2 rounded-xl bg-moon-bg/60 px-3 py-2">
+              <div key={row.label} className="flex flex-wrap items-center gap-2 rounded-xl bg-moon-bg/60 px-3 py-2">
                 <span className="w-14 shrink-0 text-[11px] font-bold text-moon-muted/60">{row.label}</span>
-                <div className="flex flex-wrap items-center gap-1.5">
+                <div className="flex min-w-0 flex-wrap items-center gap-1.5">
                   <span className="rounded-lg bg-[#EFF9F0] px-2 py-0.5 text-[11px] font-semibold text-[#3a7d44]">
                     🟢 {row.green}
                   </span>
@@ -1448,7 +1448,7 @@ function NutritionTargets() {
                   )}
                 </div>
                 {row.note && (
-                  <span className="ml-auto shrink-0 text-[10px] font-semibold text-moon-accent">{row.note}</span>
+                  <span className="basis-full text-[10px] font-semibold text-moon-accent sm:ml-auto sm:basis-auto">{row.note}</span>
                 )}
               </div>
             ))}
@@ -1468,10 +1468,10 @@ function NutritionTargets() {
           <p className="mt-5 text-[10px] font-black uppercase tracking-[0.18em] text-moon-muted/50">Meal rhythm</p>
           <div className="mt-2 grid gap-1.5">
             {mealRhythm.map((meal) => (
-              <div key={meal.label} className="flex items-center gap-3 rounded-xl bg-moon-bg/60 px-3 py-2.5">
+              <div key={meal.label} className="flex flex-wrap items-center gap-2 rounded-xl bg-moon-bg/60 px-3 py-2.5 sm:gap-3">
                 <span className="text-lg">{meal.emoji}</span>
                 <span className="text-[12px] font-semibold text-moon-text">{meal.label}</span>
-                <span className="ml-auto text-[12px] font-semibold text-moon-accent">{meal.target}</span>
+                <span className="text-[12px] font-semibold text-moon-accent sm:ml-auto">{meal.target}</span>
               </div>
             ))}
           </div>
