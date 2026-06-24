@@ -446,13 +446,13 @@ function WorkoutDetail({ workout, refresh, onClose }: { workout: WorkoutDay; ref
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-[#2B2232]/28 p-2 backdrop-blur-sm sm:items-center"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#2B2232]/28 p-2 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-label={`${workout.day} ${workout.type}`}
     >
       <div
-        className="max-h-[94dvh] w-full max-w-3xl overflow-y-auto rounded-t-[2rem] border border-moon-border/30 bg-[#FFFCF4] sm:rounded-[2rem]"
+        className="max-h-[94dvh] w-full max-w-3xl overflow-y-auto rounded-[2rem] border border-moon-border/30 bg-[#FFFCF4]"
         style={{ boxShadow: '0 -24px 80px rgba(71, 44, 89, 0.16)' }}
       >
         <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-5 sm:p-6">
@@ -624,7 +624,7 @@ function ExerciseLibrary() {
 function ExerciseModal({ exercise, onClose }: { exercise: Exercise; onClose: () => void }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-[#1D1424]/38 p-3 backdrop-blur-sm sm:items-center"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#1D1424]/38 p-3 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-label={exercise.name}
