@@ -362,7 +362,6 @@ function ChecklistRow({
         >
           {item.label}
         </span>
-        <span className="mt-0.5 block text-[11px] text-moon-muted/40">{item.section}</span>
       </button>
     </div>
   );
@@ -522,30 +521,19 @@ function WorkoutDetail({ workout, refresh, onClose }: { workout: WorkoutDay; ref
             </label>
           </div>
 
-          <div className="mt-5 grid gap-5">
-            {(['Warm-up', 'Workout', 'Cool-down', 'Rest'] as const).map((section) => {
-              const sectionItems = items.filter((item) => item.section === section);
-              if (sectionItems.length === 0) return null;
+          <div className="mt-5 grid gap-2">
+            {items.map((item) => {
+              const done = Boolean(workout.itemCompletions?.[item.key]);
+              const exercise = item.exerciseId ? exerciseById.get(item.exerciseId) : undefined;
               return (
-                <section key={section}>
-                  <h3 className="px-1 text-[10px] font-black uppercase tracking-[0.22em] text-moon-muted/50">{section}</h3>
-                  <div className="mt-2 grid gap-2">
-                    {sectionItems.map((item) => {
-                      const done = Boolean(workout.itemCompletions?.[item.key]);
-                      const exercise = item.exerciseId ? exerciseById.get(item.exerciseId) : undefined;
-                      return (
-                        <ChecklistRow
-                          key={item.key}
-                          item={item}
-                          done={done}
-                          onToggle={() => toggleItem(item)}
-                          onSelect={() => exercise && setSelectedExercise(exercise)}
-                          hasExercise={!!exercise}
-                        />
-                      );
-                    })}
-                  </div>
-                </section>
+                <ChecklistRow
+                  key={item.key}
+                  item={item}
+                  done={done}
+                  onToggle={() => toggleItem(item)}
+                  onSelect={() => exercise && setSelectedExercise(exercise)}
+                  hasExercise={!!exercise}
+                />
               );
             })}
           </div>
