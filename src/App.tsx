@@ -20,7 +20,7 @@ import {
   X
 } from 'lucide-react';
 import { db, exportBackup, importBackup, resetAllData } from './db';
-import { elbowRules, exerciseById, exercises, milestones, nutritionGuide, phases } from './data/program';
+import { elbowRules, exerciseById, exercises, milestones, phases } from './data/program';
 import { useLiveData } from './hooks/useLiveData';
 import type { BackupPayload, Exercise, WeeklyReflection, WorkoutDay } from './types';
 import { downloadJson } from './utils/file';
@@ -81,7 +81,7 @@ function Header({ route }: { route: Route }) {
     plan: 'Twenty-four weeks, one kind choice at a time.',
     exercises: 'Pain-free options before pride.',
     progress: 'Track how this feels, not what you weigh.',
-    nutrition: 'Simple food math, no courtroom energy.',
+    nutrition: 'Protein first. Practical ideas. No guilt.',
     settings: 'Your app, your local data.'
   };
   const today = new Date();
@@ -810,32 +810,513 @@ function ReflectionForm({ currentWeek, reflections, refresh }: { currentWeek: nu
   );
 }
 
+// ====================== NUTRITION DATA ======================
+
+type MealTag = 'high-protein' | 'quick' | 'cozy' | 'fresh' | 'comfort' | 'vegetarian' | 'budget' | 'no-cook' | 'meal-prep' | 'takeout';
+type CravingTag = 'savory' | 'cozy' | 'fresh' | 'pasta' | 'mexican' | 'chicken' | 'beef' | 'sweet' | 'light' | 'hungry' | 'comfort';
+
+type Meal = {
+  id: string;
+  name: string;
+  emoji: string;
+  protein: number;
+  calories: number;
+  fullness: number;
+  prepTime: string;
+  bestFor: string;
+  portions: Partial<Record<'protein' | 'carbs' | 'veg' | 'fat' | 'fruit', string>>;
+  proteinBoost: string;
+  swap: string;
+  tags: MealTag[];
+  cravings: CravingTag[];
+};
+
+type PlateItem = { id: string; name: string; emoji: string; protein: number; calories: number };
+type Restaurant = { name: string; emoji: string; best: string; balanced: string; treat: string };
+
+const MEALS: Meal[] = [
+  { id: 'chicken-rice-bowl', name: 'Chicken Rice Bowl', emoji: '🍚', protein: 40, calories: 550, fullness: 5, prepTime: '20 min', bestFor: 'Good after a workout', portions: { protein: 'Palm of chicken', carbs: 'Fist of rice', veg: 'Two handfuls of veggies', fat: 'Thumb of avocado' }, proteinBoost: 'Add Greek yogurt sauce', swap: 'Use potatoes instead of rice', tags: ['high-protein', 'meal-prep'], cravings: ['savory', 'chicken', 'hungry'] },
+  { id: 'greek-yogurt-bowl', name: 'Greek Yogurt Parfait', emoji: '🫙', protein: 25, calories: 320, fullness: 3, prepTime: '5 min', bestFor: 'Quick breakfast or snack', portions: { protein: 'Palm-sized cup of yogurt', carbs: 'Cupped hand of granola', fruit: 'Cupped hand of berries' }, proteinBoost: 'Add a scoop of protein powder', swap: 'Use cottage cheese instead of yogurt', tags: ['high-protein', 'quick', 'no-cook', 'vegetarian'], cravings: ['sweet', 'light', 'fresh'] },
+  { id: 'salmon-sweet-potato', name: 'Salmon + Sweet Potato', emoji: '🐟', protein: 38, calories: 520, fullness: 5, prepTime: '25 min', bestFor: 'Recovery dinner', portions: { protein: 'Palm of salmon', carbs: 'Fist of sweet potato', veg: 'Two handfuls greens', fat: 'Thumb of olive oil' }, proteinBoost: 'Add a boiled egg on the side', swap: 'Use tilapia or shrimp instead', tags: ['high-protein', 'fresh'], cravings: ['savory', 'fresh', 'hungry'] },
+  { id: 'turkey-wrap', name: 'Turkey Avocado Wrap', emoji: '🌯', protein: 32, calories: 440, fullness: 4, prepTime: '10 min', bestFor: 'Quick lunch', portions: { protein: 'Palm of turkey', carbs: 'One tortilla wrap', veg: 'Two handfuls lettuce + tomato', fat: 'Thumb of avocado' }, proteinBoost: 'Add a side of cottage cheese', swap: 'Use a lettuce wrap instead of tortilla', tags: ['high-protein', 'quick', 'no-cook'], cravings: ['savory', 'fresh', 'hungry'] },
+  { id: 'egg-oatmeal', name: 'Eggs + Oatmeal', emoji: '🍳', protein: 28, calories: 420, fullness: 4, prepTime: '15 min', bestFor: 'Before a workout', portions: { protein: 'Two or three eggs', carbs: 'Fist of oatmeal', fruit: 'Cupped hand of fruit' }, proteinBoost: 'Add a protein shake on the side', swap: 'Replace oatmeal with toast', tags: ['high-protein', 'cozy', 'budget', 'vegetarian'], cravings: ['cozy', 'savory', 'hungry'] },
+  { id: 'pasta-chicken', name: 'Pasta with Chicken', emoji: '🍝', protein: 42, calories: 620, fullness: 5, prepTime: '25 min', bestFor: 'Big dinner or meal prep', portions: { protein: 'Palm of chicken', carbs: 'Fist of pasta', veg: 'Two handfuls spinach or broccoli', fat: 'Thumb of olive oil' }, proteinBoost: 'Add parmesan or cottage cheese sauce', swap: 'Use chickpea pasta for more protein', tags: ['high-protein', 'meal-prep', 'cozy', 'comfort'], cravings: ['pasta', 'cozy', 'comfort', 'hungry'] },
+  { id: 'beef-stir-fry', name: 'Beef Stir-Fry', emoji: '🥩', protein: 44, calories: 580, fullness: 5, prepTime: '20 min', bestFor: 'High-protein dinner', portions: { protein: 'Palm of lean beef', carbs: 'Fist of rice or noodles', veg: 'Two handfuls mixed veggies', fat: 'Thumb of sesame oil' }, proteinBoost: 'Add edamame on the side', swap: 'Use tofu or chicken instead', tags: ['high-protein', 'meal-prep'], cravings: ['beef', 'savory', 'hungry'] },
+  { id: 'burrito-bowl', name: 'Burrito Bowl', emoji: '🫕', protein: 38, calories: 560, fullness: 5, prepTime: '15 min', bestFor: 'Filling lunch or dinner', portions: { protein: 'Palm of chicken or beef', carbs: 'Fist of rice or beans', veg: 'Two handfuls peppers + lettuce', fat: 'Thumb of guacamole' }, proteinBoost: 'Double the protein, skip some rice', swap: 'Use cauliflower rice to lower carbs', tags: ['high-protein', 'meal-prep', 'takeout'], cravings: ['mexican', 'savory', 'hungry', 'comfort'] },
+  { id: 'cottage-cheese-toast', name: 'Cottage Cheese Toast', emoji: '🍞', protein: 22, calories: 290, fullness: 3, prepTime: '5 min', bestFor: 'Light breakfast or snack', portions: { protein: 'Palm of cottage cheese', carbs: 'Two slices of toast', fruit: 'Cupped hand of berries' }, proteinBoost: 'Add smoked salmon or a boiled egg', swap: 'Use ricotta instead', tags: ['quick', 'no-cook', 'vegetarian', 'budget'], cravings: ['fresh', 'light', 'sweet'] },
+  { id: 'shrimp-tacos', name: 'Shrimp Tacos', emoji: '🌮', protein: 33, calories: 460, fullness: 4, prepTime: '20 min', bestFor: 'Fun weeknight dinner', portions: { protein: 'Palm of shrimp', carbs: 'Two small tortillas', veg: 'Two handfuls slaw', fat: 'Thumb of sauce' }, proteinBoost: 'Add black beans or extra shrimp', swap: 'Use fish or chicken instead', tags: ['fresh', 'quick'], cravings: ['mexican', 'fresh', 'savory', 'light'] },
+  { id: 'tuna-salad', name: 'Tuna Salad Bowl', emoji: '🥗', protein: 36, calories: 380, fullness: 3, prepTime: '5 min', bestFor: 'Fast protein, no cooking', portions: { protein: 'Palm of tuna', veg: 'Two handfuls greens', fat: 'Thumb of olive oil or avocado', fruit: 'Cupped hand of cherry tomatoes' }, proteinBoost: 'Add a boiled egg or white beans', swap: 'Use salmon or chicken instead', tags: ['high-protein', 'quick', 'no-cook', 'fresh'], cravings: ['fresh', 'light', 'savory'] },
+  { id: 'turkey-chili', name: 'Turkey Chili', emoji: '🥣', protein: 40, calories: 490, fullness: 5, prepTime: '35 min', bestFor: 'Cozy meal prep', portions: { protein: 'Palm of turkey', carbs: 'Fist of beans', veg: 'Two handfuls peppers + tomatoes' }, proteinBoost: 'Top with Greek yogurt instead of sour cream', swap: 'Use ground beef or lentils', tags: ['high-protein', 'meal-prep', 'cozy', 'comfort', 'budget'], cravings: ['cozy', 'comfort', 'savory', 'hungry', 'beef'] },
+];
+
+const PLATE_PROTEINS: PlateItem[] = [
+  { id: 'chicken', name: 'Chicken breast', emoji: '🍗', protein: 35, calories: 165 },
+  { id: 'salmon', name: 'Salmon', emoji: '🐟', protein: 30, calories: 180 },
+  { id: 'lean-beef', name: 'Lean ground beef', emoji: '🥩', protein: 28, calories: 200 },
+  { id: 'eggs', name: 'Eggs (3)', emoji: '🍳', protein: 18, calories: 210 },
+  { id: 'shrimp', name: 'Shrimp', emoji: '🦐', protein: 26, calories: 130 },
+  { id: 'tuna', name: 'Canned tuna', emoji: '🐡', protein: 30, calories: 130 },
+  { id: 'tofu', name: 'Tofu', emoji: '🫘', protein: 15, calories: 160 },
+  { id: 'turkey', name: 'Turkey breast', emoji: '🦃', protein: 34, calories: 160 },
+];
+
+const PLATE_CARBS: PlateItem[] = [
+  { id: 'rice', name: 'Rice', emoji: '🍚', protein: 4, calories: 200 },
+  { id: 'sweet-potato', name: 'Sweet potato', emoji: '🍠', protein: 2, calories: 130 },
+  { id: 'pasta', name: 'Pasta', emoji: '🍝', protein: 7, calories: 220 },
+  { id: 'oats', name: 'Oats', emoji: '🌾', protein: 6, calories: 150 },
+  { id: 'quinoa', name: 'Quinoa', emoji: '🌱', protein: 8, calories: 185 },
+  { id: 'bread', name: 'Sourdough', emoji: '🍞', protein: 5, calories: 140 },
+  { id: 'beans', name: 'Beans', emoji: '🫘', protein: 9, calories: 150 },
+  { id: 'potatoes', name: 'Potatoes', emoji: '🥔', protein: 3, calories: 130 },
+];
+
+const PLATE_VEGS: PlateItem[] = [
+  { id: 'spinach', name: 'Spinach', emoji: '🌿', protein: 2, calories: 15 },
+  { id: 'broccoli', name: 'Broccoli', emoji: '🥦', protein: 3, calories: 30 },
+  { id: 'peppers', name: 'Bell peppers', emoji: '🫑', protein: 1, calories: 25 },
+  { id: 'cucumber', name: 'Cucumber + tomato', emoji: '🥒', protein: 1, calories: 20 },
+  { id: 'asparagus', name: 'Asparagus', emoji: '🌱', protein: 3, calories: 20 },
+  { id: 'zucchini', name: 'Zucchini', emoji: '🥬', protein: 2, calories: 20 },
+  { id: 'salad', name: 'Mixed greens', emoji: '🥗', protein: 2, calories: 15 },
+  { id: 'cauliflower', name: 'Cauliflower', emoji: '🌸', protein: 2, calories: 25 },
+];
+
+const PLATE_FATS: PlateItem[] = [
+  { id: 'avocado', name: 'Avocado', emoji: '🥑', protein: 1, calories: 80 },
+  { id: 'olive-oil', name: 'Olive oil', emoji: '🫒', protein: 0, calories: 60 },
+  { id: 'nuts', name: 'Mixed nuts', emoji: '🥜', protein: 4, calories: 90 },
+  { id: 'cheese', name: 'Parmesan', emoji: '🧀', protein: 4, calories: 60 },
+  { id: 'tahini', name: 'Tahini drizzle', emoji: '🌻', protein: 2, calories: 60 },
+  { id: 'butter', name: 'Butter', emoji: '🧈', protein: 0, calories: 70 },
+];
+
+const PLATE_EXTRAS: PlateItem[] = [
+  { id: 'berries', name: 'Mixed berries', emoji: '🍓', protein: 1, calories: 50 },
+  { id: 'banana', name: 'Banana', emoji: '🍌', protein: 1, calories: 90 },
+  { id: 'salsa', name: 'Salsa', emoji: '🍅', protein: 0, calories: 20 },
+  { id: 'hot-sauce', name: 'Hot sauce', emoji: '🌶️', protein: 0, calories: 5 },
+  { id: 'greek-yogurt', name: 'Greek yogurt sauce', emoji: '🫙', protein: 6, calories: 40 },
+  { id: 'kimchi', name: 'Kimchi', emoji: '🥬', protein: 1, calories: 15 },
+];
+
+const RESTAURANTS: Restaurant[] = [
+  { name: 'Chipotle', emoji: '🌯', best: 'Burrito bowl: double chicken, black beans, fajita veggies, salsa, lettuce. ~55g protein.', balanced: 'Burrito bowl: chicken, rice, beans, salsa, guac. ~42g protein. Keeps you full.', treat: 'Burrito with everything. Still ~35g protein. Worth it.' },
+  { name: 'CAVA', emoji: '🫕', best: 'Greens base, grilled chicken or lamb, roasted veggies, hummus, tzatziki. ~45g protein.', balanced: 'Grain base, chicken or falafel, cucumber, harissa, feta. ~35g protein.', treat: 'Pita bowl with everything. Good call.' },
+  { name: 'Panera', emoji: '🥖', best: 'You Pick Two: chicken soup + half turkey sandwich. ~32g protein.', balanced: 'Fuji Apple Salad with chicken. Light but protein-forward.', treat: 'Mac and cheese with chicken added. Worth it sometimes.' },
+  { name: 'Chick-fil-A', emoji: '🍗', best: 'Grilled chicken sandwich or grilled nuggets with side salad. ~35g protein.', balanced: 'Grilled Spicy Deluxe sandwich. Good balance, ~38g protein.', treat: 'Classic sandwich + waffle fries. Enjoy it.' },
+  { name: 'Panda Express', emoji: '🥡', best: 'Grilled teriyaki chicken with mixed veggies, skip the rice. ~40g protein.', balanced: 'Grilled teriyaki with half rice, half veggies. ~38g protein.', treat: 'Orange chicken with fried rice. Still ~25g protein.' },
+  { name: 'Subway', emoji: '🥪', best: '12-inch turkey or chicken on whole grain, loaded with veggies. ~38g protein.', balanced: '6-inch turkey with avocado, lots of veggies. ~26g protein.', treat: 'Meatball sub. Delicious occasionally.' },
+  { name: "Jimmy John's", emoji: '🥖', best: 'Unwich (lettuce wrap) with turkey, avocado, extra meat. ~32g protein.', balanced: 'Slim turkey sandwich. Simple and solid. ~24g protein.', treat: 'Italian sub. Good fat and protein combo.' },
+  { name: 'Starbucks', emoji: '☕', best: 'Egg white bites + a protein box. ~25g protein, easy grab-and-go.', balanced: 'Turkey bacon breakfast sandwich + cold brew. Works well.', treat: 'Lavender latte and a croissant. Treat meals are allowed.' },
+];
+
+const FILTER_TAGS: Array<{ id: MealTag; label: string; emoji: string }> = [
+  { id: 'high-protein', label: 'High protein', emoji: '💪' },
+  { id: 'quick', label: 'Quick', emoji: '⚡' },
+  { id: 'cozy', label: 'Cozy', emoji: '🍲' },
+  { id: 'fresh', label: 'Fresh', emoji: '🥗' },
+  { id: 'comfort', label: 'Comfort food', emoji: '❤️' },
+  { id: 'vegetarian', label: 'Vegetarian', emoji: '🌱' },
+  { id: 'budget', label: 'Budget', emoji: '💚' },
+  { id: 'no-cook', label: 'No cooking', emoji: '🙌' },
+  { id: 'meal-prep', label: 'Meal prep', emoji: '📦' },
+  { id: 'takeout', label: 'Takeout', emoji: '🥡' },
+];
+
+const CRAVING_TAGS: Array<{ id: CravingTag; label: string; emoji: string }> = [
+  { id: 'savory', label: 'Savory', emoji: '🧂' },
+  { id: 'cozy', label: 'Cozy', emoji: '🍲' },
+  { id: 'fresh', label: 'Fresh', emoji: '🌿' },
+  { id: 'pasta', label: 'Pasta', emoji: '🍝' },
+  { id: 'mexican', label: 'Mexican', emoji: '🌮' },
+  { id: 'chicken', label: 'Chicken', emoji: '🍗' },
+  { id: 'beef', label: 'Beef', emoji: '🥩' },
+  { id: 'sweet', label: 'Sweet', emoji: '🍓' },
+  { id: 'light', label: 'Light', emoji: '🥬' },
+  { id: 'hungry', label: 'Really hungry', emoji: '🔥' },
+];
+
+const PORTION_LABELS: Record<string, string> = {
+  protein: '🤚 Protein',
+  carbs: '✊ Carbs',
+  veg: '🤲 Veg',
+  fat: '👍 Fat',
+  fruit: '🫴 Fruit',
+};
+
 function Nutrition() {
+  const [activeFilter, setActiveFilter] = useState<MealTag | null>(null);
+  const [activeCraving, setActiveCraving] = useState<CravingTag | null>(null);
+  const [expandedMeal, setExpandedMeal] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'browse' | 'build' | 'restaurants'>('browse');
+  const [plateProtein, setPlateProtein] = useState<PlateItem | null>(null);
+  const [plateCarb, setPlateCarb] = useState<PlateItem | null>(null);
+  const [plateVeg, setPlateVeg] = useState<PlateItem | null>(null);
+  const [plateFat, setPlateFat] = useState<PlateItem | null>(null);
+  const [plateExtra, setPlateExtra] = useState<PlateItem | null>(null);
+
+  const filteredMeals = MEALS.filter((meal) => {
+    if (activeFilter && !meal.tags.includes(activeFilter)) return false;
+    if (activeCraving && !meal.cravings.includes(activeCraving)) return false;
+    return true;
+  });
+
+  const plateProteinTotal =
+    (plateProtein?.protein ?? 0) + (plateCarb?.protein ?? 0) +
+    (plateVeg?.protein ?? 0) + (plateFat?.protein ?? 0) + (plateExtra?.protein ?? 0);
+  const plateCalTotal =
+    (plateProtein?.calories ?? 0) + (plateCarb?.calories ?? 0) +
+    (plateVeg?.calories ?? 0) + (plateFat?.calories ?? 0) + (plateExtra?.calories ?? 0);
+  const isBalanced = plateProtein !== null && plateCarb !== null && plateVeg !== null && plateFat !== null;
+  const plateFullness = plateProtein && plateCarb && plateVeg
+    ? plateProteinTotal >= 30 ? 5 : plateProteinTotal >= 20 ? 4 : 3
+    : 0;
+
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
-      <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
-        <Pill icon={Utensils} text="Starting targets" />
-        <h2 className="mt-3 font-display text-3xl leading-tight tracking-[-0.01em]">Enough protein. Enough life.</h2>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          <MiniBlock title="Protein" body={nutritionGuide.protein} />
-          <MiniBlock title="Calories" body={nutritionGuide.calories} />
+    <div className="grid gap-6">
+      <section className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
+        <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-5 sm:p-6">
+          <Pill icon={Utensils} text="Food coach" />
+          <h2 className="mt-3 font-display text-3xl leading-tight tracking-[-0.01em] sm:text-4xl">What should I eat next?</h2>
+          <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-moon-muted/70">
+            Protein first. No weighing. No guilt. Just practical ideas from someone who wants you to feel good and stay full.
+          </p>
         </div>
       </section>
-      <GuideCard title="Meal formulas" items={nutritionGuide.formulas} />
-      <GuideCard title="Grocery list" items={nutritionGuide.groceries} />
-      <GuideCard title="Snack ideas" items={nutritionGuide.snacks} />
-      <GuideCard title="Restaurant tips" items={nutritionGuide.restaurants} />
-      <section className="rounded-[2rem] border border-moon-border/35 bg-moon-surface/55 p-5 shadow-soft">
-        <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Simple checklist</h2>
-        <div className="mt-4 grid gap-2.5">
-          {['Protein at breakfast', 'Protein at lunch', 'Protein at dinner', 'One fruit or vegetable before scrolling', 'Water bottle visible'].map((item) => (
-            <label key={item} className="flex min-h-12 cursor-pointer items-center gap-3 rounded-2xl bg-white/70 px-4 transition hover:bg-white/90">
-              <input type="checkbox" className="h-4 w-4 accent-moon-accent" />
-              <span className="text-[13px] font-semibold">{item}</span>
-            </label>
+
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {(['browse', 'build', 'restaurants'] as const).map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            onClick={() => setActiveTab(tab)}
+            className={`no-active-scale shrink-0 rounded-2xl px-4 py-2.5 text-[13px] font-semibold transition-all duration-200 ${
+              activeTab === tab
+                ? 'bg-moon-accent text-white'
+                : 'border border-moon-border/40 bg-white text-moon-muted/70'
+            }`}
+            style={activeTab === tab ? { boxShadow: '0 4px 16px rgba(191, 162, 220, 0.38)' } : undefined}
+          >
+            {tab === 'browse' ? 'Browse meals' : tab === 'build' ? 'Build my plate' : 'Restaurants'}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === 'browse' && (
+        <>
+          <section>
+            <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">What are you craving?</h2>
+            <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+              {CRAVING_TAGS.map((tag) => (
+                <button
+                  key={tag.id}
+                  type="button"
+                  onClick={() => { setActiveCraving(activeCraving === tag.id ? null : tag.id); setActiveFilter(null); }}
+                  className={`no-active-scale flex shrink-0 items-center gap-1.5 rounded-2xl border px-3.5 py-2 text-[12px] font-semibold transition-all duration-200 ${
+                    activeCraving === tag.id
+                      ? 'border-moon-accent bg-moon-accent text-white'
+                      : 'border-moon-border/40 bg-white text-moon-muted/70'
+                  }`}
+                >
+                  <span aria-hidden="true">{tag.emoji}</span>
+                  {tag.label}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Browse by</h2>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {FILTER_TAGS.map((tag) => (
+                <button
+                  key={tag.id}
+                  type="button"
+                  onClick={() => { setActiveFilter(activeFilter === tag.id ? null : tag.id); setActiveCraving(null); }}
+                  className={`no-active-scale flex items-center gap-1.5 rounded-2xl border px-3.5 py-2 text-[12px] font-semibold transition-all duration-200 ${
+                    activeFilter === tag.id
+                      ? 'border-moon-accent bg-moon-accent text-white'
+                      : 'border-moon-border/40 bg-white text-moon-muted/70'
+                  }`}
+                >
+                  <span aria-hidden="true">{tag.emoji}</span>
+                  {tag.label}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section>
+            {(activeFilter || activeCraving) && (
+              <p className="mb-3 text-[13px] text-moon-muted/55">
+                {filteredMeals.length} idea{filteredMeals.length !== 1 ? 's' : ''} found
+              </p>
+            )}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredMeals.map((meal) => (
+                <MealCard
+                  key={meal.id}
+                  meal={meal}
+                  expanded={expandedMeal === meal.id}
+                  onToggle={() => setExpandedMeal(expandedMeal === meal.id ? null : meal.id)}
+                />
+              ))}
+            </div>
+            {filteredMeals.length === 0 && (
+              <div className="rounded-[2rem] border border-moon-border/35 bg-moon-surface/40 p-8 text-center">
+                <p className="font-display text-xl">No matches</p>
+                <p className="mt-2 text-[13px] text-moon-muted/60">Try a different filter or craving.</p>
+              </div>
+            )}
+          </section>
+        </>
+      )}
+
+      {activeTab === 'build' && (
+        <BuildMyPlate
+          protein={plateProtein} onProtein={setPlateProtein}
+          carb={plateCarb} onCarb={setPlateCarb}
+          veg={plateVeg} onVeg={setPlateVeg}
+          fat={plateFat} onFat={setPlateFat}
+          extra={plateExtra} onExtra={setPlateExtra}
+          proteinTotal={plateProteinTotal}
+          calTotal={plateCalTotal}
+          isBalanced={isBalanced}
+          fullness={plateFullness}
+        />
+      )}
+
+      {activeTab === 'restaurants' && <RestaurantGuide />}
+    </div>
+  );
+}
+
+function MealCard({ meal, expanded, onToggle }: { meal: Meal; expanded: boolean; onToggle: () => void }) {
+  return (
+    <article className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft transition-all duration-200 hover:shadow-[0_20px_48px_rgba(71,44,89,0.11)]">
+      <div className="bg-gradient-to-br from-moon-surface/45 to-[#EDE0FA]/25 p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-4xl shadow-soft">
+            {meal.emoji}
+          </div>
+          <div className="text-right">
+            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-moon-muted/50">Protein</p>
+            <p className="font-display text-2xl leading-none text-moon-text">~{meal.protein}g</p>
+          </div>
+        </div>
+        <h3 className="mt-3 font-display text-xl leading-tight tracking-[-0.01em]">{meal.name}</h3>
+        <p className="mt-1 text-[12px] text-moon-muted/60">{meal.bestFor}</p>
+      </div>
+
+      <div className="p-5">
+        <div className="flex items-center gap-2">
+          <NutriPill label="Fullness" value={`${meal.fullness}/5`} />
+          <NutriPill label="~Cal" value={`${meal.calories}`} />
+          <NutriPill label="Time" value={meal.prepTime} />
+        </div>
+
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          {(Object.entries(meal.portions) as Array<[string, string]>).map(([key, value]) => (
+            <div key={key} className="rounded-xl bg-moon-bg/60 px-3 py-2">
+              <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-moon-muted/45">
+                {PORTION_LABELS[key] ?? key}
+              </p>
+              <p className="mt-0.5 text-[11px] font-semibold leading-snug">{value}</p>
+            </div>
           ))}
         </div>
+
+        <button
+          type="button"
+          onClick={onToggle}
+          className="no-active-scale mt-4 flex w-full items-center justify-between rounded-2xl bg-moon-bg/55 px-4 py-2.5 text-left text-[12px] font-semibold text-moon-muted/65 transition hover:bg-moon-bg"
+        >
+          <span>Swaps &amp; boosts</span>
+          <ChevronDown size={14} className={`transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} aria-hidden="true" />
+        </button>
+
+        {expanded && (
+          <div className="mt-3 grid gap-2">
+            <div className="rounded-2xl border border-moon-accent/20 bg-moon-surface/30 p-3">
+              <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-moon-muted/50">Protein boost</p>
+              <p className="mt-1 text-[12px] font-semibold">{meal.proteinBoost}</p>
+            </div>
+            <div className="rounded-2xl border border-moon-border/30 bg-moon-bg/60 p-3">
+              <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-moon-muted/50">Easy swap</p>
+              <p className="mt-1 text-[12px] font-semibold">{meal.swap}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </article>
+  );
+}
+
+function NutriPill({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col items-center gap-0.5 rounded-xl bg-moon-bg/65 px-2.5 py-2">
+      <span className="text-[9px] font-bold uppercase tracking-[0.1em] text-moon-muted/45">{label}</span>
+      <span className="text-[11px] font-bold text-moon-text">{value}</span>
+    </div>
+  );
+}
+
+function BuildMyPlate({
+  protein, onProtein, carb, onCarb, veg, onVeg, fat, onFat, extra, onExtra,
+  proteinTotal, calTotal, isBalanced, fullness
+}: {
+  protein: PlateItem | null; onProtein: (item: PlateItem | null) => void;
+  carb: PlateItem | null; onCarb: (item: PlateItem | null) => void;
+  veg: PlateItem | null; onVeg: (item: PlateItem | null) => void;
+  fat: PlateItem | null; onFat: (item: PlateItem | null) => void;
+  extra: PlateItem | null; onExtra: (item: PlateItem | null) => void;
+  proteinTotal: number; calTotal: number; isBalanced: boolean; fullness: number;
+}) {
+  const plateItems = [protein, carb, veg, fat, extra].filter(Boolean) as PlateItem[];
+
+  return (
+    <div className="grid gap-4">
+      <section className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
+        <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-5">
+          <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Build My Plate</h2>
+          <p className="mt-1.5 text-[13px] text-moon-muted/70">Choose one from each category. See your meal take shape.</p>
+        </div>
+        <div className="p-5">
+          <div className="flex justify-center">
+            <div
+              className="relative flex h-44 w-44 items-center justify-center rounded-full border-4 border-moon-border/20 bg-gradient-to-br from-moon-bg to-moon-surface/40"
+              style={{ boxShadow: '0 4px 32px rgba(71, 44, 89, 0.10), inset 0 2px 8px rgba(71, 44, 89, 0.05)' }}
+            >
+              {plateItems.length > 0 ? (
+                <div className="flex flex-wrap items-center justify-center gap-2 p-4">
+                  {plateItems.map((item) => (
+                    <span key={item.id} className="text-3xl" title={item.name} aria-label={item.name}>
+                      {item.emoji}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="px-6 text-center text-[12px] text-moon-muted/40">Start picking below</p>
+              )}
+            </div>
+          </div>
+
+          {plateItems.length > 0 && (
+            <div className="mt-5 grid grid-cols-3 gap-3">
+              <div className="rounded-2xl bg-moon-surface/50 p-3 text-center">
+                <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-moon-muted/50">Protein</p>
+                <p className="mt-1 font-display text-2xl">~{proteinTotal}g</p>
+              </div>
+              <div className="rounded-2xl bg-moon-bg/70 p-3 text-center">
+                <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-moon-muted/50">Calories</p>
+                <p className="mt-1 font-display text-2xl">~{calTotal}</p>
+              </div>
+              <div className="rounded-2xl bg-moon-bg/70 p-3 text-center">
+                <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-moon-muted/50">Fullness</p>
+                <p className="mt-1 font-display text-2xl">{fullness > 0 ? `${fullness}/5` : '–'}</p>
+              </div>
+            </div>
+          )}
+
+          {isBalanced && (
+            <div className="mt-3 rounded-2xl border border-[#C3E6C8]/60 bg-[#EFF9F0] p-3 text-center">
+              <p className="text-[13px] font-semibold text-[#3a7d44]">
+                {proteinTotal >= 30
+                  ? 'Balanced and protein-rich. Good call.'
+                  : 'Balanced meal. Add a protein boost if still hungry.'}
+              </p>
+            </div>
+          )}
+        </div>
       </section>
+
+      <PlateSection title="🤚 Protein" subtitle="Palm-sized" items={PLATE_PROTEINS} selected={protein} onSelect={(item) => onProtein(protein?.id === item.id ? null : item)} />
+      <PlateSection title="✊ Carbs" subtitle="Fist-sized" items={PLATE_CARBS} selected={carb} onSelect={(item) => onCarb(carb?.id === item.id ? null : item)} />
+      <PlateSection title="🤲 Vegetables" subtitle="Two handfuls" items={PLATE_VEGS} selected={veg} onSelect={(item) => onVeg(veg?.id === item.id ? null : item)} />
+      <PlateSection title="👍 Fat" subtitle="Thumb-sized" items={PLATE_FATS} selected={fat} onSelect={(item) => onFat(fat?.id === item.id ? null : item)} />
+      <PlateSection title="🫴 Add-on" subtitle="Optional fruit or sauce" items={PLATE_EXTRAS} selected={extra} onSelect={(item) => onExtra(extra?.id === item.id ? null : item)} optional />
+    </div>
+  );
+}
+
+function PlateSection({
+  title, subtitle, items, selected, onSelect, optional
+}: {
+  title: string; subtitle: string; items: PlateItem[];
+  selected: PlateItem | null; onSelect: (item: PlateItem) => void; optional?: boolean;
+}) {
+  return (
+    <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
+      <div className="flex items-baseline gap-2">
+        <h3 className="font-display text-xl leading-tight tracking-[-0.01em]">{title}</h3>
+        {optional && <span className="text-[11px] text-moon-muted/45">optional</span>}
+      </div>
+      <p className="mt-0.5 text-[12px] text-moon-muted/55">{subtitle}</p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {items.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => onSelect(item)}
+            className={`no-active-scale flex items-center gap-1.5 rounded-2xl border px-3 py-2 text-[12px] font-semibold transition-all duration-200 ${
+              selected?.id === item.id
+                ? 'border-moon-accent bg-moon-accent text-white'
+                : 'border-moon-border/40 bg-moon-bg text-moon-muted/70 hover:bg-moon-surface/40'
+            }`}
+            style={selected?.id === item.id ? { boxShadow: '0 2px 10px rgba(191, 162, 220, 0.35)' } : undefined}
+          >
+            <span aria-hidden="true">{item.emoji}</span>
+            {item.name}
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function RestaurantGuide() {
+  return (
+    <div className="grid gap-4">
+      <section className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
+        <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-5">
+          <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Ordering out?</h2>
+          <p className="mt-1.5 text-[13px] text-moon-muted/70">
+            Treat meals are allowed. We're just making choices easier.
+          </p>
+        </div>
+      </section>
+      <div className="grid gap-4 sm:grid-cols-2">
+        {RESTAURANTS.map((r) => (
+          <article key={r.name} className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
+            <div className="flex items-center gap-3">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-moon-surface/50 text-2xl">
+                {r.emoji}
+              </span>
+              <h3 className="font-display text-xl leading-tight tracking-[-0.01em]">{r.name}</h3>
+            </div>
+            <div className="mt-4 grid gap-2">
+              <RestaurantChoice label="Best choice" body={r.best} color="green" />
+              <RestaurantChoice label="Balanced enough" body={r.balanced} color="purple" />
+              <RestaurantChoice label="Treat yourself" body={r.treat} color="neutral" />
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function RestaurantChoice({ label, body, color }: { label: string; body: string; color: 'green' | 'purple' | 'neutral' }) {
+  const styles: Record<string, string> = {
+    green: 'bg-[#EFF9F0] border-[#C3E6C8]/60 text-[#3a7d44]',
+    purple: 'bg-moon-surface/40 border-moon-border/40 text-moon-text',
+    neutral: 'bg-moon-bg/70 border-moon-border/30 text-moon-muted/70',
+  };
+  return (
+    <div className={`rounded-2xl border p-3 ${styles[color]}`}>
+      <p className="text-[9px] font-bold uppercase tracking-[0.13em] opacity-60">{label}</p>
+      <p className="mt-1 text-[12px] font-medium leading-relaxed">{body}</p>
     </div>
   );
 }
