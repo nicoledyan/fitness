@@ -58,7 +58,7 @@ export default function App() {
     <div className="min-h-screen">
       <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 pb-28 pt-6 text-moon-text sm:px-6 lg:pb-8">
         <Header route={route} />
-        <main className="mt-6 min-w-0 flex-1 overflow-x-hidden">
+        <main className="mt-6 flex-1">
           {route === 'dashboard' && <Dashboard {...data} currentWeek={week} openWorkout={setActiveWorkoutId} />}
           {route === 'plan' && <Plan workouts={data.workouts} currentWeek={week} refresh={data.refresh} openWorkout={setActiveWorkoutId} />}
           {route === 'exercises' && <ExerciseLibrary />}
@@ -1382,11 +1382,11 @@ function NutritionTargets() {
   ];
 
   const plateGoals = [
-    { emoji: '🤚', label: 'Protein', amount: '4–5 palms' },
-    { emoji: '✊', label: 'Carbs', amount: '3–4 fists' },
-    { emoji: '🤲', label: 'Veg', amount: '5+ handfuls' },
-    { emoji: '👍', label: 'Healthy fat', amount: '3–4 thumbs' },
-    { emoji: '🍎', label: 'Fruit', amount: '2 cupped handfuls' },
+    { emoji: '🖐️', label: 'Protein', amount: '4–5 palms', why: 'Gets you close to 120–130g protein.' },
+    { emoji: '✊', label: 'Carbs', amount: '3–4 fists', why: 'Enough to fuel lifting and recovery without overdoing it.' },
+    { emoji: '🥬', label: 'Vegetables', amount: '4–6 handfuls', why: 'Flexible and easier to hit than a fixed 5+.' },
+    { emoji: '👍', label: 'Healthy fats', amount: '3 thumbs (up to 4 if eating leaner)', why: 'Supports hormones and satiety without crowding out protein.' },
+    { emoji: '🍎', label: 'Fruit', amount: '1–2 handfuls', why: 'Plenty for fiber and micronutrients.' },
   ];
 
   const mealRhythm = [
@@ -1455,12 +1455,17 @@ function NutritionTargets() {
           </div>
 
           <p className="mt-5 text-[10px] font-black uppercase tracking-[0.18em] text-moon-muted/50">Today's plate</p>
-          <div className="mt-2 grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+          <div className="mt-2 grid gap-1.5">
             {plateGoals.map((item) => (
-              <div key={item.label} className="rounded-xl bg-moon-bg/60 px-3 py-2.5">
-                <p className="text-xl">{item.emoji}</p>
-                <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.1em] text-moon-muted/50">{item.label}</p>
-                <p className="mt-0.5 text-[12px] font-semibold">{item.amount}</p>
+              <div key={item.label} className="flex items-start gap-3 rounded-xl bg-moon-bg/60 px-3 py-2.5">
+                <span className="mt-0.5 text-xl leading-none">{item.emoji}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                    <p className="text-[11px] font-bold text-moon-text">{item.label}</p>
+                    <p className="text-[11px] font-semibold text-moon-accent">{item.amount}</p>
+                  </div>
+                  <p className="mt-0.5 text-[11px] leading-snug text-moon-muted/55">{item.why}</p>
+                </div>
               </div>
             ))}
           </div>
