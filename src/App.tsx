@@ -20,7 +20,7 @@ import {
   X
 } from 'lucide-react';
 import { db, exportBackup, importBackup, resetAllData } from './db';
-import { elbowRules, exerciseById, exercises, milestones, phases } from './data/program';
+import { coolDownPrescriptionFor, elbowRules, exerciseById, exercises, milestones, mobilityPrescriptionFor, phases, warmUpPrescriptionFor, workoutPrescriptionFor } from './data/program';
 import { useLiveData } from './hooks/useLiveData';
 import type { BackupPayload, Exercise, WeeklyReflection, WorkoutDay } from './types';
 import { downloadJson } from './utils/file';
@@ -2050,10 +2050,15 @@ function checklistItems(workout: WorkoutDay): ChecklistItem[] {
   if (workout.type === 'Rest') {
     return [{ key: `${workout.id}-rest`, label: 'Complete rest day', section: 'Rest' }];
   }
+  const isStrength = workout.type.startsWith('Strength');
   return [
-    ...(workout.warmUp ?? []).map((id, index) => checklistItem(workout.id, 'Warm-up', id, index, workout.warmUpPrescriptions?.[index])),
-    ...workout.exercises.map((id, index) => checklistItem(workout.id, 'Workout', id, index, workout.workoutPrescriptions?.[index])),
-    ...(workout.coolDown ?? []).map((id, index) => checklistItem(workout.id, 'Cool-down', id, index, workout.coolDownPrescriptions?.[index]))
+    ...(workout.warmUp ?? []).map((id, index) => checklistItem(workout.id, 'Warm-up', id, index, warmUpPrescriptionFor(id))),
+    ...workout.exercises.map((id, index) =>
+      checklistItem(workout.id, 'Workout', id, index,
+        isStrength ? workoutPrescriptionFor(id, workout.week) : mobilityPrescriptionFor(id)
+      )
+    ),
+    ...(workout.coolDown ?? []).map((id, index) => checklistItem(workout.id, 'Cool-down', id, index, coolDownPrescriptionFor(id)))
   ];
 }
 

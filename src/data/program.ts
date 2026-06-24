@@ -831,7 +831,7 @@ const progression = (week: number) => {
 
 // ─── Prescription helpers ───────────────────────────────────────────────────
 
-const warmUpPrescriptionFor = (id: string): string => {
+export const warmUpPrescriptionFor = (id: string): string => {
   const map: Record<string, string> = {
     'cat-cow': '8 slow reps',
     'worlds-greatest-stretch': '5 each side',
@@ -847,7 +847,7 @@ const warmUpPrescriptionFor = (id: string): string => {
   return map[id] ?? '8 reps';
 };
 
-const coolDownPrescriptionFor = (id: string): string => {
+export const coolDownPrescriptionFor = (id: string): string => {
   const map: Record<string, string> = {
     'hamstring-floss': '8 slow reps each side',
     'hip-flexor-stretch': 'Hold 30-45 sec each side',
@@ -864,7 +864,7 @@ const coolDownPrescriptionFor = (id: string): string => {
   return map[id] ?? 'Hold 30 seconds';
 };
 
-const workoutPrescriptionFor = (id: string, week: number): string => {
+export const workoutPrescriptionFor = (id: string, week: number): string => {
   const dose = progression(week);
   const sets = dose.sets;
   const reps = dose.reps;
@@ -904,6 +904,26 @@ const workoutPrescriptionFor = (id: string, week: number): string => {
   }
   // Default: bilateral sets × reps
   return `${sets} · ${reps}`;
+};
+
+export const mobilityPrescriptionFor = (id: string): string => {
+  const map: Record<string, string> = {
+    'cat-cow': '8 slow reps',
+    'worlds-greatest-stretch': '5 each side',
+    'hip-flexor-stretch': 'Hold 30-45 seconds each side',
+    'hamstring-floss': '8 slow reps each side',
+    'figure-four': 'Hold 30-45 sec each side',
+    'open-book': '8 each side',
+    'thread-needle': '5 each side',
+    'hip-circles': '10 each direction',
+    'calf-stretch': 'Hold 30 sec each side',
+    'neck-mobility': '5 each direction',
+    'gentle-yoga-flow': '15-20 minutes',
+    'mace-offset-hold': '2 sets · Hold 20 seconds',
+    'mace-halo': '2 sets · 5 each direction',
+    'mace-360-prep': '2 sets · 5 each direction'
+  };
+  return map[id] ?? '';
 };
 
 // ─── Exercise plan ──────────────────────────────────────────────────────────
@@ -1042,9 +1062,6 @@ export const generateWorkoutPlan = (): WorkoutDay[] => {
         setsReps: isStrength ? strengthPrescription(week) : nonStrengthPrescription(week, item.type),
         warmUp: warmUpIds,
         coolDown: coolDownIds,
-        warmUpPrescriptions: warmUpIds.map((id) => warmUpPrescriptionFor(id)),
-        workoutPrescriptions: isStrength ? exerciseIds.map((id) => workoutPrescriptionFor(id, week)) : undefined,
-        coolDownPrescriptions: coolDownIds.map((id) => coolDownPrescriptionFor(id)),
         effortTarget: item.type.startsWith('Strength') ? rules.effort : 'Easy effort. You should be able to breathe through your nose or hold a conversation.',
         walkingTarget: rules.walk,
         coachNote: weeklyCoachNote(week),
