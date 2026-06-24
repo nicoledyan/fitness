@@ -835,7 +835,8 @@ type Meal = {
 };
 
 type PlateItem = { id: string; name: string; emoji: string; protein: number; calories: number };
-type Restaurant = { name: string; emoji: string; best: string; balanced: string; treat: string };
+type RestaurantCategory = 'burger' | 'chicken' | 'mexican' | 'sandwich' | 'coffee' | 'asian' | 'pizza' | 'casual' | 'healthy';
+type Restaurant = { name: string; emoji: string; category: RestaurantCategory; best: string; balanced: string; treat: string };
 
 const MEALS: Meal[] = [
   // ── BREAKFAST ──
@@ -927,15 +928,402 @@ const PLATE_EXTRAS: PlateItem[] = [
   { id: 'kimchi', name: 'Kimchi', emoji: '🥬', protein: 1, calories: 15 },
 ];
 
+const RESTAURANT_CATEGORIES: Array<{ id: RestaurantCategory; label: string }> = [
+  { id: 'burger', label: '🍔 Fast Food' },
+  { id: 'chicken', label: '🍗 Chicken' },
+  { id: 'mexican', label: '🌮 Mexican' },
+  { id: 'sandwich', label: '🥪 Sandwiches' },
+  { id: 'coffee', label: '☕ Breakfast' },
+  { id: 'asian', label: '🥡 Asian' },
+  { id: 'pizza', label: '🍕 Pizza' },
+  { id: 'casual', label: '🍽️ Casual Dining' },
+  { id: 'healthy', label: '🌱 Healthy' },
+];
+
 const RESTAURANTS: Restaurant[] = [
-  { name: 'Chipotle', emoji: '🌯', best: 'Burrito bowl: double chicken, black beans, fajita veggies, salsa, lettuce. ~55g protein.', balanced: 'Burrito bowl: chicken, rice, beans, salsa, guac. ~42g protein. Keeps you full.', treat: 'Burrito with everything. Still ~35g protein. Worth it.' },
-  { name: 'CAVA', emoji: '🫕', best: 'Greens base, grilled chicken or lamb, roasted veggies, hummus, tzatziki. ~45g protein.', balanced: 'Grain base, chicken or falafel, cucumber, harissa, feta. ~35g protein.', treat: 'Pita bowl with everything. Good call.' },
-  { name: 'Panera', emoji: '🥖', best: 'You Pick Two: chicken soup + half turkey sandwich. ~32g protein.', balanced: 'Fuji Apple Salad with chicken. Light but protein-forward.', treat: 'Mac and cheese with chicken added. Worth it sometimes.' },
-  { name: 'Chick-fil-A', emoji: '🍗', best: 'Grilled chicken sandwich or grilled nuggets with side salad. ~35g protein.', balanced: 'Grilled Spicy Deluxe sandwich. Good balance, ~38g protein.', treat: 'Classic sandwich + waffle fries. Enjoy it.' },
-  { name: 'Panda Express', emoji: '🥡', best: 'Grilled teriyaki chicken with mixed veggies, skip the rice. ~40g protein.', balanced: 'Grilled teriyaki with half rice, half veggies. ~38g protein.', treat: 'Orange chicken with fried rice. Still ~25g protein.' },
-  { name: 'Subway', emoji: '🥪', best: '12-inch turkey or chicken on whole grain, loaded with veggies. ~38g protein.', balanced: '6-inch turkey with avocado, lots of veggies. ~26g protein.', treat: 'Meatball sub. Delicious occasionally.' },
-  { name: "Jimmy John's", emoji: '🥖', best: 'Unwich (lettuce wrap) with turkey, avocado, extra meat. ~32g protein.', balanced: 'Slim turkey sandwich. Simple and solid. ~24g protein.', treat: 'Italian sub. Good fat and protein combo.' },
-  { name: 'Starbucks', emoji: '☕', best: 'Egg white bites + a protein box. ~25g protein, easy grab-and-go.', balanced: 'Turkey bacon breakfast sandwich + cold brew. Works well.', treat: 'Lavender latte and a croissant. Treat meals are allowed.' },
+  // ── Fast Food (Burgers) ──────────────────────────────────────────────────────
+  {
+    name: "McDonald's", emoji: '🍔', category: 'burger',
+    best: "Quarter Pounder with Cheese + side salad. ~560 cal, ~32g protein. ⭐⭐⭐⭐ High protein for a fast food burger — skip the fries and you're in solid shape.",
+    balanced: "McDouble + small fries. ~640 cal, ~27g protein. ⭐⭐⭐ The McDouble is surprisingly efficient — two patties for under $3.",
+    treat: "Big Mac + medium fries. ~940 cal, ~28g protein. ⭐⭐⭐ The classic for a reason. Enjoy it.",
+  },
+  {
+    name: "Wendy's", emoji: '🍔', category: 'burger',
+    best: "Grilled Chicken Sandwich + a cup of chili. ~680 cal, ~57g protein. ⭐⭐⭐⭐⭐ Wendy's chili is a legitimate high-protein side — don't sleep on it.",
+    balanced: "Dave's Single + side salad. ~640 cal, ~40g protein. ⭐⭐⭐⭐ Fresh beef, real protein. A solid everyday pick.",
+    treat: "Baconator. ~950 cal, ~57g protein. ⭐⭐⭐⭐ Indulgent but genuinely protein-dense — this one earns the calories.",
+  },
+  {
+    name: "Burger King", emoji: '🍔', category: 'burger',
+    best: "Grilled Chicken Sandwich (no mayo). ~470 cal, ~37g protein. ⭐⭐⭐⭐ One of the better grilled chicken options in fast food. Lean and filling.",
+    balanced: "Whopper Jr. (no mayo) + side salad. ~490 cal, ~28g protein. ⭐⭐⭐ Good balance — the Jr. keeps calories in check.",
+    treat: "Whopper + onion rings. ~880 cal, ~30g protein. ⭐⭐⭐ The classic. Worth every bite.",
+  },
+  {
+    name: "Jack in the Box", emoji: '🍔', category: 'burger',
+    best: "Grilled Chicken Strips (4-piece) + side salad. ~390 cal, ~38g protein. ⭐⭐⭐⭐⭐ Clean protein option — great ratio for a fast food stop.",
+    balanced: "Jumbo Jack (no mayo) + side salad. ~530 cal, ~26g protein. ⭐⭐⭐ Solid all-around choice without going overboard.",
+    treat: "Ultimate Cheeseburger + small fries. ~1,050 cal, ~43g protein. ⭐⭐⭐ Big meal, strong protein — enjoy it.",
+  },
+  {
+    name: "Carl's Jr. / Hardee's", emoji: '🍔', category: 'burger',
+    best: "Charbroiled Chicken Club (no sauce). ~550 cal, ~40g protein. ⭐⭐⭐⭐ Charbroiled = actual grill flavor without the fryer. Ask for sauce on the side.",
+    balanced: "Famous Star Burger. ~660 cal, ~27g protein. ⭐⭐⭐ The original. Good protein for a drive-through meal.",
+    treat: "Double Western Bacon Cheeseburger. ~960 cal, ~51g protein. ⭐⭐⭐⭐ High cal but surprisingly protein-dense. A real treat.",
+  },
+  {
+    name: "Sonic", emoji: '🍔', category: 'burger',
+    best: "Grilled Chicken Sandwich. ~390 cal, ~30g protein. ⭐⭐⭐⭐ Solid grilled option at a drive-in. Skip the ranch dip.",
+    balanced: "Jr. Cheeseburger + small tater tots. ~620 cal, ~22g protein. ⭐⭐⭐ Satisfying combo without going overboard.",
+    treat: "Bacon Double Cheeseburger + tots. ~970 cal, ~42g protein. ⭐⭐⭐ Classic Sonic experience. Go for it.",
+  },
+  {
+    name: "Dairy Queen", emoji: '🍔', category: 'burger',
+    best: "Grilled Chicken Sandwich. ~370 cal, ~32g protein. ⭐⭐⭐⭐ Simple, lean, filling.",
+    balanced: "Double Cheeseburger + side salad. ~700 cal, ~38g protein. ⭐⭐⭐⭐ Two patties means solid protein — swap fries for salad.",
+    treat: "Burger + Blizzard. ~1,100+ cal. ⭐⭐⭐ You came to DQ for the Blizzard. Get the Blizzard.",
+  },
+  {
+    name: "Arby's", emoji: '🥩', category: 'burger',
+    best: "Two Classic Roast Beef sandwiches. ~680 cal, ~46g protein. ⭐⭐⭐⭐ Roast beef is leaner than most fast food meat — and Arby's does it right.",
+    balanced: "Roast Turkey Farmhouse Salad. ~230 cal, ~26g protein. ⭐⭐⭐ Light and protein-forward. Surprisingly filling.",
+    treat: "Beef 'N Cheddar + curly fries. ~820 cal, ~32g protein. ⭐⭐⭐ The classic Arby's order.",
+  },
+  {
+    name: "Five Guys", emoji: '🍔', category: 'burger',
+    best: "Little Hamburger + extra patty + side salad. ~700 cal, ~41g protein. ⭐⭐⭐⭐ Build it the way you want — the customization is the point.",
+    balanced: "Little Cheeseburger + side salad. ~600 cal, ~35g protein. ⭐⭐⭐⭐ Genuinely fresh ingredients.",
+    treat: "Regular Cheeseburger (double) + fries. ~1,200 cal, ~55g protein. ⭐⭐⭐⭐⭐ Protein-rich treat — the fries are worth it.",
+  },
+  {
+    name: "In-N-Out", emoji: '🍔', category: 'burger',
+    best: "Protein Style Double-Double (lettuce wrap). ~520 cal, ~37g protein. ⭐⭐⭐⭐⭐ Same flavor, no bun. The secret menu is real and worth it.",
+    balanced: "Double-Double (no fries). ~670 cal, ~37g protein. ⭐⭐⭐⭐ Skip the fries and you've got a balanced, high-protein meal.",
+    treat: "Double-Double Animal Style + fries. ~980 cal, ~37g protein. ⭐⭐⭐ Worth the hype. No guilt.",
+  },
+  {
+    name: "Whataburger", emoji: '🍔', category: 'burger',
+    best: "Grilled Chicken Sandwich (no mayo). ~420 cal, ~35g protein. ⭐⭐⭐⭐ Great lean option. Add jalapeños for flavor.",
+    balanced: "Whataburger (single) + side salad. ~540 cal, ~26g protein. ⭐⭐⭐ The OG — a good balanced pick.",
+    treat: "Double Whataburger with Cheese. ~870 cal, ~51g protein. ⭐⭐⭐⭐ One of the most protein-dense doubles in fast food.",
+  },
+  {
+    name: "Culver's", emoji: '🍔', category: 'burger',
+    best: "Grilled Chicken Sandwich (no sauce). ~400 cal, ~34g protein. ⭐⭐⭐⭐ Fresh, never frozen. A genuinely good grilled option.",
+    balanced: "ButterBurger (single) + side salad. ~570 cal, ~28g protein. ⭐⭐⭐ Midwest comfort done right.",
+    treat: "Cheese Curd Burger + cheese curds. ~1,000 cal, ~40g protein. ⭐⭐⭐ Wisconsin at its finest. Embrace it.",
+  },
+  {
+    name: "Shake Shack", emoji: '🍔', category: 'burger',
+    best: "SmokeShack (single) + no fries. ~490 cal, ~28g protein. ⭐⭐⭐ Bacon + cherry peppers = a better burger. Worth savoring.",
+    balanced: "ShackBurger (single) + side salad. ~500 cal, ~27g protein. ⭐⭐⭐⭐ Simple, quality ingredients.",
+    treat: "Double SmokeShack + fries. ~1,080 cal, ~56g protein. ⭐⭐⭐⭐⭐ High protein treat. No apologies needed.",
+  },
+  {
+    name: "Freddy's", emoji: '🍔', category: 'burger',
+    best: "Double Steakburger (no sauce) + side salad. ~640 cal, ~42g protein. ⭐⭐⭐⭐ Smashed patties = more surface area, more flavor, solid protein.",
+    balanced: "Single Steakburger + small fries. ~650 cal, ~28g protein. ⭐⭐⭐ A satisfying everyday pick.",
+    treat: "Double Steakburger + frozen custard concrete. ~1,100 cal. ⭐⭐⭐ The full Freddy's experience. Go for it.",
+  },
+  {
+    name: "Smashburger", emoji: '🍔', category: 'burger',
+    best: "Classic Smash (no sauce) + side salad. ~540 cal, ~32g protein. ⭐⭐⭐⭐ Simple, protein-forward, and satisfying.",
+    balanced: "BBQ Bacon Smash (single) + side salad. ~600 cal, ~34g protein. ⭐⭐⭐⭐ Smoky and filling.",
+    treat: "Double Classic + smash fries. ~980 cal, ~52g protein. ⭐⭐⭐⭐⭐ Protein-dense treat. You earned it.",
+  },
+
+  // ── Chicken ──────────────────────────────────────────────────────────────────
+  {
+    name: "Chick-fil-A", emoji: '🍗', category: 'chicken',
+    best: "Grilled Chicken Sandwich + side salad. ~490 cal, ~39g protein. ⭐⭐⭐⭐⭐ One of the best fast food protein sandwiches, full stop.",
+    balanced: "Grilled Spicy Deluxe. ~450 cal, ~38g protein. ⭐⭐⭐⭐⭐ All the flavor, lean protein. A reliable pick.",
+    treat: "Classic Chicken Sandwich + waffle fries. ~870 cal, ~38g protein. ⭐⭐⭐⭐ The original. Still solid protein. Enjoy it.",
+  },
+  {
+    name: "Raising Cane's", emoji: '🍗', category: 'chicken',
+    best: "3-piece Chicken Fingers + coleslaw (no Cane's sauce). ~520 cal, ~40g protein. ⭐⭐⭐⭐ The sauce is where most of the extra calories hide — go easy or skip it.",
+    balanced: "3-piece combo with coleslaw instead of fries. ~640 cal, ~40g protein. ⭐⭐⭐⭐ A solid protein meal.",
+    treat: "Box Combo (4 fingers + fries + toast + sauce). ~1,000 cal, ~52g protein. ⭐⭐⭐⭐⭐ The full Cane's experience. Worth it.",
+  },
+  {
+    name: "KFC", emoji: '🍗', category: 'chicken',
+    best: "3-piece Grilled Chicken (breast + drumstick + thigh) + green beans. ~380 cal, ~58g protein. ⭐⭐⭐⭐⭐ KFC's grilled option is seriously underrated — best protein-per-calorie at any chicken chain.",
+    balanced: "Extra Crispy Chicken Sandwich + coleslaw. ~700 cal, ~32g protein. ⭐⭐⭐ Crispy and satisfying — coleslaw over fries to balance it out.",
+    treat: "3-piece Original Recipe + mashed potatoes + biscuit. ~1,050 cal, ~62g protein. ⭐⭐⭐⭐⭐ Surprisingly protein-rich for a treat meal.",
+  },
+  {
+    name: "Popeyes", emoji: '🍗', category: 'chicken',
+    best: "Blackened Chicken Tenders (3-piece) + green beans. ~380 cal, ~42g protein. ⭐⭐⭐⭐⭐ Blackened = big flavor without the fry coating calories. Hidden gem on the menu.",
+    balanced: "Chicken Sandwich (classic) + coleslaw. ~700 cal, ~30g protein. ⭐⭐⭐ Still a great sandwich — coleslaw is the right side call.",
+    treat: "Classic Chicken Sandwich + Cajun fries. ~900 cal, ~30g protein. ⭐⭐⭐ The sandwich that started the great chicken war. Worth every bite.",
+  },
+  {
+    name: "Church's Chicken", emoji: '🍗', category: 'chicken',
+    best: "2-piece Mixed (breast + leg, original) + coleslaw. ~540 cal, ~44g protein. ⭐⭐⭐⭐ Real bone-in chicken = great protein density.",
+    balanced: "Chicken sandwich + coleslaw. ~620 cal, ~28g protein. ⭐⭐⭐ Solid, affordable, filling.",
+    treat: "2-piece + honey butter biscuit + fries. ~980 cal, ~44g protein. ⭐⭐⭐⭐ Southern comfort done right. Enjoy it.",
+  },
+  {
+    name: "Bojangles", emoji: '🍗', category: 'chicken',
+    best: "4-piece Supremes (chicken strips) + green beans (no biscuit). ~480 cal, ~46g protein. ⭐⭐⭐⭐⭐ Southern seasoning, real protein. The strips are the move.",
+    balanced: "2-piece leg quarter + dirty rice. ~680 cal, ~38g protein. ⭐⭐⭐ Flavorful and filling — the dirty rice is worth it.",
+    treat: "2-piece + seasoned fries + biscuit. ~920 cal, ~38g protein. ⭐⭐⭐ The full Bojangles experience. Saturday morning approved.",
+  },
+
+  // ── Mexican ──────────────────────────────────────────────────────────────────
+  {
+    name: "Chipotle", emoji: '🌯', category: 'mexican',
+    best: "Burrito bowl: double chicken + black beans + fajita veggies + salsa + lettuce. ~650 cal, ~55g protein. ⭐⭐⭐⭐⭐ Double protein is always worth the upcharge here.",
+    balanced: "Burrito bowl: chicken + rice + beans + salsa + guac. ~730 cal, ~42g protein. ⭐⭐⭐⭐ Guac adds good fats. A complete meal.",
+    treat: "Full burrito with everything. ~1,050 cal, ~38g protein. ⭐⭐⭐⭐ Still solid protein. Worth it for a big day.",
+  },
+  {
+    name: "Qdoba", emoji: '🌯', category: 'mexican',
+    best: "Protein bowl: grilled chicken + black beans + fajita veggies + salsa + lettuce. ~580 cal, ~46g protein. ⭐⭐⭐⭐⭐ Free queso makes this an easy win.",
+    balanced: "Burrito bowl: chicken + rice + beans + queso + pico. ~720 cal, ~38g protein. ⭐⭐⭐⭐ The free queso upgrade is a real advantage at Qdoba.",
+    treat: "Full burrito with everything. ~1,050 cal, ~38g protein. ⭐⭐⭐⭐ Go all in. It's good.",
+  },
+  {
+    name: "Taco Bell", emoji: '🌮', category: 'mexican',
+    best: "Power Menu Bowl (chicken). ~490 cal, ~27g protein. ⭐⭐⭐⭐ Or try 3 Fresco Style Chicken Soft Tacos for ~480 cal, ~30g protein. Both are solid wins.",
+    balanced: "Chicken Burrito Supreme. ~490 cal, ~20g protein. ⭐⭐⭐ Reliable and filling. Add extra chicken if you want more protein.",
+    treat: "Crunchwrap Supreme. ~540 cal, ~17g protein. ⭐⭐⭐ The iconic Taco Bell experience. Sometimes that's exactly what you need.",
+  },
+  {
+    name: "Del Taco", emoji: '🌮', category: 'mexican',
+    best: "2 Grilled Chicken Del Carbon Tacos. ~400 cal, ~30g protein. ⭐⭐⭐⭐ Simple, lean, and genuinely tasty.",
+    balanced: "Chicken Burrito + side of beans. ~680 cal, ~34g protein. ⭐⭐⭐ Filling and practical — beans add fiber and extra protein.",
+    treat: "Del Beef Tacos (×3) + quesadilla. ~950 cal, ~40g protein. ⭐⭐⭐⭐ Budget-friendly treat with real protein.",
+  },
+  {
+    name: "Cafe Rio", emoji: '🌯', category: 'mexican',
+    best: "Salad bowl: grilled chicken + black beans + salsa + lettuce. ~580 cal, ~45g protein. ⭐⭐⭐⭐⭐ The fresh lime flavor makes this feel like a real meal, not a compromise.",
+    balanced: "3 tacos: chicken + black beans + pico. ~650 cal, ~38g protein. ⭐⭐⭐⭐ Three tacos is the right amount.",
+    treat: "Full burrito con todo. ~1,100 cal, ~42g protein. ⭐⭐⭐⭐ Save this for a big appetite day — worth it.",
+  },
+  {
+    name: "Costa Vida", emoji: '🌯', category: 'mexican',
+    best: "Sweet Pork Salad (no tortilla shell) + black beans + pico + lettuce. ~600 cal, ~40g protein. ⭐⭐⭐⭐ The sweet pork is their signature — lean enough to make it work.",
+    balanced: "Chicken Burrito Bowl + rice + beans + mild salsa. ~680 cal, ~38g protein. ⭐⭐⭐ Solid, reliable, filling.",
+    treat: "Sweet Pork Burrito with everything. ~1,100 cal, ~42g protein. ⭐⭐⭐⭐ The full Costa Vida experience. Go for it.",
+  },
+
+  // ── Sandwiches ───────────────────────────────────────────────────────────────
+  {
+    name: "Subway", emoji: '🥪', category: 'sandwich',
+    best: "Footlong Rotisserie-Style Chicken on multigrain, loaded with veggies. ~640 cal, ~44g protein. ⭐⭐⭐⭐⭐ Load it up — the veggies are free and filling.",
+    balanced: "6-inch Turkey Breast + avocado + veggies. ~480 cal, ~26g protein. ⭐⭐⭐⭐ Add a second 6-inch if you're hungry.",
+    treat: "Footlong Meatball Marinara. ~960 cal, ~43g protein. ⭐⭐⭐⭐ Satisfying and still protein-rich.",
+  },
+  {
+    name: "Jimmy John's", emoji: '🥖', category: 'sandwich',
+    best: "Unwich (lettuce wrap) with roast beef or turkey + extra meat. ~300 cal, ~32g protein. ⭐⭐⭐⭐ Great low-carb pick — same fillings, less bread.",
+    balanced: "#7 Gourmet Smoked Ham Club on wheat. ~540 cal, ~34g protein. ⭐⭐⭐⭐ Freaky fast and genuinely satisfying.",
+    treat: "#12 Beach Club + chips. ~730 cal, ~30g protein. ⭐⭐⭐ Fresh and filling. The chips are worth it.",
+  },
+  {
+    name: "Jersey Mike's", emoji: '🥖', category: 'sandwich',
+    best: "Giant #13 Original Italian on wheat (light oil). ~780 cal, ~52g protein. ⭐⭐⭐⭐⭐ One of the best protein sandwiches you can order anywhere.",
+    balanced: "Regular Turkey + provolone on wheat, light oil. ~520 cal, ~34g protein. ⭐⭐⭐⭐ Clean and filling.",
+    treat: "Giant Italian Mike's Way. ~950 cal, ~52g protein. ⭐⭐⭐⭐ The full experience. Oil, vinegar, hot peppers — all of it.",
+  },
+  {
+    name: "Firehouse Subs", emoji: '🥖', category: 'sandwich',
+    best: "Medium Turkey Breast on wheat. ~490 cal, ~38g protein. ⭐⭐⭐⭐⭐ Real sliced turkey in generous portions — hard to beat.",
+    balanced: "Medium Hook & Ladder (turkey + ham) on wheat. ~540 cal, ~40g protein. ⭐⭐⭐⭐⭐ Two proteins, one sandwich. Smart pick.",
+    treat: "Large Engineer (roast beef + corned beef) + chips. ~1,100 cal, ~68g protein. ⭐⭐⭐⭐⭐ Treat meal with serious protein.",
+  },
+  {
+    name: "Potbelly", emoji: '🥪', category: 'sandwich',
+    best: "Grilled Chicken sandwich (regular) + steamed broccoli. ~540 cal, ~38g protein. ⭐⭐⭐⭐⭐ Underrated sandwich chain with real protein.",
+    balanced: "Skinny (half) Mediterranean + cup of soup. ~420 cal, ~24g protein. ⭐⭐⭐⭐ Lighter option that still satisfies.",
+    treat: "Regular Turkey Bacon Dijon on multigrain + shake. ~900 cal, ~40g protein. ⭐⭐⭐⭐ Get the shake. It's worth it.",
+  },
+  {
+    name: "Which Wich", emoji: '🥖', category: 'sandwich',
+    best: "Large Turkey Wich on multigrain + extra turkey. ~640 cal, ~48g protein. ⭐⭐⭐⭐⭐ Build it exactly how you want — that's the whole point.",
+    balanced: "Regular Turkey Wich on wheat, piled with veggies. ~520 cal, ~36g protein. ⭐⭐⭐⭐ Customizable and filling.",
+    treat: "Meaty Wich + chips. ~980 cal, ~52g protein. ⭐⭐⭐⭐ Protein-rich treat. Go for it.",
+  },
+
+  // ── Coffee & Breakfast ───────────────────────────────────────────────────────
+  {
+    name: "Starbucks", emoji: '☕', category: 'coffee',
+    best: "Egg White & Roasted Red Pepper Egg Bites (×2) + unsweetened cold brew. ~310 cal, ~24g protein. ⭐⭐⭐⭐ The best grab-and-go protein breakfast at any coffee shop.",
+    balanced: "Turkey Bacon, Cheddar & Egg White Sandwich + protein box. ~530 cal, ~32g protein. ⭐⭐⭐⭐ A real meal in coffee shop form.",
+    treat: "Iced Caramel Macchiato + Butter Croissant. ~560 cal, ~12g protein. ⭐⭐ Enjoy it. Add a protein box if you want more substance.",
+  },
+  {
+    name: "Dutch Bros", emoji: '☕', category: 'coffee',
+    best: "Americano or cold brew straight (or with splash of protein milk). ~20 cal, ~0g protein. ⭐⭐⭐⭐ Dutch Bros is about the coffee — grab a protein bar to pair with it.",
+    balanced: "Golden Eagle with 2% milk (medium). ~310 cal, ~11g protein. ⭐⭐⭐ One of their smoother drinks. Pair with food for a real meal.",
+    treat: "Freeze or Rebel. High sugar, big fun. ⭐⭐⭐ It's a coffee experience, not a nutrition strategy — that's allowed.",
+  },
+  {
+    name: "Dunkin'", emoji: '🍩', category: 'coffee',
+    best: "Egg & Cheese Wake-Up Wrap (×2) + cold brew (unsweetened). ~340 cal, ~18g protein. ⭐⭐⭐ Two wraps gets you to a real breakfast. Easy and portable.",
+    balanced: "Bacon, Egg & Cheese Croissant + cold brew. ~490 cal, ~18g protein. ⭐⭐⭐ Classic Dunkin' breakfast. Does the job.",
+    treat: "Boston Kreme donut + iced latte. ~540 cal. ⭐⭐ Sometimes you just want the donut. That's completely fine.",
+  },
+  {
+    name: "Einstein Bros.", emoji: '🥯', category: 'coffee',
+    best: "Thin bagel with smoked salmon + plain cream cheese. ~420 cal, ~28g protein. ⭐⭐⭐⭐ Salmon brings real protein and omega-3s to a bagel breakfast.",
+    balanced: "Everything Bagel + turkey + veggie cream cheese. ~500 cal, ~26g protein. ⭐⭐⭐⭐ Load it up with turkey for extra protein.",
+    treat: "Asiago bagel with classic cream cheese. ~490 cal, ~13g protein. ⭐⭐⭐ The classic. Pair with a protein shake to round it out.",
+  },
+  {
+    name: "Panera", emoji: '🥖', category: 'coffee',
+    best: "You Pick Two: Turkey Chili + half Chicken Caesar Salad. ~510 cal, ~38g protein. ⭐⭐⭐⭐⭐ Smart combo — protein from two sources.",
+    balanced: "Fuji Apple Salad with chicken. ~570 cal, ~32g protein. ⭐⭐⭐⭐ Light, satisfying, and protein-forward.",
+    treat: "Mac & cheese + half turkey sandwich. ~980 cal, ~32g protein. ⭐⭐⭐⭐ Comfort choice worth having on a slow day.",
+  },
+  {
+    name: "First Watch", emoji: '🍳', category: 'coffee',
+    best: "Farmhouse Hash with 3 scrambled eggs. ~580 cal, ~35g protein. ⭐⭐⭐⭐⭐ A real breakfast with real protein. Order it and feel good about your day.",
+    balanced: "Turkey Avocado BLT on multigrain. ~620 cal, ~34g protein. ⭐⭐⭐⭐ Lunch-style option with solid macros.",
+    treat: "Lemon Ricotta Pancakes + eggs on the side. ~900 cal, ~28g protein. ⭐⭐⭐ Saturday morning done right. Add the eggs to bump protein.",
+  },
+
+  // ── Asian ─────────────────────────────────────────────────────────────────────
+  {
+    name: "Panda Express", emoji: '🥡', category: 'asian',
+    best: "Grilled Teriyaki Chicken + mixed veggies (no rice). ~290 cal, ~36g protein. ⭐⭐⭐⭐⭐ The highest protein, lowest calorie main at Panda. Underrated order.",
+    balanced: "Grilled Teriyaki Chicken + half rice/half veggies. ~490 cal, ~36g protein. ⭐⭐⭐⭐ Great balance. The teriyaki is genuinely good.",
+    treat: "Orange Chicken + fried rice. ~800 cal, ~25g protein. ⭐⭐⭐ The crowd favorite exists for a reason. Enjoy it.",
+  },
+  {
+    name: "Pei Wei", emoji: '🥢', category: 'asian',
+    best: "Japanese Teriyaki Chicken bowl + extra veggies. ~450 cal, ~36g protein. ⭐⭐⭐⭐⭐ Clean protein, good flavor, filling.",
+    balanced: "Teriyaki Chicken bowl with brown rice. ~620 cal, ~38g protein. ⭐⭐⭐⭐ Brown rice keeps it balanced.",
+    treat: "Mongolian Beef + white rice. ~840 cal, ~36g protein. ⭐⭐⭐⭐ Rich, satisfying, and still protein-solid.",
+  },
+  {
+    name: "Teriyaki Madness", emoji: '🍱', category: 'asian',
+    best: "Chicken bowl + veggie base (skip the rice or go half). ~420 cal, ~48g protein. ⭐⭐⭐⭐⭐ Generous portions of real chicken breast — hard to find a better protein ratio at a casual chain.",
+    balanced: "Chicken bowl + brown rice + extra veggies. ~680 cal, ~48g protein. ⭐⭐⭐⭐⭐ More volume, still great protein. A real meal.",
+    treat: "Beef bowl + white rice + gyoza add-on. ~1,050 cal, ~52g protein. ⭐⭐⭐⭐⭐ Protein-packed treat. Worth every bite.",
+  },
+
+  // ── Pizza ─────────────────────────────────────────────────────────────────────
+  {
+    name: "Domino's", emoji: '🍕', category: 'pizza',
+    best: "2 slices Thin Crust Chicken & Veggie (no ranch). ~400 cal, ~24g protein. ⭐⭐⭐ Thin crust drops the carb load significantly — the right move for pizza night.",
+    balanced: "2 slices Hand Tossed Chicken + 1 slice veggie. ~580 cal, ~30g protein. ⭐⭐⭐⭐ Solid balance if you're having a proper dinner.",
+    treat: "3 slices Pepperoni Hand Tossed. ~720 cal, ~30g protein. ⭐⭐⭐ Nobody eats pizza to be virtuous. Enjoy it.",
+  },
+  {
+    name: "Pizza Hut", emoji: '🍕', category: 'pizza',
+    best: "2 slices Thin 'N Crispy Chicken Supreme. ~380 cal, ~22g protein. ⭐⭐⭐ Thin crust + chicken is the smart combo.",
+    balanced: "2 slices Original Crust Chicken + side salad. ~580 cal, ~28g protein. ⭐⭐⭐⭐ Add the salad to stretch the meal.",
+    treat: "3 slices Original Pan + garlic bread. ~900 cal, ~30g protein. ⭐⭐⭐ The classic thick-crust experience.",
+  },
+  {
+    name: "Papa John's", emoji: '🍕', category: 'pizza',
+    best: "2 slices Thin Crust Chicken & Veggie. ~380 cal, ~22g protein. ⭐⭐⭐ Lighter option that still satisfies.",
+    balanced: "2 slices Original Crust with chicken. ~540 cal, ~26g protein. ⭐⭐⭐ Reliable. Add a side salad to round it out.",
+    treat: "3 slices The Works + garlic dipping sauce. ~860 cal, ~33g protein. ⭐⭐⭐ The full Papa John's experience.",
+  },
+  {
+    name: "Little Caesars", emoji: '🍕', category: 'pizza',
+    best: "2 slices Classic Cheese + side salad from home. ~400 cal, ~18g protein. ⭐⭐⭐ The price-per-calorie is unmatched anywhere. Pair with a protein shake.",
+    balanced: "2 slices Pepperoni + Crazy Bread (1 piece). ~640 cal, ~26g protein. ⭐⭐⭐ Budget-friendly and filling.",
+    treat: "3 slices Pepperoni + Crazy Bread (3 pieces). ~880 cal, ~30g protein. ⭐⭐⭐ The value is unbeatable. Enjoy it.",
+  },
+  {
+    name: "MOD Pizza", emoji: '🍕', category: 'pizza',
+    best: "Build your own: thin crust + red sauce + grilled chicken + roasted veggies + light cheese. ~520 cal, ~32g protein. ⭐⭐⭐⭐ Full control of what goes on — use it.",
+    balanced: "Build: classic sauce + mozzarella + chicken + roasted garlic + artichoke. ~640 cal, ~34g protein. ⭐⭐⭐⭐ Flavor-forward and filling.",
+    treat: "Any signature pizza + salad. ~800 cal, ~30g protein. ⭐⭐⭐ MOD is fun because you can make it exactly what you want.",
+  },
+  {
+    name: "Blaze Pizza", emoji: '🍕', category: 'pizza',
+    best: "Build your own: white garlic sauce + spinach + grilled chicken + roasted tomatoes (thin crust). ~540 cal, ~34g protein. ⭐⭐⭐⭐ High-protein custom build that actually tastes good.",
+    balanced: "High Bird or Green Stripe (their built-for-protein pies). ~620 cal, ~36g protein. ⭐⭐⭐⭐ These menu picks exist specifically for people who care about protein.",
+    treat: "Any pizza + garlic knots. ~880 cal, ~32g protein. ⭐⭐⭐ The garlic knots are the move. Get them.",
+  },
+
+  // ── Casual Dining ────────────────────────────────────────────────────────────
+  {
+    name: "Applebee's", emoji: '🍽️', category: 'casual',
+    best: "8 oz Sirloin + steamed broccoli + house salad. ~580 cal, ~52g protein. ⭐⭐⭐⭐⭐ Steak at a sit-down restaurant is one of the smartest protein picks around.",
+    balanced: "Grilled Chicken Wonton Tacos. ~590 cal, ~34g protein. ⭐⭐⭐⭐ Light, satisfying, and one of their better options.",
+    treat: "Double Crunch Bone-In Wings + fries. ~1,100 cal, ~54g protein. ⭐⭐⭐⭐⭐ High protein treat. Game-day approved.",
+  },
+  {
+    name: "Chili's", emoji: '🍽️', category: 'casual',
+    best: "6 oz Classic Sirloin + steamed broccoli + house salad. ~560 cal, ~48g protein. ⭐⭐⭐⭐⭐ A complete protein meal for a reasonable price.",
+    balanced: "Grilled Chicken Sandwich + steamed broccoli. ~570 cal, ~42g protein. ⭐⭐⭐⭐⭐ One of the better balanced picks at a casual chain.",
+    treat: "Boss Burger + fries. ~1,200 cal, ~56g protein. ⭐⭐⭐⭐ Indulgent but protein-dense. Worth it for a cheat day.",
+  },
+  {
+    name: "Olive Garden", emoji: '🍝', category: 'casual',
+    best: "Herb-Grilled Salmon. ~510 cal, ~42g protein. ⭐⭐⭐⭐⭐ One of the best macro meals at OG — skip the breadstick and add a side salad.",
+    balanced: "Chicken Alfredo (half portion) + minestrone soup. ~720 cal, ~38g protein. ⭐⭐⭐⭐ Pasta + soup is a surprisingly filling combo.",
+    treat: "Tour of Italy + a breadstick. ~1,500 cal, ~55g protein. ⭐⭐⭐⭐⭐ Special occasion order. High protein, high enjoyment.",
+  },
+  {
+    name: "Red Robin", emoji: '🍔', category: 'casual',
+    best: "Simply Grilled Chicken Burger (lettuce wrap) + side salad. ~520 cal, ~38g protein. ⭐⭐⭐⭐ Great customization options — build it your way.",
+    balanced: "Burnin' Love Burger (single) + side salad. ~700 cal, ~34g protein. ⭐⭐⭐⭐ Spicy and filling. Swap fries for salad.",
+    treat: "Gourmet Cheeseburger + bottomless steak fries. ~1,200 cal, ~48g protein. ⭐⭐⭐⭐ The bottomless fries are part of the experience. Embrace it.",
+  },
+  {
+    name: "Buffalo Wild Wings", emoji: '🍗', category: 'casual',
+    best: "Traditional Wings (8) + dry rub seasoning + side salad. ~680 cal, ~60g protein. ⭐⭐⭐⭐⭐ Traditional > boneless for protein-to-calorie — real chicken, less breading.",
+    balanced: "Naked Tenders (6) + Spicy Garlic sauce + celery. ~540 cal, ~52g protein. ⭐⭐⭐⭐⭐ Unbreaded tenders are a protein powerhouse.",
+    treat: "Boneless Wings (15) + loaded fries. ~1,400 cal, ~72g protein. ⭐⭐⭐⭐⭐ Game day done right. High protein, zero regrets.",
+  },
+  {
+    name: "Texas Roadhouse", emoji: '🥩', category: 'casual',
+    best: "8 oz Sirloin + grilled green beans + house salad. ~620 cal, ~58g protein. ⭐⭐⭐⭐⭐ Save the rolls for after — start with the steak and let the protein do its job.",
+    balanced: "Grilled Chicken + mashed potatoes + house salad. ~680 cal, ~54g protein. ⭐⭐⭐⭐⭐ A complete, high-protein meal at a fair price.",
+    treat: "12 oz Ribeye + mashed potatoes + rolls. ~1,400 cal, ~78g protein. ⭐⭐⭐⭐⭐ Premium treat with exceptional protein. Special occasion approved.",
+  },
+  {
+    name: "Outback Steakhouse", emoji: '🥩', category: 'casual',
+    best: "9 oz Victoria's Filet + steamed vegetables + house salad. ~680 cal, ~62g protein. ⭐⭐⭐⭐⭐ The filet is lean, tender, and protein-packed.",
+    balanced: "Grilled Salmon + seasonal vegetables. ~620 cal, ~46g protein. ⭐⭐⭐⭐⭐ Omega-3 rich and balanced.",
+    treat: "Outback Special (14 oz) + loaded baked potato. ~1,400 cal, ~85g protein. ⭐⭐⭐⭐⭐ Worth every calorie for a big night out.",
+  },
+  {
+    name: "BJ's Restaurant", emoji: '🍺', category: 'casual',
+    best: "Enlightened Grilled Chicken Pesto + zucchini noodles. ~480 cal, ~44g protein. ⭐⭐⭐⭐⭐ From their lighter menu — genuinely good and protein-packed.",
+    balanced: "Grilled Salmon + roasted Brussels sprouts. ~680 cal, ~42g protein. ⭐⭐⭐⭐ Solid sit-down meal.",
+    treat: "Personal Deep Dish Pizza + Pizookie for dessert. ~1,200 cal. ⭐⭐⭐ The Pizookie is non-negotiable at BJ's. Get it.",
+  },
+  {
+    name: "Cheesecake Factory", emoji: '🍰', category: 'casual',
+    best: "SkinnyLicious® Grilled Chicken (lighter menu). ~580 cal, ~48g protein. ⭐⭐⭐⭐⭐ Their lighter menu is actually good — real food, not rabbit food.",
+    balanced: "Factory Chopped Salad with chicken. ~700 cal, ~40g protein. ⭐⭐⭐⭐ Generous portions of real ingredients.",
+    treat: "Pasta Napoletana + a slice of cheesecake. ~1,400 cal. ⭐⭐⭐ You came for the cheesecake. Get the cheesecake. No guilt.",
+  },
+
+  // ── Healthy Chains ───────────────────────────────────────────────────────────
+  {
+    name: "CAVA", emoji: '🫕', category: 'healthy',
+    best: "Greens base + grilled chicken + roasted veggies + hummus + tzatziki. ~560 cal, ~46g protein. ⭐⭐⭐⭐⭐ Add double chicken if you're hungry. The lemon herb tahini is worth it.",
+    balanced: "Grain base + grilled chicken + cucumber + harissa + feta. ~680 cal, ~38g protein. ⭐⭐⭐⭐ Balanced, filling, and genuinely tasty.",
+    treat: "Pita bowl + falafel + all the toppings. ~950 cal, ~38g protein. ⭐⭐⭐⭐ Falafel is surprisingly filling and worth adding.",
+  },
+  {
+    name: "Sweetgreen", emoji: '🥗', category: 'healthy',
+    best: "Harvest Bowl (no croutons, extra chicken). ~620 cal, ~46g protein. ⭐⭐⭐⭐⭐ One of the best macro bowls at any salad chain. The warm base + chicken combo is legitimately good.",
+    balanced: "Custom bowl: roasted chicken + greens + roasted veggies + balsamic vinaigrette. ~580 cal, ~40g protein. ⭐⭐⭐⭐⭐ Build it the way you want.",
+    treat: "Crispy Rice Bowl + warm garlic bread. ~980 cal, ~30g protein. ⭐⭐⭐ Sweetgreen goes harder than you'd expect. Enjoy it.",
+  },
+  {
+    name: "Flower Child", emoji: '🌸', category: 'healthy',
+    best: "Mother Earth Bowl + grilled chicken added. ~560 cal, ~42g protein. ⭐⭐⭐⭐⭐ Clean ingredients, real food, great flavor. A lunch you'll actually look forward to.",
+    balanced: "Kale Caesar + grilled chicken. ~510 cal, ~36g protein. ⭐⭐⭐⭐ Light but filling. The Caesar dressing is made right here.",
+    treat: "Crispy Chicken bowl + tahini drizzle. ~780 cal, ~42g protein. ⭐⭐⭐⭐ Crispy still fits. No need to deprive yourself.",
+  },
+  {
+    name: "Noodles & Company", emoji: '🍜', category: 'healthy',
+    best: "Zucchini Pesto + grilled chicken. ~510 cal, ~42g protein. ⭐⭐⭐⭐⭐ The zucchini noodle swap is genuinely good — not a compromise.",
+    balanced: "Japanese Pan Noodles + grilled chicken. ~620 cal, ~38g protein. ⭐⭐⭐⭐ Savory, filling, and solid protein.",
+    treat: "Wisconsin Mac & Cheese + chicken. ~860 cal, ~40g protein. ⭐⭐⭐⭐ Cheese + protein. A genuinely good day.",
+  },
 ];
 
 const FILTER_TAGS: Array<{ id: MealTag; label: string; emoji: string }> = [
@@ -978,11 +1366,18 @@ function Nutrition() {
   const [activeCraving, setActiveCraving] = useState<CravingTag | null>(null);
   const [expandedMeal, setExpandedMeal] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'browse' | 'build' | 'restaurants'>('browse');
-  const [plateProtein, setPlateProtein] = useState<PlateItem | null>(null);
-  const [plateCarb, setPlateCarb] = useState<PlateItem | null>(null);
-  const [plateVeg, setPlateVeg] = useState<PlateItem | null>(null);
-  const [plateFat, setPlateFat] = useState<PlateItem | null>(null);
-  const [plateExtra, setPlateExtra] = useState<PlateItem | null>(null);
+  const [plateProtein, setPlateProtein] = useState<PlateItem[]>([]);
+  const [plateCarb, setPlateCarb] = useState<PlateItem[]>([]);
+  const [plateVeg, setPlateVeg] = useState<PlateItem[]>([]);
+  const [plateFat, setPlateFat] = useState<PlateItem[]>([]);
+  const [plateExtra, setPlateExtra] = useState<PlateItem[]>([]);
+
+  function togglePlateItem(list: PlateItem[], setList: (v: PlateItem[]) => void, item: PlateItem) {
+    setList(list.some((s) => s.id === item.id) ? list.filter((s) => s.id !== item.id) : [...list, item]);
+  }
+  function clearPlate() {
+    setPlateProtein([]); setPlateCarb([]); setPlateVeg([]); setPlateFat([]); setPlateExtra([]);
+  }
 
   const filteredMeals = MEALS.filter((meal) => {
     if (activeCategory !== 'all' && meal.category !== activeCategory) return false;
@@ -991,14 +1386,11 @@ function Nutrition() {
     return true;
   });
 
-  const plateProteinTotal =
-    (plateProtein?.protein ?? 0) + (plateCarb?.protein ?? 0) +
-    (plateVeg?.protein ?? 0) + (plateFat?.protein ?? 0) + (plateExtra?.protein ?? 0);
-  const plateCalTotal =
-    (plateProtein?.calories ?? 0) + (plateCarb?.calories ?? 0) +
-    (plateVeg?.calories ?? 0) + (plateFat?.calories ?? 0) + (plateExtra?.calories ?? 0);
-  const isBalanced = plateProtein !== null && plateCarb !== null && plateVeg !== null && plateFat !== null;
-  const plateFullness = plateProtein && plateCarb && plateVeg
+  const allPlateItems = [...plateProtein, ...plateCarb, ...plateVeg, ...plateFat, ...plateExtra];
+  const plateProteinTotal = allPlateItems.reduce((sum, i) => sum + i.protein, 0);
+  const plateCalTotal = allPlateItems.reduce((sum, i) => sum + i.calories, 0);
+  const isBalanced = plateProtein.length > 0 && plateCarb.length > 0 && plateVeg.length > 0 && plateFat.length > 0;
+  const plateFullness = plateProtein.length > 0 && plateCarb.length > 0 && plateVeg.length > 0
     ? plateProteinTotal >= 30 ? 5 : plateProteinTotal >= 20 ? 4 : 3
     : 0;
 
@@ -1122,11 +1514,12 @@ function Nutrition() {
 
       {activeTab === 'build' && (
         <BuildMyPlate
-          protein={plateProtein} onProtein={setPlateProtein}
-          carb={plateCarb} onCarb={setPlateCarb}
-          veg={plateVeg} onVeg={setPlateVeg}
-          fat={plateFat} onFat={setPlateFat}
-          extra={plateExtra} onExtra={setPlateExtra}
+          protein={plateProtein} onProtein={(item) => togglePlateItem(plateProtein, setPlateProtein, item)}
+          carb={plateCarb} onCarb={(item) => togglePlateItem(plateCarb, setPlateCarb, item)}
+          veg={plateVeg} onVeg={(item) => togglePlateItem(plateVeg, setPlateVeg, item)}
+          fat={plateFat} onFat={(item) => togglePlateItem(plateFat, setPlateFat, item)}
+          extra={plateExtra} onExtra={(item) => togglePlateItem(plateExtra, setPlateExtra, item)}
+          onClear={clearPlate}
           proteinTotal={plateProteinTotal}
           calTotal={plateCalTotal}
           isBalanced={isBalanced}
@@ -1212,24 +1605,38 @@ function NutriPill({ label, value }: { label: string; value: string }) {
 }
 
 function BuildMyPlate({
-  protein, onProtein, carb, onCarb, veg, onVeg, fat, onFat, extra, onExtra,
+  protein, onProtein, carb, onCarb, veg, onVeg, fat, onFat, extra, onExtra, onClear,
   proteinTotal, calTotal, isBalanced, fullness
 }: {
-  protein: PlateItem | null; onProtein: (item: PlateItem | null) => void;
-  carb: PlateItem | null; onCarb: (item: PlateItem | null) => void;
-  veg: PlateItem | null; onVeg: (item: PlateItem | null) => void;
-  fat: PlateItem | null; onFat: (item: PlateItem | null) => void;
-  extra: PlateItem | null; onExtra: (item: PlateItem | null) => void;
+  protein: PlateItem[]; onProtein: (item: PlateItem) => void;
+  carb: PlateItem[]; onCarb: (item: PlateItem) => void;
+  veg: PlateItem[]; onVeg: (item: PlateItem) => void;
+  fat: PlateItem[]; onFat: (item: PlateItem) => void;
+  extra: PlateItem[]; onExtra: (item: PlateItem) => void;
+  onClear: () => void;
   proteinTotal: number; calTotal: number; isBalanced: boolean; fullness: number;
 }) {
-  const plateItems = [protein, carb, veg, fat, extra].filter(Boolean) as PlateItem[];
+  const plateItems = [...protein, ...carb, ...veg, ...fat, ...extra];
 
   return (
     <div className="grid min-w-0 max-w-full gap-3 overflow-x-hidden">
       <section className="min-w-0 overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
         <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-4 sm:p-5">
-          <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Build My Plate</h2>
-          <p className="mt-1.5 text-[13px] text-moon-muted/70">Choose one from each category. See your meal take shape.</p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Build My Plate</h2>
+              <p className="mt-1.5 text-[13px] text-moon-muted/70">Pick as many as you like from each category.</p>
+            </div>
+            {plateItems.length > 0 && (
+              <button
+                type="button"
+                onClick={onClear}
+                className="no-active-scale shrink-0 rounded-2xl border border-moon-border/40 bg-white/60 px-3 py-1.5 text-[12px] font-semibold text-moon-muted/60 transition-all hover:bg-white"
+              >
+                Clear plate
+              </button>
+            )}
+          </div>
         </div>
         <div className="p-4 sm:p-5">
           <div className="flex justify-center">
@@ -1280,11 +1687,11 @@ function BuildMyPlate({
         </div>
       </section>
 
-      <PlateSection title="🤚 Protein" subtitle="Palm-sized" items={PLATE_PROTEINS} selected={protein} onSelect={(item) => onProtein(protein?.id === item.id ? null : item)} />
-      <PlateSection title="✊ Carbs" subtitle="Fist-sized" items={PLATE_CARBS} selected={carb} onSelect={(item) => onCarb(carb?.id === item.id ? null : item)} />
-      <PlateSection title="🤲 Veg" subtitle="Two handfuls" items={PLATE_VEGS} selected={veg} onSelect={(item) => onVeg(veg?.id === item.id ? null : item)} />
-      <PlateSection title="👍 Fat" subtitle="Thumb-sized" items={PLATE_FATS} selected={fat} onSelect={(item) => onFat(fat?.id === item.id ? null : item)} />
-      <PlateSection title="🫴 Add-on" subtitle="Optional" items={PLATE_EXTRAS} selected={extra} onSelect={(item) => onExtra(extra?.id === item.id ? null : item)} optional />
+      <PlateSection title="🤚 Protein" subtitle="Palm-sized" items={PLATE_PROTEINS} selected={protein} onSelect={onProtein} />
+      <PlateSection title="✊ Carbs" subtitle="Fist-sized" items={PLATE_CARBS} selected={carb} onSelect={onCarb} />
+      <PlateSection title="🤲 Veg" subtitle="Two handfuls" items={PLATE_VEGS} selected={veg} onSelect={onVeg} />
+      <PlateSection title="👍 Fat" subtitle="Thumb-sized" items={PLATE_FATS} selected={fat} onSelect={onFat} />
+      <PlateSection title="🫴 Add-on" subtitle="Optional" items={PLATE_EXTRAS} selected={extra} onSelect={onExtra} optional />
     </div>
   );
 }
@@ -1293,7 +1700,7 @@ function PlateSection({
   title, subtitle, items, selected, onSelect, optional
 }: {
   title: string; subtitle: string; items: PlateItem[];
-  selected: PlateItem | null; onSelect: (item: PlateItem) => void; optional?: boolean;
+  selected: PlateItem[]; onSelect: (item: PlateItem) => void; optional?: boolean;
 }) {
   return (
     <section className="min-w-0 rounded-[2rem] border border-moon-border/40 bg-white p-4 shadow-soft sm:p-5">
@@ -1302,28 +1709,34 @@ function PlateSection({
         <span className="text-[11px] text-moon-muted/45">{optional ? 'optional · ' : ''}{subtitle}</span>
       </div>
       <div className="mt-2.5 flex min-w-0 flex-wrap gap-2">
-        {items.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            onClick={() => onSelect(item)}
-            className={`no-active-scale flex min-h-10 max-w-full items-center gap-1.5 rounded-2xl border px-3 py-1.5 text-[12px] font-semibold transition-all duration-200 ${
-              selected?.id === item.id
-                ? 'border-moon-accent bg-moon-accent text-white'
-                : 'border-moon-border/40 bg-moon-bg text-moon-muted/70 hover:bg-moon-surface/40'
-            }`}
-            style={selected?.id === item.id ? { boxShadow: '0 2px 10px rgba(191, 162, 220, 0.35)' } : undefined}
-          >
-            <span aria-hidden="true">{item.emoji}</span>
-            <span className="truncate">{item.name}</span>
-          </button>
-        ))}
+        {items.map((item) => {
+          const isActive = selected.some((s) => s.id === item.id);
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onSelect(item)}
+              className={`no-active-scale flex min-h-10 max-w-full items-center gap-1.5 rounded-2xl border px-3 py-1.5 text-[12px] font-semibold transition-all duration-200 ${
+                isActive
+                  ? 'border-moon-accent bg-moon-accent text-white'
+                  : 'border-moon-border/40 bg-moon-bg text-moon-muted/70 hover:bg-moon-surface/40'
+              }`}
+              style={isActive ? { boxShadow: '0 2px 10px rgba(191, 162, 220, 0.35)' } : undefined}
+            >
+              <span aria-hidden="true">{item.emoji}</span>
+              <span className="truncate">{item.name}</span>
+            </button>
+          );
+        })}
       </div>
     </section>
   );
 }
 
 function RestaurantGuide() {
+  const [activeCategory, setActiveCategory] = useState<RestaurantCategory | 'all'>('all');
+  const filtered = activeCategory === 'all' ? RESTAURANTS : RESTAURANTS.filter((r) => r.category === activeCategory);
+
   return (
     <div className="grid min-w-0 max-w-full gap-3 overflow-x-hidden">
       <section className="min-w-0 overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
@@ -1334,8 +1747,39 @@ function RestaurantGuide() {
           </p>
         </div>
       </section>
+
+      <div className="no-scrollbar -mx-4 flex max-w-[100vw] gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:max-w-full sm:flex-wrap sm:px-0">
+        <button
+          type="button"
+          onClick={() => setActiveCategory('all')}
+          className={`no-active-scale shrink-0 rounded-2xl px-3.5 py-2 text-[12px] font-semibold transition-all duration-200 ${
+            activeCategory === 'all'
+              ? 'bg-moon-accent text-white'
+              : 'border border-moon-border/40 bg-white text-moon-muted/70'
+          }`}
+          style={activeCategory === 'all' ? { boxShadow: '0 4px 16px rgba(191, 162, 220, 0.38)' } : undefined}
+        >
+          All
+        </button>
+        {RESTAURANT_CATEGORIES.map((cat) => (
+          <button
+            key={cat.id}
+            type="button"
+            onClick={() => setActiveCategory(cat.id)}
+            className={`no-active-scale shrink-0 rounded-2xl px-3.5 py-2 text-[12px] font-semibold transition-all duration-200 ${
+              activeCategory === cat.id
+                ? 'bg-moon-accent text-white'
+                : 'border border-moon-border/40 bg-white text-moon-muted/70'
+            }`}
+            style={activeCategory === cat.id ? { boxShadow: '0 4px 16px rgba(191, 162, 220, 0.38)' } : undefined}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
       <div className="grid gap-3 sm:grid-cols-2">
-        {RESTAURANTS.map((r) => (
+        {filtered.map((r) => (
           <article key={r.name} className="min-w-0 rounded-[2rem] border border-moon-border/40 bg-white p-4 shadow-soft sm:p-5">
             <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-moon-surface/50 text-xl">
@@ -1344,9 +1788,9 @@ function RestaurantGuide() {
               <h3 className="font-display text-lg leading-tight tracking-[-0.01em] sm:text-xl">{r.name}</h3>
             </div>
             <div className="mt-3 grid gap-2">
-              <RestaurantChoice label="Best choice" body={r.best} color="green" />
-              <RestaurantChoice label="Balanced enough" body={r.balanced} color="purple" />
-              <RestaurantChoice label="Treat yourself" body={r.treat} color="neutral" />
+              <RestaurantChoice label="🟢 Great choice" body={r.best} color="green" />
+              <RestaurantChoice label="🟡 Good choice" body={r.balanced} color="purple" />
+              <RestaurantChoice label="🟠 Treat yourself" body={r.treat} color="neutral" />
             </div>
           </article>
         ))}
