@@ -56,9 +56,9 @@ export default function App() {
 
   return (
     <div className={data.settings.darkMode ? 'dark min-h-screen' : 'min-h-screen'}>
-      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 pb-28 pt-5 text-moon-text dark:text-[#FFF8FD] sm:px-6 lg:pb-8">
+      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 pb-28 pt-6 text-moon-text dark:text-[#FFF8FD] sm:px-6 lg:pb-8">
         <Header route={route} />
-        <main className="mt-5 flex-1">
+        <main className="mt-6 flex-1">
           {route === 'dashboard' && <Dashboard {...data} currentWeek={week} openWorkout={setActiveWorkoutId} />}
           {route === 'plan' && <Plan workouts={data.workouts} currentWeek={week} refresh={data.refresh} openWorkout={setActiveWorkoutId} />}
           {route === 'exercises' && <ExerciseLibrary />}
@@ -84,18 +84,22 @@ function Header({ route }: { route: Route }) {
     nutrition: 'Simple food math, no courtroom energy.',
     settings: 'Your app, your local data.'
   };
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
   return (
     <header className="flex items-start justify-between gap-4">
       <div>
-        <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-moon-muted dark:text-[#EADDF7]">
-          <Moon size={18} aria-hidden="true" />
-          Grow Strong
+        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-moon-muted/60 dark:text-[#EADDF7]/50">
+          <Moon size={13} aria-hidden="true" />
+          <span>Grow Strong</span>
+          <span className="opacity-30">·</span>
+          <span className="normal-case tracking-normal font-medium opacity-75">{dateStr}</span>
         </div>
-        <h1 className="mt-2 font-display text-4xl leading-tight sm:text-5xl">{route === 'dashboard' ? 'Today' : titleForRoute(route)}</h1>
-        <p className="mt-2 max-w-xl text-base text-moon-muted dark:text-[#EADDF7]">{subtitles[route]}</p>
-      </div>
-      <div className="hidden rounded-full border border-moon-border bg-white/80 px-4 py-2 text-sm font-semibold text-moon-muted shadow-soft dark:border-[#5B456B] dark:bg-[#32253C] dark:text-[#F3E9FB] sm:block">
-        ✦ quiet planner
+        <h1 className="mt-2.5 font-display text-[2.6rem] leading-[1.08] tracking-[-0.01em] sm:text-5xl">
+          {route === 'dashboard' ? 'Today' : titleForRoute(route)}
+        </h1>
+        <p className="mt-2 text-[15px] leading-relaxed text-moon-muted/75 dark:text-[#EADDF7]/60">{subtitles[route]}</p>
       </div>
     </header>
   );
@@ -103,8 +107,8 @@ function Header({ route }: { route: Route }) {
 
 function BottomNav({ route, setRoute }: { route: Route; setRoute: (route: Route) => void }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-moon-border bg-[#FFFCF4]/95 px-2 pb-[env(safe-area-inset-bottom)] pt-2 shadow-[0_-12px_32px_rgba(71,44,89,0.08)] backdrop-blur dark:border-[#5B456B] dark:bg-[#21182A]/95 lg:left-1/2 lg:max-w-3xl lg:-translate-x-1/2 lg:rounded-t-3xl lg:border-x">
-      <div className="grid grid-cols-6 gap-1">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-moon-border/50 bg-[#FFFCF4]/93 px-2 pb-[env(safe-area-inset-bottom)] pt-1.5 backdrop-blur-xl dark:border-[#5B456B]/40 dark:bg-[#21182A]/93 lg:left-1/2 lg:max-w-3xl lg:-translate-x-1/2 lg:rounded-t-3xl lg:border-x" style={{ boxShadow: '0 -6px 32px rgba(71, 44, 89, 0.06)' }}>
+      <div className="flex items-start justify-around">
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = route === item.route;
@@ -113,13 +117,26 @@ function BottomNav({ route, setRoute }: { route: Route; setRoute: (route: Route)
               key={item.route}
               type="button"
               onClick={() => setRoute(item.route)}
-              className={`flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl px-1 text-xs font-semibold transition ${
-                active ? 'bg-moon-surface text-moon-text dark:bg-[#BFA2DC] dark:text-white' : 'text-moon-muted dark:text-[#EADDF7]'
-              }`}
+              className="no-active-scale flex flex-col items-center gap-1 px-2 py-1.5"
               aria-current={active ? 'page' : undefined}
             >
-              <Icon size={21} aria-hidden="true" />
-              <span>{item.label}</span>
+              <span
+                className={`flex h-11 w-11 items-center justify-center rounded-2xl transition-all duration-200 ${
+                  active
+                    ? 'bg-moon-surface/80 text-[#8B6AAF] dark:bg-[#3A2A46]/80 dark:text-[#D4B8F0]'
+                    : 'text-moon-muted/45 dark:text-[#EADDF7]/35'
+                }`}
+                style={active ? { boxShadow: '0 2px 12px rgba(191, 162, 220, 0.18)' } : undefined}
+              >
+                <Icon size={active ? 21 : 20} aria-hidden="true" />
+              </span>
+              <span
+                className={`text-[10px] font-semibold leading-none transition-colors duration-200 ${
+                  active ? 'text-[#8B6AAF] dark:text-[#D4B8F0]' : 'text-moon-muted/40 dark:text-[#EADDF7]/30'
+                }`}
+              >
+                {item.label}
+              </span>
             </button>
           );
         })}
@@ -142,41 +159,52 @@ function Dashboard({
   const milestone = earnedMilestone(workouts);
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-      <section className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
-        <div className="flex items-center justify-between gap-3">
-          <Pill icon={Sparkles} text={`Week ${currentWeek} · ${phase.name}`} />
-          <ProgressRing percent={progress.percent} />
+    <div className="grid gap-4 lg:grid-cols-[1.25fr_0.75fr]">
+      {/* Today hero card */}
+      <section className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+        <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-5 dark:from-[#2D2040] dark:via-[#3A2A46] dark:to-[#4A3558]/50">
+          <div className="flex items-center justify-between gap-3">
+            <Pill icon={Sparkles} text={`Week ${currentWeek} · ${phase.name}`} />
+            <ProgressRing percent={progress.percent} />
+          </div>
+          <h2 className="mt-4 font-display text-3xl leading-tight tracking-[-0.01em]">{today?.type ?? 'Plan loading'}</h2>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-moon-muted/75 dark:text-[#EADDF7]/60">{today?.focus}</p>
         </div>
-        <h2 className="mt-5 font-display text-3xl leading-tight">{today?.type ?? 'Plan loading'}</h2>
-        <p className="mt-2 text-moon-muted dark:text-[#EADDF7]">{today?.focus}</p>
         {today && (
-          <>
-            <div className="mt-5 rounded-[1.75rem] border border-moon-border bg-moon-bg p-4 dark:border-[#5B456B] dark:bg-[#1D1424]">
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-moon-muted dark:text-[#EADDF7]">{today.day}</p>
-              <p className="mt-2 text-lg font-semibold">{today.setsReps}</p>
-              {today.effortTarget && <p className="mt-2 text-sm font-semibold text-moon-muted dark:text-[#EADDF7]">{today.effortTarget}</p>}
+          <div className="p-5">
+            <div className="rounded-[1.5rem] border border-moon-border/35 bg-moon-bg/50 p-4 dark:border-[#5B456B]/25 dark:bg-[#1D1424]/60">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-moon-muted/55 dark:text-[#EADDF7]/40">{today.day}</p>
+              <p className="mt-2 text-[15px] font-semibold leading-snug">{today.setsReps}</p>
+              {today.effortTarget && <p className="mt-1.5 text-[13px] text-moon-muted/65 dark:text-[#EADDF7]/50">{today.effortTarget}</p>}
               <TodayItemList workout={today} refresh={refresh} />
-              <button type="button" onClick={() => openWorkout(today.id)} className="mt-4 min-h-12 w-full rounded-2xl bg-white px-4 font-bold text-moon-text shadow-soft dark:bg-[#2A2033] dark:text-[#FFF8FD]">
+              <button
+                type="button"
+                onClick={() => openWorkout(today.id)}
+                className="mt-4 min-h-12 w-full rounded-2xl bg-white/80 px-4 text-[13px] font-semibold text-moon-text transition hover:bg-white dark:bg-[#2A2033]/80 dark:text-[#FFF8FD] dark:hover:bg-[#2A2033]"
+                style={{ boxShadow: '0 2px 10px rgba(71, 44, 89, 0.06)' }}
+              >
                 Notes, pain, and details
               </button>
             </div>
-          </>
+          </div>
         )}
       </section>
 
+      {/* Sidebar */}
       <section className="grid gap-4">
-        <MetricCard icon={Flame} label="Streak" value={`${streak} day${streak === 1 ? '' : 's'}`} detail="Today’s win does not have to be dramatic." />
+        <MetricCard icon={Flame} label="Streak" value={`${streak} day${streak === 1 ? '' : 's'}`} detail="Today's win does not have to be dramatic." />
         <MetricCard icon={Activity} label="This week" value={`${progress.completed}/${progress.total}`} detail="A checked-off day means you showed up in some real way." />
-        <div className="rounded-[2rem] border border-moon-border bg-moon-surface p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#3A2A46]">
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-moon-muted dark:text-[#EADDF7]">Next action</p>
-          <h3 className="mt-2 text-xl font-bold">{progress.percent === 100 ? 'Let recovery do its work.' : today?.completed ? 'Write how it felt.' : 'Pick one item that feels doable.'}</h3>
-          <p className="mt-2 text-moon-muted dark:text-[#F3E9FB]">No sharp elbow pain. We are building strength, not collecting injuries.</p>
+        <div className="rounded-[2rem] border border-moon-border/35 bg-moon-surface/60 p-5 shadow-soft dark:border-[#5B456B]/35 dark:bg-[#3A2A46]/60">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-moon-muted/55 dark:text-[#EADDF7]/40">Next action</p>
+          <h3 className="mt-2.5 text-[17px] font-bold leading-snug">
+            {progress.percent === 100 ? 'Let recovery do its work.' : today?.completed ? 'Write how it felt.' : 'Pick one item that feels doable.'}
+          </h3>
+          <p className="mt-2 text-[13px] leading-relaxed text-moon-muted/60 dark:text-[#F3E9FB]/50">No sharp elbow pain. We are building strength, not collecting injuries.</p>
         </div>
         {milestone && (
-          <div className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
+          <div className="rounded-[2rem] border border-moon-border/35 bg-white p-5 shadow-soft dark:border-[#5B456B]/35 dark:bg-[#2A2033]">
             <Pill icon={Moon} text="Milestone earned" />
-            <h3 className="mt-3 font-display text-2xl">{milestone.label}</h3>
+            <h3 className="mt-3 font-display text-2xl leading-tight">{milestone.label}</h3>
           </div>
         )}
       </section>
@@ -202,8 +230,8 @@ function Plan({
 
   return (
     <div className="grid gap-4 lg:grid-cols-[20rem_1fr]">
-      <aside className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033] lg:sticky lg:top-4 lg:self-start">
-        <label className="text-sm font-semibold text-moon-muted dark:text-[#EADDF7]" htmlFor="week-select">
+      <aside className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033] lg:sticky lg:top-4 lg:self-start">
+        <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-moon-muted/55 dark:text-[#EADDF7]/45" htmlFor="week-select">
           Week
         </label>
         <div className="relative mt-2">
@@ -211,7 +239,7 @@ function Plan({
             id="week-select"
             value={week}
             onChange={(event) => setWeek(Number(event.target.value))}
-            className="min-h-12 w-full appearance-none rounded-2xl border border-moon-border bg-moon-bg px-4 text-base font-semibold dark:border-[#5B456B] dark:bg-[#1D1424]"
+            className="min-h-12 w-full appearance-none rounded-2xl border border-moon-border/40 bg-moon-bg px-4 text-[15px] font-semibold dark:border-[#5B456B]/40 dark:bg-[#1D1424]"
           >
             {Array.from({ length: 24 }, (_, index) => index + 1).map((weekNumber) => (
               <option key={weekNumber} value={weekNumber}>
@@ -219,12 +247,14 @@ function Plan({
               </option>
             ))}
           </select>
-          <ChevronDown className="pointer-events-none absolute right-4 top-3.5 text-moon-muted" size={20} aria-hidden="true" />
+          <ChevronDown className="pointer-events-none absolute right-4 top-3.5 text-moon-muted/40" size={17} aria-hidden="true" />
         </div>
-        <div className="mt-5">
+        <div className="mt-5 flex items-start gap-4">
           <ProgressRing percent={progress.percent} />
-          <h2 className="mt-4 font-display text-3xl">{phase.name}</h2>
-          <p className="mt-2 text-moon-muted dark:text-[#EADDF7]">{phase.focus}</p>
+          <div className="min-w-0">
+            <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">{phase.name}</h2>
+            <p className="mt-1 text-[13px] leading-relaxed text-moon-muted/65 dark:text-[#EADDF7]/50">{phase.focus}</p>
+          </div>
         </div>
       </aside>
       <section className="grid gap-4">
@@ -243,30 +273,99 @@ function WorkoutCard({ workout, refresh, openWorkout }: { workout: WorkoutDay; r
   };
 
   return (
-    <article className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
+    <article className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft transition-shadow duration-200 hover:shadow-[0_20px_48px_rgba(71,44,89,0.11)] dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
       <div className="flex items-start justify-between gap-3">
-        <button type="button" onClick={() => openWorkout(workout.id)} className="min-w-0 flex-1 text-left">
-          <p className="font-semibold text-moon-muted dark:text-[#EADDF7]">{workout.day}</p>
-          <h3 className="mt-1 text-2xl font-bold">{workout.type}</h3>
-          <p className="mt-2 text-moon-muted dark:text-[#EADDF7]">{workout.focus}</p>
-          <p className="mt-3 text-sm font-bold text-moon-muted dark:text-[#EADDF7]">{checkedCount(workout)} of {checklistItems(workout).length} checklist items done</p>
+        <button type="button" onClick={() => openWorkout(workout.id)} className="no-active-scale min-w-0 flex-1 text-left">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-moon-muted/50 dark:text-[#EADDF7]/40">{workout.day}</p>
+          <h3 className="mt-1.5 font-display text-2xl leading-tight tracking-[-0.01em]">{workout.type}</h3>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-moon-muted/65 dark:text-[#EADDF7]/55">{workout.focus}</p>
+          <p className="mt-3 text-[11px] font-semibold text-moon-muted/45 dark:text-[#EADDF7]/35">
+            {checkedCount(workout)} of {checklistItems(workout).length} done
+          </p>
         </button>
         <button
           type="button"
           onClick={() => update({ completed: !workout.completed, completedAt: workout.completed ? undefined : new Date().toISOString() })}
-          className={`grid min-h-12 min-w-12 place-items-center rounded-2xl border ${
-            workout.completed ? 'border-moon-accent bg-moon-accent text-white' : 'border-moon-border bg-moon-bg text-moon-text'
+          className={`no-active-scale grid h-12 w-12 shrink-0 place-items-center rounded-2xl transition-all duration-200 ${
+            workout.completed
+              ? 'bg-moon-accent text-white'
+              : 'border border-moon-border/55 bg-moon-bg text-transparent dark:border-[#5B456B]/45 dark:bg-[#1D1424]'
           }`}
+          style={workout.completed ? { boxShadow: '0 4px 16px rgba(191, 162, 220, 0.42)' } : undefined}
           aria-label={workout.completed ? 'Mark incomplete' : 'Mark complete'}
         >
-          <Check size={23} aria-hidden="true" />
+          <Check size={20} className={workout.completed ? 'opacity-100' : 'opacity-0'} aria-hidden="true" />
         </button>
       </div>
-      <button type="button" onClick={() => openWorkout(workout.id)} className="mt-4 w-full rounded-2xl bg-moon-bg p-3 text-left font-semibold dark:bg-[#1D1424]">
-        {workout.setsReps}
-        <span className="mt-2 block text-sm text-moon-muted dark:text-[#EADDF7]">Tap for warm-up, item checkoffs, and instructions.</span>
+      <button
+        type="button"
+        onClick={() => openWorkout(workout.id)}
+        className="no-active-scale mt-4 w-full rounded-2xl bg-moon-bg/60 p-4 text-left transition hover:bg-moon-bg dark:bg-[#1D1424]/60 dark:hover:bg-[#1D1424]"
+      >
+        <p className="text-[13px] font-semibold leading-snug">{workout.setsReps}</p>
+        <p className="mt-1.5 text-[11px] text-moon-muted/50 dark:text-[#EADDF7]/35">Tap for warm-up, item checkoffs, and instructions.</p>
       </button>
     </article>
+  );
+}
+
+type ChecklistItem = {
+  key: string;
+  label: string;
+  section: 'Warm-up' | 'Workout' | 'Cool-down' | 'Rest';
+  exerciseId?: string;
+};
+
+function ChecklistRow({
+  item,
+  done,
+  onToggle,
+  onSelect,
+  hasExercise
+}: {
+  item: ChecklistItem;
+  done: boolean;
+  onToggle: () => void;
+  onSelect: () => void;
+  hasExercise: boolean;
+}) {
+  return (
+    <div
+      className={`flex items-center gap-3 rounded-2xl border p-2.5 transition-all duration-200 ${
+        done
+          ? 'border-moon-accent/20 bg-moon-surface/25 dark:border-[#BFA2DC]/15 dark:bg-[#3A2A46]/25'
+          : 'border-moon-border/35 bg-white/55 dark:border-[#5B456B]/25 dark:bg-[#2A2033]/50'
+      }`}
+    >
+      <button
+        type="button"
+        onClick={onToggle}
+        className={`no-active-scale grid h-10 w-10 shrink-0 place-items-center rounded-xl transition-all duration-200 ${
+          done
+            ? 'bg-moon-accent text-white dark:bg-[#BFA2DC]'
+            : 'border border-moon-border/55 bg-white text-transparent dark:border-[#5B456B]/45 dark:bg-[#1D1424]'
+        }`}
+        style={done ? { boxShadow: '0 2px 10px rgba(191, 162, 220, 0.38)' } : undefined}
+        aria-label={done ? `Uncheck ${item.label}` : `Check off ${item.label}`}
+      >
+        {done && <Check size={17} className="check-icon" aria-hidden="true" />}
+      </button>
+      <button
+        type="button"
+        onClick={onSelect}
+        className="no-active-scale min-h-10 flex-1 text-left"
+        disabled={!hasExercise}
+      >
+        <span
+          className={`block text-[13px] font-semibold transition-all duration-200 ${
+            done ? 'text-moon-muted/45 line-through decoration-moon-accent/35 dark:text-[#EADDF7]/35' : ''
+          }`}
+        >
+          {item.label}
+        </span>
+        <span className="mt-0.5 block text-[11px] text-moon-muted/40 dark:text-[#EADDF7]/30">{item.section}</span>
+      </button>
+    </div>
   );
 }
 
@@ -288,34 +387,25 @@ function TodayItemList({ workout, refresh }: { workout: WorkoutDay; refresh: () 
   return (
     <div className="mt-4">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm font-black uppercase tracking-[0.16em] text-moon-muted dark:text-[#EADDF7]">Today’s list</p>
-        <p className="text-sm font-bold text-moon-muted dark:text-[#EADDF7]">{checkedCount(workout)} of {items.length}</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-moon-muted/55 dark:text-[#EADDF7]/40">Today's list</p>
+        <span className="rounded-full bg-white/70 px-2.5 py-1 text-[11px] font-bold text-moon-muted/60 dark:bg-[#2A2033]/70 dark:text-[#EADDF7]/45">
+          {checkedCount(workout)}/{items.length}
+        </span>
       </div>
-      <p className="mt-1 text-sm text-moon-muted dark:text-[#EADDF7]">Pick anything when you feel like it. No required order.</p>
+      <p className="mt-1 text-[12px] leading-relaxed text-moon-muted/50 dark:text-[#EADDF7]/35">Pick anything when you feel like it. No required order.</p>
       <div className="mt-3 grid gap-2">
         {items.map((item) => {
           const done = Boolean(workout.itemCompletions?.[item.key]);
           const exercise = item.exerciseId ? exerciseById.get(item.exerciseId) : undefined;
           return (
-            <div key={item.key} className={`flex items-center gap-3 rounded-[1.25rem] border p-2 ${done ? 'border-moon-accent bg-white' : 'border-moon-border bg-white/70 dark:border-[#5B456B] dark:bg-[#2A2033]'}`}>
-              <button
-                type="button"
-                onClick={() => toggleItem(item)}
-                className={`grid min-h-10 min-w-10 place-items-center rounded-2xl border ${done ? 'border-moon-accent bg-moon-accent text-white' : 'border-moon-border bg-moon-bg text-moon-muted'}`}
-                aria-label={done ? `Uncheck ${item.label}` : `Check off ${item.label}`}
-              >
-                {done && <Check size={20} aria-hidden="true" />}
-              </button>
-              <button
-                type="button"
-                onClick={() => exercise && setSelectedExercise(exercise)}
-                className="min-h-11 flex-1 text-left"
-                disabled={!exercise}
-              >
-                <span className="block font-bold">{item.label}</span>
-                <span className="block text-xs font-semibold text-moon-muted dark:text-[#EADDF7]">{item.section}</span>
-              </button>
-            </div>
+            <ChecklistRow
+              key={item.key}
+              item={item}
+              done={done}
+              onToggle={() => toggleItem(item)}
+              onSelect={() => exercise && setSelectedExercise(exercise)}
+              hasExercise={!!exercise}
+            />
           );
         })}
       </div>
@@ -323,13 +413,6 @@ function TodayItemList({ workout, refresh }: { workout: WorkoutDay; refresh: () 
     </div>
   );
 }
-
-type ChecklistItem = {
-  key: string;
-  label: string;
-  section: 'Warm-up' | 'Workout' | 'Cool-down' | 'Rest';
-  exerciseId?: string;
-};
 
 function WorkoutDetail({ workout, refresh, onClose }: { workout: WorkoutDay; refresh: () => void; onClose: () => void }) {
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
@@ -363,101 +446,130 @@ function WorkoutDetail({ workout, refresh, onClose }: { workout: WorkoutDay; ref
   };
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-end bg-[#2B2232]/35 p-2 sm:place-items-center" role="dialog" aria-modal="true" aria-label={`${workout.day} ${workout.type}`}>
-      <div className="max-h-[94vh] w-full max-w-3xl overflow-y-auto rounded-t-[2rem] border border-moon-border bg-[#FFFCF4] p-4 shadow-soft dark:border-[#5B456B] dark:bg-[#21182A] sm:rounded-[2rem] sm:p-6">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <Pill icon={Sparkles} text={`Week ${workout.week} · ${workout.phase}`} />
-            <h2 className="mt-3 font-display text-3xl leading-tight sm:text-4xl">{workout.type}</h2>
-            <p className="mt-2 text-moon-muted dark:text-[#EADDF7]">{workout.day} · Use this as a running checklist throughout the day.</p>
+    <div
+      className="fixed inset-0 z-50 grid place-items-end bg-[#2B2232]/28 p-2 backdrop-blur-sm sm:place-items-center"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${workout.day} ${workout.type}`}
+    >
+      <div
+        className="max-h-[94vh] w-full max-w-3xl overflow-y-auto rounded-t-[2rem] border border-moon-border/30 bg-[#FFFCF4] dark:border-[#5B456B]/30 dark:bg-[#21182A] sm:rounded-[2rem]"
+        style={{ boxShadow: '0 -24px 80px rgba(71, 44, 89, 0.16)' }}
+      >
+        {/* Gradient modal header */}
+        <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-5 dark:from-[#2D2040] dark:via-[#3A2A46] dark:to-[#4A3558]/50 sm:p-6">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <Pill icon={Sparkles} text={`Week ${workout.week} · ${workout.phase}`} />
+              <h2 className="mt-3 font-display text-3xl leading-tight tracking-[-0.01em] sm:text-4xl">{workout.type}</h2>
+              <p className="mt-1.5 text-[13px] text-moon-muted/65 dark:text-[#EADDF7]/55">
+                {workout.day} · Use this as a running checklist throughout the day.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white/70 text-moon-muted transition hover:bg-white dark:bg-[#1D1424]/60 dark:text-[#FFF8FD] dark:hover:bg-[#1D1424]"
+              style={{ boxShadow: '0 2px 8px rgba(71, 44, 89, 0.08)' }}
+              aria-label="Close workout"
+            >
+              <X size={17} aria-hidden="true" />
+            </button>
           </div>
-          <button type="button" onClick={onClose} className="grid min-h-12 min-w-12 place-items-center rounded-2xl bg-white text-moon-text shadow-soft dark:bg-[#1D1424] dark:text-[#FFF8FD]" aria-label="Close workout">
-            <X aria-hidden="true" />
-          </button>
         </div>
 
-        <div className="mt-5 rounded-[1.75rem] bg-white p-4 shadow-soft dark:bg-[#2A2033]">
-          <div className="flex items-center justify-between gap-3">
-            <p className="font-bold">{completeCount} of {items.length} items checked</p>
-            <p className="text-sm font-bold text-moon-muted dark:text-[#EADDF7]">{percent}%</p>
+        <div className="p-5 sm:p-6">
+          {/* Progress bar */}
+          <div
+            className="rounded-2xl border border-moon-border/25 bg-white p-4 dark:border-[#5B456B]/20 dark:bg-[#2A2033]"
+            style={{ boxShadow: '0 2px 10px rgba(71, 44, 89, 0.05)' }}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[13px] font-semibold">{completeCount} of {items.length} items checked</p>
+              <p className="text-[13px] font-bold text-moon-accent dark:text-[#D4B8F0]">{percent}%</p>
+            </div>
+            <div className="mt-3 h-2 overflow-hidden rounded-full bg-moon-surface dark:bg-[#3A2A46]">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-moon-accent to-[#D4B8F0] transition-all duration-700 ease-out"
+                style={{ width: `${percent}%` }}
+              />
+            </div>
           </div>
-          <div className="mt-3 h-3 overflow-hidden rounded-full bg-moon-surface dark:bg-[#3A2A46]">
-            <div className="h-full rounded-full bg-moon-accent transition-all" style={{ width: `${percent}%` }} />
+
+          <div className="mt-4 grid gap-3">
+            <MiniBlock title="Plan for today" body={workout.setsReps} />
+            {workout.effortTarget && <MiniBlock title="Effort target" body={workout.effortTarget} />}
+            {workout.coachNote && <MiniBlock title="Coach's note" body={workout.coachNote} />}
           </div>
-        </div>
 
-        <div className="mt-4 grid gap-3">
-          <MiniBlock title="Plan for today" body={workout.setsReps} />
-          {workout.effortTarget && <MiniBlock title="Effort target" body={workout.effortTarget} />}
-          {workout.coachNote && <MiniBlock title="Coach’s note" body={workout.coachNote} />}
-        </div>
-
-        <div className="mt-4 grid gap-3 rounded-[1.75rem] bg-white p-4 shadow-soft dark:bg-[#2A2033] sm:grid-cols-2">
-          <NumberInput label="Effort rating" min={1} max={10} value={workout.rpe} onChange={(value) => updateWorkout({ rpe: value })} />
-          <NumberInput label="Elbow pain" min={0} max={10} value={workout.elbowPain} onChange={(value) => updateWorkout({ elbowPain: value })} />
-          <div className="sm:col-span-2">
-            <ElbowNote value={workout.elbowPain} />
+          <div
+            className="mt-4 grid gap-3 rounded-2xl border border-moon-border/25 bg-white p-4 dark:border-[#5B456B]/20 dark:bg-[#2A2033] sm:grid-cols-2"
+            style={{ boxShadow: '0 2px 10px rgba(71, 44, 89, 0.05)' }}
+          >
+            <NumberInput label="Effort rating" min={1} max={10} value={workout.rpe} onChange={(value) => updateWorkout({ rpe: value })} />
+            <NumberInput label="Elbow pain" min={0} max={10} value={workout.elbowPain} onChange={(value) => updateWorkout({ elbowPain: value })} />
+            <div className="sm:col-span-2">
+              <ElbowNote value={workout.elbowPain} />
+            </div>
+            <label className="block sm:col-span-2" htmlFor={`${workout.id}-detail-notes`}>
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55 dark:text-[#EADDF7]/45">Notes</span>
+              <textarea
+                id={`${workout.id}-detail-notes`}
+                value={notes}
+                onChange={(event) => setNotes(event.target.value)}
+                onBlur={() => updateWorkout({ notes })}
+                rows={3}
+                className="mt-2 w-full rounded-2xl border border-moon-border/35 bg-moon-bg p-3 text-[13px] leading-relaxed dark:border-[#5B456B]/35 dark:bg-[#1D1424]"
+                placeholder="Use this for split-up sessions, swaps, or what felt different."
+              />
+            </label>
           </div>
-          <label className="block sm:col-span-2" htmlFor={`${workout.id}-detail-notes`}>
-            <span className="text-sm font-semibold text-moon-muted dark:text-[#EADDF7]">Notes</span>
-            <textarea
-              id={`${workout.id}-detail-notes`}
-              value={notes}
-              onChange={(event) => setNotes(event.target.value)}
-              onBlur={() => updateWorkout({ notes })}
-              rows={3}
-              className="mt-2 w-full rounded-2xl border border-moon-border bg-moon-bg p-3 text-base dark:border-[#5B456B] dark:bg-[#1D1424]"
-              placeholder="Use this for split-up sessions, swaps, or what felt different."
-            />
-          </label>
-        </div>
 
-        <div className="mt-5 grid gap-5">
-          {(['Warm-up', 'Workout', 'Cool-down', 'Rest'] as const).map((section) => {
-            const sectionItems = items.filter((item) => item.section === section);
-            if (sectionItems.length === 0) return null;
-            return (
-              <section key={section}>
-                <h3 className="px-1 text-sm font-black uppercase tracking-[0.18em] text-moon-muted dark:text-[#EADDF7]">{section}</h3>
-                <div className="mt-2 grid gap-2">
-                  {sectionItems.map((item) => {
-                    const done = Boolean(workout.itemCompletions?.[item.key]);
-                    const exercise = item.exerciseId ? exerciseById.get(item.exerciseId) : undefined;
-                    return (
-                      <div key={item.key} className={`flex items-center gap-3 rounded-[1.35rem] border p-2 transition ${done ? 'border-moon-accent bg-moon-surface' : 'border-moon-border bg-white dark:border-[#5B456B] dark:bg-[#2A2033]'}`}>
-                        <button
-                          type="button"
-                          onClick={() => toggleItem(item)}
-                          className={`grid min-h-11 min-w-11 place-items-center rounded-2xl border ${done ? 'border-moon-accent bg-moon-accent text-white' : 'border-moon-border bg-moon-bg text-moon-muted'}`}
-                          aria-label={done ? `Uncheck ${item.label}` : `Check off ${item.label}`}
-                        >
-                          {done && <Check size={21} aria-hidden="true" />}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => exercise && setSelectedExercise(exercise)}
-                          className="min-h-12 flex-1 text-left"
-                          disabled={!exercise}
-                        >
-                          <span className="block font-bold">{item.label}</span>
-                          <span className="mt-1 block text-sm text-moon-muted dark:text-[#EADDF7]">{exercise ? 'Tap for instructions and modifications.' : 'Check this when it is genuinely done.'}</span>
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            );
-          })}
-        </div>
+          <div className="mt-5 grid gap-5">
+            {(['Warm-up', 'Workout', 'Cool-down', 'Rest'] as const).map((section) => {
+              const sectionItems = items.filter((item) => item.section === section);
+              if (sectionItems.length === 0) return null;
+              return (
+                <section key={section}>
+                  <h3 className="px-1 text-[10px] font-black uppercase tracking-[0.22em] text-moon-muted/50 dark:text-[#EADDF7]/40">{section}</h3>
+                  <div className="mt-2 grid gap-2">
+                    {sectionItems.map((item) => {
+                      const done = Boolean(workout.itemCompletions?.[item.key]);
+                      const exercise = item.exerciseId ? exerciseById.get(item.exerciseId) : undefined;
+                      return (
+                        <ChecklistRow
+                          key={item.key}
+                          item={item}
+                          done={done}
+                          onToggle={() => toggleItem(item)}
+                          onSelect={() => exercise && setSelectedExercise(exercise)}
+                          hasExercise={!!exercise}
+                        />
+                      );
+                    })}
+                  </div>
+                </section>
+              );
+            })}
+          </div>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          <button type="button" onClick={markAllDone} className="min-h-12 rounded-2xl bg-moon-accent px-4 font-bold text-white">
-            Mark all done
-          </button>
-          <button type="button" onClick={onClose} className="min-h-12 rounded-2xl border border-moon-border bg-white px-4 font-bold text-moon-muted dark:border-[#5B456B] dark:bg-[#2A2033] dark:text-[#EADDF7]">
-            Done for now
-          </button>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <button
+              type="button"
+              onClick={markAllDone}
+              className="min-h-12 rounded-2xl bg-moon-accent px-4 text-[13px] font-bold text-white transition"
+              style={{ boxShadow: '0 4px 18px rgba(191, 162, 220, 0.42)' }}
+            >
+              Mark all done
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="min-h-12 rounded-2xl border border-moon-border/50 bg-white px-4 text-[13px] font-semibold text-moon-muted transition hover:border-moon-border dark:border-[#5B456B]/40 dark:bg-[#2A2033] dark:text-[#EADDF7]"
+            >
+              Done for now
+            </button>
+          </div>
         </div>
       </div>
       {selectedExercise && <ExerciseModal exercise={selectedExercise} onClose={() => setSelectedExercise(null)} />}
@@ -479,14 +591,14 @@ function ExerciseLibrary() {
 
   return (
     <>
-      <div className="grid gap-3 rounded-[2rem] border border-moon-border bg-white p-4 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033] sm:grid-cols-3">
+      <div className="grid gap-3 rounded-[2rem] border border-moon-border/40 bg-white p-4 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033] sm:grid-cols-3">
         <label className="relative sm:col-span-1">
           <span className="sr-only">Search exercises</span>
-          <Search className="absolute left-4 top-3.5 text-moon-muted" size={20} aria-hidden="true" />
+          <Search className="absolute left-4 top-3.5 text-moon-muted/35" size={17} aria-hidden="true" />
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            className="min-h-12 w-full rounded-2xl border border-moon-border bg-moon-bg pl-11 pr-4 text-base dark:border-[#5B456B] dark:bg-[#1D1424]"
+            className="min-h-12 w-full rounded-2xl border border-moon-border/40 bg-moon-bg pl-11 pr-4 text-[13px] dark:border-[#5B456B]/40 dark:bg-[#1D1424]"
             placeholder="Search moves"
           />
         </label>
@@ -499,11 +611,11 @@ function ExerciseLibrary() {
             key={exercise.id}
             type="button"
             onClick={() => setSelected(exercise)}
-            className="min-h-40 rounded-[2rem] border border-moon-border bg-white p-5 text-left shadow-soft transition hover:-translate-y-0.5 dark:border-[#5B456B] dark:bg-[#2A2033]"
+            className="no-active-scale min-h-40 rounded-[2rem] border border-moon-border/40 bg-white p-5 text-left shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_20px_48px_rgba(71,44,89,0.12)] dark:border-[#5B456B]/40 dark:bg-[#2A2033]"
           >
             <Pill icon={HeartPulse} text={exercise.elbowLoad} />
-            <h2 className="mt-4 text-xl font-bold">{exercise.name}</h2>
-            <p className="mt-2 text-moon-muted dark:text-[#EADDF7]">{exercise.category} · {exercise.difficulty}</p>
+            <h2 className="mt-4 font-display text-xl leading-tight tracking-[-0.01em]">{exercise.name}</h2>
+            <p className="mt-2 text-[13px] text-moon-muted/60 dark:text-[#EADDF7]/50">{exercise.category} · {exercise.difficulty}</p>
           </button>
         ))}
       </div>
@@ -514,24 +626,41 @@ function ExerciseLibrary() {
 
 function ExerciseModal({ exercise, onClose }: { exercise: Exercise; onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 grid place-items-end bg-[#1D1424]/45 p-3 sm:place-items-center" role="dialog" aria-modal="true" aria-label={exercise.name}>
-      <div className="max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-[2rem] bg-white p-5 shadow-soft dark:bg-[#2A2033]">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <Pill icon={HeartPulse} text={`Elbow load: ${exercise.elbowLoad}`} />
-            <h2 className="mt-3 font-display text-3xl">{exercise.name}</h2>
+    <div
+      className="fixed inset-0 z-50 grid place-items-end bg-[#1D1424]/38 p-3 backdrop-blur-sm sm:place-items-center"
+      role="dialog"
+      aria-modal="true"
+      aria-label={exercise.name}
+    >
+      <div
+        className="max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-[2rem] border border-moon-border/30 bg-white dark:border-[#5B456B]/30 dark:bg-[#2A2033]"
+        style={{ boxShadow: '0 32px 80px rgba(71, 44, 89, 0.18)' }}
+      >
+        <div className="bg-gradient-to-br from-[#F4EAFF] to-[#EDE0FA]/60 p-5 dark:from-[#2D2040] dark:to-[#3A2A46]/60">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <Pill icon={HeartPulse} text={`Elbow load: ${exercise.elbowLoad}`} />
+              <h2 className="mt-3 font-display text-3xl leading-tight tracking-[-0.01em]">{exercise.name}</h2>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white/70 text-moon-muted transition hover:bg-white dark:bg-[#1D1424]/60 dark:text-[#FFF8FD] dark:hover:bg-[#1D1424]"
+              aria-label="Close"
+            >
+              <X size={17} aria-hidden="true" />
+            </button>
           </div>
-          <button type="button" onClick={onClose} className="grid min-h-12 min-w-12 place-items-center rounded-2xl bg-moon-bg dark:bg-[#1D1424]" aria-label="Close">
-            <X aria-hidden="true" />
-          </button>
         </div>
-        <DetailBlock title="How to do it" body={exercise.howTo} />
-        <DetailList title="Form cues" items={exercise.formCues} />
-        <DetailList title="Common mistakes" items={exercise.commonMistakes} />
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">
-          <MiniBlock title="Easier" body={exercise.easier} />
-          <MiniBlock title="Harder" body={exercise.harder} />
-          <MiniBlock title="Substitute" body={exercise.substitute} />
+        <div className="p-5">
+          <DetailBlock title="How to do it" body={exercise.howTo} />
+          <DetailList title="Form cues" items={exercise.formCues} />
+          <DetailList title="Common mistakes" items={exercise.commonMistakes} />
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <MiniBlock title="Easier" body={exercise.easier} />
+            <MiniBlock title="Harder" body={exercise.harder} />
+            <MiniBlock title="Substitute" body={exercise.substitute} />
+          </div>
         </div>
       </div>
     </div>
@@ -567,11 +696,11 @@ function Progress({
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_22rem]">
       <section className="grid gap-4">
-        <section className="overflow-hidden rounded-[2rem] border border-moon-border bg-white shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
-          <div className="bg-[linear-gradient(135deg,#FFFCF4_0%,#EFE3FA_60%,#BFA2DC_160%)] p-5 dark:bg-none">
+        <section className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+          <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-5 dark:from-[#2D2040] dark:via-[#3A2A46] dark:to-[#4A3558]/50">
             <Pill icon={Heart} text="Feel first" />
-            <h2 className="mt-4 font-display text-3xl">No weigh-ins required.</h2>
-            <p className="mt-2 max-w-2xl text-moon-muted dark:text-[#EADDF7]">
+            <h2 className="mt-4 font-display text-3xl leading-tight tracking-[-0.01em]">No weigh-ins required.</h2>
+            <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-moon-muted/70 dark:text-[#EADDF7]/55">
               This page is for energy, sleep, soreness, mood, and the quiet evidence that movement is becoming part of your life.
             </p>
           </div>
@@ -588,17 +717,20 @@ function Progress({
 
 function FeelingChart({ title, rows }: { title: string; rows: Array<{ label: string; value: number; max: number }> }) {
   return (
-    <section className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
-      <h2 className="text-2xl font-bold">{title}</h2>
-      <div className="mt-5 flex h-44 items-end gap-2 overflow-x-auto pb-2">
+    <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+      <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">{title}</h2>
+      <div className="mt-5 flex h-44 items-end gap-1.5 overflow-x-auto pb-2">
         {rows.map((row) => {
-          const height = row.max ? Math.max(8, Math.round((row.value / row.max) * 100)) : 8;
+          const height = row.max ? Math.max(5, Math.round((row.value / row.max) * 100)) : 5;
           return (
-            <div key={row.label} className="flex min-w-8 flex-1 flex-col items-center gap-2">
-              <div className="flex h-32 w-full items-end rounded-full bg-moon-bg dark:bg-[#1D1424]">
-                <div className="w-full rounded-full bg-moon-accent transition-all" style={{ height: `${height}%` }} />
+            <div key={row.label} className="flex min-w-7 flex-1 flex-col items-center gap-2">
+              <div className="flex h-32 w-full items-end overflow-hidden rounded-full bg-moon-bg dark:bg-[#1D1424]">
+                <div
+                  className="w-full rounded-full bg-gradient-to-t from-moon-accent to-[#D4B8F0]/65 transition-all duration-700 ease-out"
+                  style={{ height: `${height}%` }}
+                />
               </div>
-              <span className="text-xs font-bold text-moon-muted dark:text-[#EADDF7]">{row.label}</span>
+              <span className="text-[9px] font-bold text-moon-muted/40 dark:text-[#EADDF7]/30">{row.label}</span>
             </div>
           );
         })}
@@ -617,17 +749,19 @@ function FeelingTrend({ rows }: { rows: Array<{ label: string; energy?: number; 
   ];
 
   return (
-    <section className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
-      <h2 className="text-2xl font-bold">Latest check-in</h2>
+    <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+      <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Latest check-in</h2>
       <div className="mt-4 grid gap-3 sm:grid-cols-4">
         {cards.map((card) => (
-          <div key={card.label} className="rounded-2xl bg-moon-bg p-4 dark:bg-[#1D1424]">
-            <p className="text-sm font-bold text-moon-muted dark:text-[#EADDF7]">{card.label}</p>
-            <p className="mt-2 text-3xl font-black">{card.value ?? '-'}</p>
+          <div key={card.label} className="rounded-2xl bg-moon-bg/60 p-4 dark:bg-[#1D1424]/60">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-moon-muted/50 dark:text-[#EADDF7]/40">{card.label}</p>
+            <p className="mt-2 font-display text-4xl leading-none">{card.value ?? '–'}</p>
           </div>
         ))}
       </div>
-      {rows.length === 0 && <p className="mt-4 text-moon-muted dark:text-[#EADDF7]">Save a weekly check-in and this will start to show patterns.</p>}
+      {rows.length === 0 && (
+        <p className="mt-4 text-[13px] text-moon-muted/60 dark:text-[#EADDF7]/50">Save a weekly check-in and this will start to show patterns.</p>
+      )}
     </section>
   );
 }
@@ -656,17 +790,22 @@ function ReflectionForm({ currentWeek, reflections, refresh }: { currentWeek: nu
     refresh();
   };
   return (
-    <div className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
-      <h2 className="text-2xl font-bold">Week {currentWeek} reflection</h2>
+    <div className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+      <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Week {currentWeek} reflection</h2>
       <div className="mt-4 grid gap-3">
         <SliderInput label="Energy" value={energy} onChange={setEnergy} />
         <SliderInput label="Sleep" value={sleep} onChange={setSleep} />
         <SliderInput label="Soreness" value={soreness} onChange={setSoreness} />
         <SliderInput label="Mood" value={mood} onChange={setMood} />
-        <TextArea label="Biggest win" value={win} onChange={setWin} placeholder="Today’s win does not have to be dramatic." />
+        <TextArea label="Biggest win" value={win} onChange={setWin} placeholder="Today's win does not have to be dramatic." />
         <TextArea label="What felt hard" value={hard} onChange={setHard} placeholder="Name it without making it your personality." />
         <TextArea label="Next week focus" value={focus} onChange={setFocus} placeholder="Repeat, regress, or gently reach." />
-        <button type="button" onClick={save} className="min-h-12 rounded-2xl bg-moon-accent px-4 font-bold text-white">
+        <button
+          type="button"
+          onClick={save}
+          className="min-h-12 rounded-2xl bg-moon-accent px-4 text-[13px] font-bold text-white transition"
+          style={{ boxShadow: '0 4px 18px rgba(191, 162, 220, 0.40)' }}
+        >
           Save reflection
         </button>
       </div>
@@ -677,9 +816,9 @@ function ReflectionForm({ currentWeek, reflections, refresh }: { currentWeek: nu
 function Nutrition() {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <section className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
+      <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
         <Pill icon={Utensils} text="Starting targets" />
-        <h2 className="mt-3 font-display text-3xl">Enough protein. Enough life.</h2>
+        <h2 className="mt-3 font-display text-3xl leading-tight tracking-[-0.01em]">Enough protein. Enough life.</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <MiniBlock title="Protein" body={nutritionGuide.protein} />
           <MiniBlock title="Calories" body={nutritionGuide.calories} />
@@ -689,13 +828,13 @@ function Nutrition() {
       <GuideCard title="Grocery list" items={nutritionGuide.groceries} />
       <GuideCard title="Snack ideas" items={nutritionGuide.snacks} />
       <GuideCard title="Restaurant tips" items={nutritionGuide.restaurants} />
-      <section className="rounded-[2rem] border border-moon-border bg-moon-surface p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#3A2A46]">
-        <h2 className="text-2xl font-bold">Simple checklist</h2>
-        <div className="mt-4 grid gap-3">
+      <section className="rounded-[2rem] border border-moon-border/35 bg-moon-surface/55 p-5 shadow-soft dark:border-[#5B456B]/35 dark:bg-[#3A2A46]/55">
+        <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Simple checklist</h2>
+        <div className="mt-4 grid gap-2.5">
           {['Protein at breakfast', 'Protein at lunch', 'Protein at dinner', 'One fruit or vegetable before scrolling', 'Water bottle visible'].map((item) => (
-            <label key={item} className="flex min-h-12 items-center gap-3 rounded-2xl bg-white/75 px-4 dark:bg-[#1D1424]">
-              <input type="checkbox" className="h-5 w-5 accent-moon-accent" />
-              <span className="font-semibold">{item}</span>
+            <label key={item} className="flex min-h-12 cursor-pointer items-center gap-3 rounded-2xl bg-white/70 px-4 transition hover:bg-white/90 dark:bg-[#1D1424]/70 dark:hover:bg-[#1D1424]/90">
+              <input type="checkbox" className="h-4 w-4 accent-moon-accent" />
+              <span className="text-[13px] font-semibold">{item}</span>
             </label>
           ))}
         </div>
@@ -737,25 +876,38 @@ function SettingsPage({ settings, refresh }: { settings: ReturnType<typeof useLi
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <section className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
-        <h2 className="text-2xl font-bold">Plan start</h2>
+      <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+        <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Plan start</h2>
         <TextInput label="Start date" type="date" value={startDate} onChange={setStartDate} />
-        <button type="button" onClick={saveSettings} className="mt-4 min-h-12 w-full rounded-2xl bg-moon-accent px-4 font-bold text-white">
+        <button
+          type="button"
+          onClick={saveSettings}
+          className="mt-4 min-h-12 w-full rounded-2xl bg-moon-accent px-4 text-[13px] font-bold text-white transition"
+          style={{ boxShadow: '0 4px 18px rgba(191, 162, 220, 0.40)' }}
+        >
           Save start date
         </button>
       </section>
-      <section className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
-        <h2 className="text-2xl font-bold">Local data</h2>
+      <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+        <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Local data</h2>
         <div className="mt-4 grid gap-3">
-          <button type="button" onClick={handleExport} className="flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-moon-bg px-4 font-bold dark:bg-[#1D1424]">
-            <Download size={20} aria-hidden="true" /> Export JSON backup
+          <button
+            type="button"
+            onClick={handleExport}
+            className="flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-moon-bg/70 px-4 text-[13px] font-semibold transition hover:bg-moon-bg dark:bg-[#1D1424]/70 dark:hover:bg-[#1D1424]"
+          >
+            <Download size={17} aria-hidden="true" /> Export JSON backup
           </button>
-          <label className="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-moon-bg px-4 font-bold dark:bg-[#1D1424]">
-            <Upload size={20} aria-hidden="true" /> Import JSON backup
+          <label className="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-moon-bg/70 px-4 text-[13px] font-semibold transition hover:bg-moon-bg dark:bg-[#1D1424]/70 dark:hover:bg-[#1D1424]">
+            <Upload size={17} aria-hidden="true" /> Import JSON backup
             <input type="file" accept="application/json" className="sr-only" onChange={(event) => handleImport(event.target.files?.[0])} />
           </label>
-          <button type="button" onClick={handleReset} className="flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-moon-border px-4 font-bold text-moon-muted dark:border-[#5B456B] dark:text-[#EADDF7]">
-            <RotateCcw size={20} aria-hidden="true" /> Reset data
+          <button
+            type="button"
+            onClick={handleReset}
+            className="flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-moon-border/50 px-4 text-[13px] font-semibold text-moon-muted/70 transition hover:border-moon-border dark:border-[#5B456B]/40 dark:text-[#EADDF7]/65"
+          >
+            <RotateCcw size={17} aria-hidden="true" /> Reset data
           </button>
           <button
             type="button"
@@ -763,16 +915,18 @@ function SettingsPage({ settings, refresh }: { settings: ReturnType<typeof useLi
               await db.settings.put({ ...settings, darkMode: !settings.darkMode });
               refresh();
             }}
-            className="flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-moon-border px-4 font-bold text-moon-muted dark:border-[#5B456B] dark:text-[#EADDF7]"
+            className="flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-moon-border/50 px-4 text-[13px] font-semibold text-moon-muted/70 transition hover:border-moon-border dark:border-[#5B456B]/40 dark:text-[#EADDF7]/65"
           >
-            <Moon size={20} aria-hidden="true" /> {settings.darkMode ? 'Use light theme' : 'Use dark theme'}
+            <Moon size={17} aria-hidden="true" /> {settings.darkMode ? 'Use light theme' : 'Use dark theme'}
           </button>
         </div>
-        {message && <p className="mt-4 rounded-2xl bg-moon-surface p-3 font-semibold dark:bg-[#3A2A46]">{message}</p>}
+        {message && (
+          <p className="mt-4 rounded-2xl bg-moon-surface/50 p-3 text-[13px] font-semibold dark:bg-[#3A2A46]/50">{message}</p>
+        )}
       </section>
-      <section className="rounded-[2rem] border border-moon-border bg-moon-surface p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#3A2A46] lg:col-span-2">
-        <h2 className="text-2xl font-bold">GitHub Pages note</h2>
-        <p className="mt-2 text-moon-muted dark:text-[#F3E9FB]">
+      <section className="rounded-[2rem] border border-moon-border/35 bg-moon-surface/50 p-5 shadow-soft dark:border-[#5B456B]/35 dark:bg-[#3A2A46]/50 lg:col-span-2">
+        <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">GitHub Pages note</h2>
+        <p className="mt-2 text-[13px] leading-relaxed text-moon-muted/60 dark:text-[#F3E9FB]/50">
           This repo publishes with GitHub Actions. In GitHub, choose Settings, Pages, then GitHub Actions as the source.
         </p>
       </section>
@@ -786,7 +940,7 @@ function WorkoutGuide({ workout }: { workout: WorkoutDay }) {
   return (
     <div className="mt-4 grid gap-3">
       {workout.effortTarget && <MiniBlock title="Effort target" body={workout.effortTarget} />}
-      {workout.coachNote && <MiniBlock title="Coach’s note" body={workout.coachNote} />}
+      {workout.coachNote && <MiniBlock title="Coach's note" body={workout.coachNote} />}
       {workout.walkingTarget && <MiniBlock title="Walking target" body={workout.walkingTarget} />}
       {warmUpNames.length > 0 && <MiniBlock title="Warm-up, 5-8 minutes" body={warmUpNames.join(', ')} />}
       {coolDownNames.length > 0 && <MiniBlock title="Cool-down, 5-10 minutes" body={coolDownNames.join(', ')} />}
@@ -799,7 +953,10 @@ function ExerciseChips({ ids }: { ids: string[] }) {
   return (
     <div className="mt-4 flex flex-wrap gap-2">
       {ids.map((id) => (
-        <span key={id} className="rounded-full border border-moon-border bg-white px-3 py-2 text-sm font-semibold text-moon-muted dark:border-[#5B456B] dark:bg-[#1D1424] dark:text-[#EADDF7]">
+        <span
+          key={id}
+          className="rounded-full border border-moon-border/40 bg-white px-3 py-1.5 text-[11px] font-semibold text-moon-muted/60 dark:border-[#5B456B]/40 dark:bg-[#1D1424] dark:text-[#EADDF7]/50"
+        >
           {exerciseById.get(id)?.name ?? id}
         </span>
       ))}
@@ -838,7 +995,7 @@ function checkedCount(workout: WorkoutDay) {
 function ElbowNote({ value }: { value?: number }) {
   const rule = value === undefined ? elbowRules[0] : value <= 2 ? elbowRules[0] : value <= 4 ? elbowRules[1] : elbowRules[2];
   return (
-    <div className="mt-4 rounded-2xl bg-moon-surface p-3 text-sm font-semibold text-moon-text dark:bg-[#3A2A46] dark:text-[#FFF8FD]">
+    <div className="mt-3 rounded-2xl bg-moon-surface/45 p-3 text-[13px] leading-relaxed text-moon-text dark:bg-[#3A2A46]/45 dark:text-[#FFF8FD]">
       {rule}
     </div>
   );
@@ -847,14 +1004,14 @@ function ElbowNote({ value }: { value?: number }) {
 function NumberInput({ label, min, max, value, onChange }: { label: string; min: number; max: number; value?: number; onChange: (value?: number) => void }) {
   return (
     <label className="block">
-      <span className="text-sm font-semibold text-moon-muted dark:text-[#EADDF7]">{label}</span>
+      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55 dark:text-[#EADDF7]/45">{label}</span>
       <input
         type="number"
         min={min}
         max={max}
         value={value ?? ''}
         onChange={(event) => onChange(event.target.value === '' ? undefined : Number(event.target.value))}
-        className="mt-2 min-h-12 w-full rounded-2xl border border-moon-border bg-moon-bg px-4 text-base font-semibold dark:border-[#5B456B] dark:bg-[#1D1424]"
+        className="mt-2 min-h-12 w-full rounded-2xl border border-moon-border/40 bg-moon-bg px-4 text-base font-semibold dark:border-[#5B456B]/40 dark:bg-[#1D1424]"
       />
     </label>
   );
@@ -862,10 +1019,12 @@ function NumberInput({ label, min, max, value, onChange }: { label: string; min:
 
 function SliderInput({ label, value, onChange }: { label: string; value: number; onChange: (value: number) => void }) {
   return (
-    <label className="block rounded-2xl bg-moon-bg p-3 dark:bg-[#1D1424]">
-      <span className="flex items-center justify-between gap-3 text-sm font-bold text-moon-muted dark:text-[#EADDF7]">
-        {label}
-        <span className="rounded-full bg-white px-3 py-1 text-moon-text dark:bg-[#2A2033] dark:text-[#FFF8FD]">{value}/10</span>
+    <label className="block rounded-2xl bg-moon-bg/50 px-3 py-3 dark:bg-[#1D1424]/50">
+      <span className="flex items-center justify-between gap-3">
+        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55 dark:text-[#EADDF7]/45">{label}</span>
+        <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-moon-text dark:bg-[#2A2033] dark:text-[#FFF8FD]" style={{ boxShadow: '0 1px 4px rgba(71,44,89,0.07)' }}>
+          {value}/10
+        </span>
       </span>
       <input
         type="range"
@@ -873,7 +1032,7 @@ function SliderInput({ label, value, onChange }: { label: string; value: number;
         max={10}
         value={value}
         onChange={(event) => onChange(Number(event.target.value))}
-        className="mt-3 w-full accent-moon-accent"
+        className="mt-3 w-full"
       />
     </label>
   );
@@ -882,12 +1041,12 @@ function SliderInput({ label, value, onChange }: { label: string; value: number;
 function TextInput({ label, type, value, onChange }: { label: string; type: string; value: string; onChange: (value: string) => void }) {
   return (
     <label className="block">
-      <span className="text-sm font-semibold text-moon-muted dark:text-[#EADDF7]">{label}</span>
+      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55 dark:text-[#EADDF7]/45">{label}</span>
       <input
         type={type}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="mt-2 min-h-12 w-full rounded-2xl border border-moon-border bg-moon-bg px-4 text-base dark:border-[#5B456B] dark:bg-[#1D1424]"
+        className="mt-2 min-h-12 w-full rounded-2xl border border-moon-border/40 bg-moon-bg px-4 text-base dark:border-[#5B456B]/40 dark:bg-[#1D1424]"
       />
     </label>
   );
@@ -896,13 +1055,13 @@ function TextInput({ label, type, value, onChange }: { label: string; type: stri
 function TextArea({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (value: string) => void; placeholder: string }) {
   return (
     <label className="block">
-      <span className="text-sm font-semibold text-moon-muted dark:text-[#EADDF7]">{label}</span>
+      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55 dark:text-[#EADDF7]/45">{label}</span>
       <textarea
         value={value}
         onChange={(event) => onChange(event.target.value)}
         rows={3}
         placeholder={placeholder}
-        className="mt-2 w-full rounded-2xl border border-moon-border bg-moon-bg p-3 text-base dark:border-[#5B456B] dark:bg-[#1D1424]"
+        className="mt-2 w-full rounded-2xl border border-moon-border/40 bg-moon-bg p-3 text-[13px] leading-relaxed dark:border-[#5B456B]/40 dark:bg-[#1D1424]"
       />
     </label>
   );
@@ -910,56 +1069,82 @@ function TextArea({ label, value, onChange, placeholder }: { label: string; valu
 
 function Select({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (value: string) => void }) {
   return (
-    <label className="block">
+    <label className="relative block">
       <span className="sr-only">{label}</span>
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="min-h-12 w-full rounded-2xl border border-moon-border bg-moon-bg px-4 text-base font-semibold dark:border-[#5B456B] dark:bg-[#1D1424]"
+        className="min-h-12 w-full appearance-none rounded-2xl border border-moon-border/40 bg-moon-bg px-4 pr-9 text-[13px] font-semibold dark:border-[#5B456B]/40 dark:bg-[#1D1424]"
       >
         {options.map((option) => (
           <option key={option}>{option}</option>
         ))}
       </select>
+      <ChevronDown className="pointer-events-none absolute right-3.5 top-3.5 text-moon-muted/35" size={15} aria-hidden="true" />
     </label>
   );
 }
 
 function Pill({ icon: Icon, text }: { icon: typeof Sparkles; text: string }) {
   return (
-    <span className="inline-flex items-center gap-2 rounded-full bg-moon-surface px-3 py-2 text-sm font-bold text-moon-muted dark:bg-[#3A2A46] dark:text-[#F3E9FB]">
-      <Icon size={16} aria-hidden="true" />
+    <span
+      className="inline-flex items-center gap-1.5 rounded-full bg-white/68 px-3 py-1.5 text-[11px] font-semibold tracking-wide text-moon-muted/70 dark:bg-[#1D1424]/55 dark:text-[#D4B8F0]/75"
+      style={{ boxShadow: '0 1px 4px rgba(71, 44, 89, 0.07)' }}
+    >
+      <Icon size={12} aria-hidden="true" className="opacity-55" />
       {text}
     </span>
   );
 }
 
 function ProgressRing({ percent }: { percent: number }) {
+  const radius = 22;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (percent / 100) * circumference;
+
   return (
-    <div
-      className="grid h-16 w-16 place-items-center rounded-full text-sm font-black"
-      style={{ background: `conic-gradient(#BFA2DC ${percent}%, #EFE3FA ${percent}%)` }}
-      aria-label={`${percent}% complete`}
-    >
-      <div className="grid h-12 w-12 place-items-center rounded-full bg-white dark:bg-[#1D1424]">{percent}%</div>
+    <div className="relative h-14 w-14 shrink-0" aria-label={`${percent}% complete`} role="img">
+      <svg className="h-full w-full -rotate-90" viewBox="0 0 56 56">
+        <circle cx="28" cy="28" r={radius} fill="none" stroke="#EFE3FA" strokeWidth="4.5" className="dark:stroke-[#3A2A46]" />
+        <circle
+          cx="28"
+          cy="28"
+          r={radius}
+          fill="none"
+          stroke="#BFA2DC"
+          strokeWidth="4.5"
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          className="transition-all duration-700 ease-out dark:stroke-[#D4B8F0]"
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-[11px] font-black text-moon-text dark:text-[#FFF8FD]">{percent}%</span>
+      </div>
     </div>
   );
 }
 
 function MetricCard({ icon: Icon, label, value, detail }: { icon: typeof Flame; label: string; value: string; detail: string }) {
   return (
-    <div className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
-      <Pill icon={Icon} text={label} />
-      <h3 className="mt-3 text-3xl font-black">{value}</h3>
-      <p className="mt-2 text-moon-muted dark:text-[#EADDF7]">{detail}</p>
+    <div className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-moon-muted/50 dark:text-[#EADDF7]/40">{label}</span>
+        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-moon-surface/55 dark:bg-[#3A2A46]/55">
+          <Icon size={14} className="text-moon-accent dark:text-[#BFA2DC]" aria-hidden="true" />
+        </span>
+      </div>
+      <p className="mt-2.5 font-display text-4xl leading-none tracking-[-0.02em]">{value}</p>
+      <p className="mt-2 text-[12px] leading-relaxed text-moon-muted/55 dark:text-[#EADDF7]/45">{detail}</p>
     </div>
   );
 }
 
 function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
-      <h2 className="text-2xl font-bold">{title}</h2>
+    <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+      <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">{title}</h2>
       <div className="mt-4 h-[240px] w-full">{children}</div>
     </section>
   );
@@ -967,11 +1152,11 @@ function ChartCard({ title, children }: { title: string; children: React.ReactNo
 
 function GuideCard({ title, items }: { title: string; items: string[] }) {
   return (
-    <section className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
-      <h2 className="text-2xl font-bold">{title}</h2>
-      <ul className="mt-4 grid gap-3">
+    <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+      <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">{title}</h2>
+      <ul className="mt-4 grid gap-2">
         {items.map((item) => (
-          <li key={item} className="rounded-2xl bg-moon-bg p-3 font-semibold text-moon-muted dark:bg-[#1D1424] dark:text-[#EADDF7]">
+          <li key={item} className="rounded-2xl bg-moon-bg/55 px-4 py-3 text-[13px] font-medium leading-relaxed text-moon-muted/70 dark:bg-[#1D1424]/55 dark:text-[#EADDF7]/55">
             {item}
           </li>
         ))}
@@ -983,8 +1168,8 @@ function GuideCard({ title, items }: { title: string; items: string[] }) {
 function DetailBlock({ title, body }: { title: string; body: string }) {
   return (
     <section className="mt-5">
-      <h3 className="font-bold">{title}</h3>
-      <p className="mt-2 text-moon-muted dark:text-[#EADDF7]">{body}</p>
+      <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55 dark:text-[#EADDF7]/45">{title}</h3>
+      <p className="mt-2 text-[13px] leading-relaxed text-moon-muted/70 dark:text-[#EADDF7]/60">{body}</p>
     </section>
   );
 }
@@ -992,10 +1177,10 @@ function DetailBlock({ title, body }: { title: string; body: string }) {
 function DetailList({ title, items }: { title: string; items: string[] }) {
   return (
     <section className="mt-5">
-      <h3 className="font-bold">{title}</h3>
+      <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55 dark:text-[#EADDF7]/45">{title}</h3>
       <ul className="mt-2 grid gap-2">
         {items.map((item) => (
-          <li key={item} className="rounded-2xl bg-moon-bg p-3 text-moon-muted dark:bg-[#1D1424] dark:text-[#EADDF7]">
+          <li key={item} className="rounded-2xl bg-moon-bg/55 px-4 py-3 text-[13px] leading-relaxed text-moon-muted/65 dark:bg-[#1D1424]/55 dark:text-[#EADDF7]/55">
             {item}
           </li>
         ))}
@@ -1006,9 +1191,9 @@ function DetailList({ title, items }: { title: string; items: string[] }) {
 
 function MiniBlock({ title, body }: { title: string; body: string }) {
   return (
-    <div className="rounded-2xl bg-moon-bg p-4 dark:bg-[#1D1424]">
-      <p className="text-sm font-bold text-moon-muted dark:text-[#EADDF7]">{title}</p>
-      <p className="mt-1 font-semibold">{body}</p>
+    <div className="rounded-2xl bg-moon-bg/55 px-4 py-3 dark:bg-[#1D1424]/55">
+      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/50 dark:text-[#EADDF7]/40">{title}</p>
+      <p className="mt-1.5 text-[13px] font-semibold leading-snug">{body}</p>
     </div>
   );
 }
