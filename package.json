@@ -12,8 +12,7 @@
     "dexie": "^4.0.11",
     "lucide-react": "^0.468.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "recharts": "^2.13.3"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.0.0",

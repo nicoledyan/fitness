@@ -7,9 +7,9 @@ import {
   Download,
   Dumbbell,
   Flame,
+  Heart,
   HeartPulse,
   Home,
-  LineChart,
   Moon,
   RotateCcw,
   Search,
@@ -19,21 +19,10 @@ import {
   Utensils,
   X
 } from 'lucide-react';
-import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis
-} from 'recharts';
 import { db, exportBackup, importBackup, resetAllData } from './db';
 import { elbowRules, exerciseById, exercises, milestones, nutritionGuide, phases } from './data/program';
 import { useLiveData } from './hooks/useLiveData';
-import type { BackupPayload, Exercise, Measurement, WeeklyReflection, WorkoutDay } from './types';
+import type { BackupPayload, Exercise, WeeklyReflection, WorkoutDay } from './types';
 import { downloadJson } from './utils/file';
 import { currentWeekFromSettings, earnedMilestone, getTodayWorkout, phaseDetails, streakCount, weeklyProgress } from './utils/progress';
 
@@ -43,15 +32,17 @@ const navItems: Array<{ route: Route; label: string; icon: typeof Home }> = [
   { route: 'dashboard', label: 'Today', icon: Home },
   { route: 'plan', label: 'Plan', icon: CalendarDays },
   { route: 'exercises', label: 'Moves', icon: Dumbbell },
-  { route: 'progress', label: 'Progress', icon: LineChart },
+  { route: 'progress', label: 'Feel', icon: Heart },
   { route: 'nutrition', label: 'Food', icon: Utensils },
   { route: 'settings', label: 'Settings', icon: Settings }
 ];
 
 export default function App() {
   const [route, setRouteState] = useState<Route>(() => routeFromHash());
+  const [activeWorkoutId, setActiveWorkoutId] = useState<string | null>(null);
   const data = useLiveData();
   const week = currentWeekFromSettings(data.settings);
+  const activeWorkout = data.workouts.find((workout) => workout.id === activeWorkoutId);
   const setRoute = (nextRoute: Route) => {
     setRouteState(nextRoute);
     window.location.hash = nextRoute === 'dashboard' ? '' : nextRoute;
@@ -68,16 +59,17 @@ export default function App() {
       <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 pb-28 pt-5 text-moon-text dark:text-[#FFF8FD] sm:px-6 lg:pb-8">
         <Header route={route} />
         <main className="mt-5 flex-1">
-          {route === 'dashboard' && <Dashboard {...data} currentWeek={week} />}
-          {route === 'plan' && <Plan workouts={data.workouts} currentWeek={week} refresh={data.refresh} />}
+          {route === 'dashboard' && <Dashboard {...data} currentWeek={week} openWorkout={setActiveWorkoutId} />}
+          {route === 'plan' && <Plan workouts={data.workouts} currentWeek={week} refresh={data.refresh} openWorkout={setActiveWorkoutId} />}
           {route === 'exercises' && <ExerciseLibrary />}
           {route === 'progress' && (
-            <Progress measurements={data.measurements} reflections={data.reflections} workouts={data.workouts} currentWeek={week} refresh={data.refresh} />
+            <Progress reflections={data.reflections} workouts={data.workouts} currentWeek={week} refresh={data.refresh} />
           )}
           {route === 'nutrition' && <Nutrition />}
           {route === 'settings' && <SettingsPage settings={data.settings} refresh={data.refresh} />}
         </main>
       </div>
+      {activeWorkout && <WorkoutDetail workout={activeWorkout} refresh={data.refresh} onClose={() => setActiveWorkoutId(null)} />}
       <BottomNav route={route} setRoute={setRoute} />
     </div>
   );
@@ -88,7 +80,7 @@ function Header({ route }: { route: Route }) {
     dashboard: 'Gentle strength, clearly planned.',
     plan: 'Twenty-four weeks, one kind choice at a time.',
     exercises: 'Pain-free options before pride.',
-    progress: 'Small changes, clearly tracked.',
+    progress: 'Track how this feels, not what you weigh.',
     nutrition: 'Simple food math, no courtroom energy.',
     settings: 'Your app, your local data.'
   };
@@ -140,8 +132,9 @@ function Dashboard({
   workouts,
   settings,
   currentWeek,
-  refresh
-}: ReturnType<typeof useLiveData> & { currentWeek: number }) {
+  refresh,
+  openWorkout
+}: ReturnType<typeof useLiveData> & { currentWeek: number; openWorkout: (id: string) => void }) {
   const today = getTodayWorkout(workouts, settings);
   const progress = weeklyProgress(workouts, currentWeek);
   const phase = phaseDetails(currentWeek);
@@ -159,23 +152,25 @@ function Dashboard({
         <p className="mt-2 text-moon-muted dark:text-[#EADDF7]">{today?.focus}</p>
         {today && (
           <>
-            <div className="mt-5 rounded-3xl bg-moon-bg p-4 dark:bg-[#1D1424]">
+            <div className="mt-5 rounded-[1.75rem] border border-moon-border bg-moon-bg p-4 dark:border-[#5B456B] dark:bg-[#1D1424]">
               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-moon-muted dark:text-[#EADDF7]">{today.day}</p>
               <p className="mt-2 text-lg font-semibold">{today.setsReps}</p>
               {today.effortTarget && <p className="mt-2 text-sm font-semibold text-moon-muted dark:text-[#EADDF7]">{today.effortTarget}</p>}
-              <ExerciseChips ids={today.exercises} />
+              <TodayItemList workout={today} refresh={refresh} />
+              <button type="button" onClick={() => openWorkout(today.id)} className="mt-4 min-h-12 w-full rounded-2xl bg-white px-4 font-bold text-moon-text shadow-soft dark:bg-[#2A2033] dark:text-[#FFF8FD]">
+                Notes, pain, and details
+              </button>
             </div>
-            <QuickLog workout={today} refresh={refresh} />
           </>
         )}
       </section>
 
       <section className="grid gap-4">
         <MetricCard icon={Flame} label="Streak" value={`${streak} day${streak === 1 ? '' : 's'}`} detail="Today’s win does not have to be dramatic." />
-        <MetricCard icon={Activity} label="Weekly progress" value={`${progress.completed}/${progress.total}`} detail={`${progress.percent}% of planned training complete.`} />
+        <MetricCard icon={Activity} label="This week" value={`${progress.completed}/${progress.total}`} detail="A checked-off day means you showed up in some real way." />
         <div className="rounded-[2rem] border border-moon-border bg-moon-surface p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#3A2A46]">
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-moon-muted dark:text-[#EADDF7]">Next action</p>
-          <h3 className="mt-2 text-xl font-bold">{progress.percent === 100 ? 'Let recovery do its work.' : today?.completed ? 'Log a tiny note.' : 'Start the first set gently.'}</h3>
+          <h3 className="mt-2 text-xl font-bold">{progress.percent === 100 ? 'Let recovery do its work.' : today?.completed ? 'Write how it felt.' : 'Pick one item that feels doable.'}</h3>
           <p className="mt-2 text-moon-muted dark:text-[#F3E9FB]">No sharp elbow pain. We are building strength, not collecting injuries.</p>
         </div>
         {milestone && (
@@ -189,7 +184,17 @@ function Dashboard({
   );
 }
 
-function Plan({ workouts, currentWeek, refresh }: { workouts: WorkoutDay[]; currentWeek: number; refresh: () => void }) {
+function Plan({
+  workouts,
+  currentWeek,
+  refresh,
+  openWorkout
+}: {
+  workouts: WorkoutDay[];
+  currentWeek: number;
+  refresh: () => void;
+  openWorkout: (id: string) => void;
+}) {
   const [week, setWeek] = useState(currentWeek);
   const weekRows = workouts.filter((workout) => workout.week === week);
   const progress = weeklyProgress(workouts, week);
@@ -224,16 +229,14 @@ function Plan({ workouts, currentWeek, refresh }: { workouts: WorkoutDay[]; curr
       </aside>
       <section className="grid gap-4">
         {weekRows.map((workout) => (
-          <WorkoutCard key={workout.id} workout={workout} refresh={refresh} />
+          <WorkoutCard key={workout.id} workout={workout} refresh={refresh} openWorkout={openWorkout} />
         ))}
       </section>
     </div>
   );
 }
 
-function WorkoutCard({ workout, refresh }: { workout: WorkoutDay; refresh: () => void }) {
-  const [notes, setNotes] = useState(workout.notes ?? '');
-
+function WorkoutCard({ workout, refresh, openWorkout }: { workout: WorkoutDay; refresh: () => void; openWorkout: (id: string) => void }) {
   const update = async (patch: Partial<WorkoutDay>) => {
     await db.workouts.update(workout.id, patch);
     refresh();
@@ -242,11 +245,12 @@ function WorkoutCard({ workout, refresh }: { workout: WorkoutDay; refresh: () =>
   return (
     <article className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
       <div className="flex items-start justify-between gap-3">
-        <div>
+        <button type="button" onClick={() => openWorkout(workout.id)} className="min-w-0 flex-1 text-left">
           <p className="font-semibold text-moon-muted dark:text-[#EADDF7]">{workout.day}</p>
           <h3 className="mt-1 text-2xl font-bold">{workout.type}</h3>
           <p className="mt-2 text-moon-muted dark:text-[#EADDF7]">{workout.focus}</p>
-        </div>
+          <p className="mt-3 text-sm font-bold text-moon-muted dark:text-[#EADDF7]">{checkedCount(workout)} of {checklistItems(workout).length} checklist items done</p>
+        </button>
         <button
           type="button"
           onClick={() => update({ completed: !workout.completed, completedAt: workout.completed ? undefined : new Date().toISOString() })}
@@ -258,57 +262,205 @@ function WorkoutCard({ workout, refresh }: { workout: WorkoutDay; refresh: () =>
           <Check size={23} aria-hidden="true" />
         </button>
       </div>
-      <p className="mt-4 rounded-2xl bg-moon-bg p-3 font-semibold dark:bg-[#1D1424]">{workout.setsReps}</p>
-      <WorkoutGuide workout={workout} />
-      <ExerciseChips ids={workout.exercises} />
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <NumberInput label="Effort rating" min={1} max={10} value={workout.rpe} onChange={(value) => update({ rpe: value })} />
-        <NumberInput label="Elbow pain" min={0} max={10} value={workout.elbowPain} onChange={(value) => update({ elbowPain: value })} />
-      </div>
-      <ElbowNote value={workout.elbowPain} />
-      <label className="mt-4 block text-sm font-semibold text-moon-muted dark:text-[#EADDF7]" htmlFor={`${workout.id}-notes`}>
-        Notes
-      </label>
-      <textarea
-        id={`${workout.id}-notes`}
-        value={notes}
-        onChange={(event) => setNotes(event.target.value)}
-        onBlur={() => update({ notes })}
-        rows={3}
-        className="mt-2 w-full rounded-2xl border border-moon-border bg-moon-bg p-3 text-base dark:border-[#5B456B] dark:bg-[#1D1424]"
-        placeholder="What felt steady, spicy, or worth repeating?"
-      />
+      <button type="button" onClick={() => openWorkout(workout.id)} className="mt-4 w-full rounded-2xl bg-moon-bg p-3 text-left font-semibold dark:bg-[#1D1424]">
+        {workout.setsReps}
+        <span className="mt-2 block text-sm text-moon-muted dark:text-[#EADDF7]">Tap for warm-up, item checkoffs, and instructions.</span>
+      </button>
     </article>
   );
 }
 
-function QuickLog({ workout, refresh }: { workout: WorkoutDay; refresh: () => void }) {
-  const [note, setNote] = useState(workout.notes ?? '');
-  const update = async (patch: Partial<WorkoutDay>) => {
+function TodayItemList({ workout, refresh }: { workout: WorkoutDay; refresh: () => void }) {
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const items = checklistItems(workout);
+
+  const toggleItem = async (item: ChecklistItem) => {
+    const nextCompletions = { ...(workout.itemCompletions ?? {}), [item.key]: !workout.itemCompletions?.[item.key] };
+    const allDone = items.length > 0 && items.every((entry) => nextCompletions[entry.key]);
+    await db.workouts.update(workout.id, {
+      itemCompletions: nextCompletions,
+      completed: allDone,
+      completedAt: allDone ? (workout.completedAt ?? new Date().toISOString()) : undefined
+    });
+    refresh();
+  };
+
+  return (
+    <div className="mt-4">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-sm font-black uppercase tracking-[0.16em] text-moon-muted dark:text-[#EADDF7]">Today’s list</p>
+        <p className="text-sm font-bold text-moon-muted dark:text-[#EADDF7]">{checkedCount(workout)} of {items.length}</p>
+      </div>
+      <p className="mt-1 text-sm text-moon-muted dark:text-[#EADDF7]">Pick anything when you feel like it. No required order.</p>
+      <div className="mt-3 grid gap-2">
+        {items.map((item) => {
+          const done = Boolean(workout.itemCompletions?.[item.key]);
+          const exercise = item.exerciseId ? exerciseById.get(item.exerciseId) : undefined;
+          return (
+            <div key={item.key} className={`flex items-center gap-3 rounded-[1.25rem] border p-2 ${done ? 'border-moon-accent bg-white' : 'border-moon-border bg-white/70 dark:border-[#5B456B] dark:bg-[#2A2033]'}`}>
+              <button
+                type="button"
+                onClick={() => toggleItem(item)}
+                className={`grid min-h-10 min-w-10 place-items-center rounded-2xl border ${done ? 'border-moon-accent bg-moon-accent text-white' : 'border-moon-border bg-moon-bg text-moon-muted'}`}
+                aria-label={done ? `Uncheck ${item.label}` : `Check off ${item.label}`}
+              >
+                {done && <Check size={20} aria-hidden="true" />}
+              </button>
+              <button
+                type="button"
+                onClick={() => exercise && setSelectedExercise(exercise)}
+                className="min-h-11 flex-1 text-left"
+                disabled={!exercise}
+              >
+                <span className="block font-bold">{item.label}</span>
+                <span className="block text-xs font-semibold text-moon-muted dark:text-[#EADDF7]">{item.section}</span>
+              </button>
+            </div>
+          );
+        })}
+      </div>
+      {selectedExercise && <ExerciseModal exercise={selectedExercise} onClose={() => setSelectedExercise(null)} />}
+    </div>
+  );
+}
+
+type ChecklistItem = {
+  key: string;
+  label: string;
+  section: 'Warm-up' | 'Workout' | 'Cool-down' | 'Rest';
+  exerciseId?: string;
+};
+
+function WorkoutDetail({ workout, refresh, onClose }: { workout: WorkoutDay; refresh: () => void; onClose: () => void }) {
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [notes, setNotes] = useState(workout.notes ?? '');
+  const items = checklistItems(workout);
+  const completeCount = checkedCount(workout);
+  const percent = items.length ? Math.round((completeCount / items.length) * 100) : workout.completed ? 100 : 0;
+
+  const updateWorkout = async (patch: Partial<WorkoutDay>) => {
     await db.workouts.update(workout.id, patch);
     refresh();
   };
+
+  const toggleItem = async (item: ChecklistItem) => {
+    const nextCompletions = { ...(workout.itemCompletions ?? {}), [item.key]: !workout.itemCompletions?.[item.key] };
+    const allDone = items.length > 0 && items.every((entry) => nextCompletions[entry.key]);
+    await updateWorkout({
+      itemCompletions: nextCompletions,
+      completed: allDone,
+      completedAt: allDone ? (workout.completedAt ?? new Date().toISOString()) : undefined
+    });
+  };
+
+  const markAllDone = async () => {
+    const nextCompletions = Object.fromEntries(items.map((item) => [item.key, true]));
+    await updateWorkout({
+      itemCompletions: nextCompletions,
+      completed: true,
+      completedAt: workout.completedAt ?? new Date().toISOString()
+    });
+  };
+
   return (
-    <div className="mt-5 grid gap-3">
-      <button
-        type="button"
-        onClick={() => update({ completed: !workout.completed, completedAt: workout.completed ? undefined : new Date().toISOString() })}
-        className="min-h-14 rounded-2xl bg-moon-accent px-5 text-base font-bold text-white shadow-soft"
-      >
-        {workout.completed ? 'Completed today' : 'Complete workout'}
-      </button>
-      <div className="grid gap-3 sm:grid-cols-2">
-        <NumberInput label="Effort rating" min={1} max={10} value={workout.rpe} onChange={(value) => update({ rpe: value })} />
-        <NumberInput label="Elbow pain" min={0} max={10} value={workout.elbowPain} onChange={(value) => update({ elbowPain: value })} />
+    <div className="fixed inset-0 z-50 grid place-items-end bg-[#2B2232]/35 p-2 sm:place-items-center" role="dialog" aria-modal="true" aria-label={`${workout.day} ${workout.type}`}>
+      <div className="max-h-[94vh] w-full max-w-3xl overflow-y-auto rounded-t-[2rem] border border-moon-border bg-[#FFFCF4] p-4 shadow-soft dark:border-[#5B456B] dark:bg-[#21182A] sm:rounded-[2rem] sm:p-6">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <Pill icon={Sparkles} text={`Week ${workout.week} · ${workout.phase}`} />
+            <h2 className="mt-3 font-display text-3xl leading-tight sm:text-4xl">{workout.type}</h2>
+            <p className="mt-2 text-moon-muted dark:text-[#EADDF7]">{workout.day} · Use this as a running checklist throughout the day.</p>
+          </div>
+          <button type="button" onClick={onClose} className="grid min-h-12 min-w-12 place-items-center rounded-2xl bg-white text-moon-text shadow-soft dark:bg-[#1D1424] dark:text-[#FFF8FD]" aria-label="Close workout">
+            <X aria-hidden="true" />
+          </button>
+        </div>
+
+        <div className="mt-5 rounded-[1.75rem] bg-white p-4 shadow-soft dark:bg-[#2A2033]">
+          <div className="flex items-center justify-between gap-3">
+            <p className="font-bold">{completeCount} of {items.length} items checked</p>
+            <p className="text-sm font-bold text-moon-muted dark:text-[#EADDF7]">{percent}%</p>
+          </div>
+          <div className="mt-3 h-3 overflow-hidden rounded-full bg-moon-surface dark:bg-[#3A2A46]">
+            <div className="h-full rounded-full bg-moon-accent transition-all" style={{ width: `${percent}%` }} />
+          </div>
+        </div>
+
+        <div className="mt-4 grid gap-3">
+          <MiniBlock title="Plan for today" body={workout.setsReps} />
+          {workout.effortTarget && <MiniBlock title="Effort target" body={workout.effortTarget} />}
+          {workout.coachNote && <MiniBlock title="Coach’s note" body={workout.coachNote} />}
+        </div>
+
+        <div className="mt-4 grid gap-3 rounded-[1.75rem] bg-white p-4 shadow-soft dark:bg-[#2A2033] sm:grid-cols-2">
+          <NumberInput label="Effort rating" min={1} max={10} value={workout.rpe} onChange={(value) => updateWorkout({ rpe: value })} />
+          <NumberInput label="Elbow pain" min={0} max={10} value={workout.elbowPain} onChange={(value) => updateWorkout({ elbowPain: value })} />
+          <div className="sm:col-span-2">
+            <ElbowNote value={workout.elbowPain} />
+          </div>
+          <label className="block sm:col-span-2" htmlFor={`${workout.id}-detail-notes`}>
+            <span className="text-sm font-semibold text-moon-muted dark:text-[#EADDF7]">Notes</span>
+            <textarea
+              id={`${workout.id}-detail-notes`}
+              value={notes}
+              onChange={(event) => setNotes(event.target.value)}
+              onBlur={() => updateWorkout({ notes })}
+              rows={3}
+              className="mt-2 w-full rounded-2xl border border-moon-border bg-moon-bg p-3 text-base dark:border-[#5B456B] dark:bg-[#1D1424]"
+              placeholder="Use this for split-up sessions, swaps, or what felt different."
+            />
+          </label>
+        </div>
+
+        <div className="mt-5 grid gap-5">
+          {(['Warm-up', 'Workout', 'Cool-down', 'Rest'] as const).map((section) => {
+            const sectionItems = items.filter((item) => item.section === section);
+            if (sectionItems.length === 0) return null;
+            return (
+              <section key={section}>
+                <h3 className="px-1 text-sm font-black uppercase tracking-[0.18em] text-moon-muted dark:text-[#EADDF7]">{section}</h3>
+                <div className="mt-2 grid gap-2">
+                  {sectionItems.map((item) => {
+                    const done = Boolean(workout.itemCompletions?.[item.key]);
+                    const exercise = item.exerciseId ? exerciseById.get(item.exerciseId) : undefined;
+                    return (
+                      <div key={item.key} className={`flex items-center gap-3 rounded-[1.35rem] border p-2 transition ${done ? 'border-moon-accent bg-moon-surface' : 'border-moon-border bg-white dark:border-[#5B456B] dark:bg-[#2A2033]'}`}>
+                        <button
+                          type="button"
+                          onClick={() => toggleItem(item)}
+                          className={`grid min-h-11 min-w-11 place-items-center rounded-2xl border ${done ? 'border-moon-accent bg-moon-accent text-white' : 'border-moon-border bg-moon-bg text-moon-muted'}`}
+                          aria-label={done ? `Uncheck ${item.label}` : `Check off ${item.label}`}
+                        >
+                          {done && <Check size={21} aria-hidden="true" />}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => exercise && setSelectedExercise(exercise)}
+                          className="min-h-12 flex-1 text-left"
+                          disabled={!exercise}
+                        >
+                          <span className="block font-bold">{item.label}</span>
+                          <span className="mt-1 block text-sm text-moon-muted dark:text-[#EADDF7]">{exercise ? 'Tap for instructions and modifications.' : 'Check this when it is genuinely done.'}</span>
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            );
+          })}
+        </div>
+
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <button type="button" onClick={markAllDone} className="min-h-12 rounded-2xl bg-moon-accent px-4 font-bold text-white">
+            Mark all done
+          </button>
+          <button type="button" onClick={onClose} className="min-h-12 rounded-2xl border border-moon-border bg-white px-4 font-bold text-moon-muted dark:border-[#5B456B] dark:bg-[#2A2033] dark:text-[#EADDF7]">
+            Done for now
+          </button>
+        </div>
       </div>
-      <textarea
-        value={note}
-        onChange={(event) => setNote(event.target.value)}
-        onBlur={() => update({ notes: note })}
-        rows={3}
-        className="w-full rounded-2xl border border-moon-border bg-moon-bg p-3 text-base dark:border-[#5B456B] dark:bg-[#1D1424]"
-        placeholder="What felt clear, steady, or worth adjusting?"
-      />
+      {selectedExercise && <ExerciseModal exercise={selectedExercise} onClose={() => setSelectedExercise(null)} />}
     </div>
   );
 }
@@ -387,110 +539,105 @@ function ExerciseModal({ exercise, onClose }: { exercise: Exercise; onClose: () 
 }
 
 function Progress({
-  measurements,
   reflections,
   workouts,
   currentWeek,
   refresh
 }: {
-  measurements: Measurement[];
   reflections: WeeklyReflection[];
   workouts: WorkoutDay[];
   currentWeek: number;
   refresh: () => void;
 }) {
-  const chartData = measurements.map((measurement) => ({ date: measurement.date.slice(5), weight: measurement.weight, waist: measurement.waist }));
   const completionData = Array.from({ length: 24 }, (_, index) => {
     const week = index + 1;
     const progress = weeklyProgress(workouts, week);
-    return { week: `W${week}`, completed: progress.completed };
+    return { label: `W${week}`, value: progress.completed, max: progress.total || 5 };
   });
+  const feelingRows = reflections
+    .filter((reflection) => reflection.energy || reflection.sleep || reflection.soreness || reflection.mood)
+    .map((reflection) => ({
+      label: `W${reflection.week}`,
+      energy: reflection.energy,
+      sleep: reflection.sleep,
+      soreness: reflection.soreness,
+      mood: reflection.mood
+    }));
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_22rem]">
       <section className="grid gap-4">
-        <ChartCard title="Weight trend">
-          <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={chartData}>
-              <CartesianGrid stroke="#E4D5F1" strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis width={36} />
-              <Tooltip />
-              <Area type="monotone" dataKey="weight" stroke="#BFA2DC" fill="#EFE3FA" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartCard>
-        <ChartCard title="Waist trend">
-          <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={chartData}>
-              <CartesianGrid stroke="#E4D5F1" strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis width={36} />
-              <Tooltip />
-              <Area type="monotone" dataKey="waist" stroke="#6E5D78" fill="#EFE3FA" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartCard>
-        <ChartCard title="Completed workouts">
-          <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={completionData}>
-              <CartesianGrid stroke="#E4D5F1" strokeDasharray="3 3" />
-              <XAxis dataKey="week" interval={2} />
-              <YAxis width={32} />
-              <Tooltip />
-              <Bar dataKey="completed" fill="#BFA2DC" radius={[8, 8, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
+        <section className="overflow-hidden rounded-[2rem] border border-moon-border bg-white shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
+          <div className="bg-[linear-gradient(135deg,#FFFCF4_0%,#EFE3FA_60%,#BFA2DC_160%)] p-5 dark:bg-none">
+            <Pill icon={Heart} text="Feel first" />
+            <h2 className="mt-4 font-display text-3xl">No weigh-ins required.</h2>
+            <p className="mt-2 max-w-2xl text-moon-muted dark:text-[#EADDF7]">
+              This page is for energy, sleep, soreness, mood, and the quiet evidence that movement is becoming part of your life.
+            </p>
+          </div>
+        </section>
+        <FeelingChart title="Weekly consistency" rows={completionData} />
+        <FeelingTrend rows={feelingRows} />
       </section>
       <aside className="grid gap-4 self-start">
-        <MeasurementForm refresh={refresh} />
         <ReflectionForm currentWeek={currentWeek} reflections={reflections} refresh={refresh} />
       </aside>
     </div>
   );
 }
 
-function MeasurementForm({ refresh }: { refresh: () => void }) {
-  const [form, setForm] = useState({ date: new Date().toISOString().slice(0, 10), weight: '', waist: '', hips: '', thigh: '', arm: '', notes: '' });
-  const save = async () => {
-    await db.measurements.put({
-      id: crypto.randomUUID(),
-      date: form.date,
-      weight: numberOrUndefined(form.weight),
-      waist: numberOrUndefined(form.waist),
-      hips: numberOrUndefined(form.hips),
-      thigh: numberOrUndefined(form.thigh),
-      arm: numberOrUndefined(form.arm),
-      notes: form.notes
-    });
-    setForm((value) => ({ ...value, weight: '', waist: '', hips: '', thigh: '', arm: '', notes: '' }));
-    refresh();
-  };
+function FeelingChart({ title, rows }: { title: string; rows: Array<{ label: string; value: number; max: number }> }) {
   return (
-    <div className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
-      <h2 className="text-2xl font-bold">Measurements</h2>
-      <div className="mt-4 grid gap-3">
-        <TextInput label="Date" type="date" value={form.date} onChange={(value) => setForm({ ...form, date: value })} />
-        {(['weight', 'waist', 'hips', 'thigh', 'arm'] as const).map((field) => (
-          <TextInput key={field} label={capitalize(field)} type="number" value={form[field]} onChange={(value) => setForm({ ...form, [field]: value })} />
-        ))}
-        <textarea
-          value={form.notes}
-          onChange={(event) => setForm({ ...form, notes: event.target.value })}
-          className="w-full rounded-2xl border border-moon-border bg-moon-bg p-3 text-base dark:border-[#5B456B] dark:bg-[#1D1424]"
-          placeholder="Photo note, cycle context, or tiny win"
-        />
-        <button type="button" onClick={save} className="min-h-12 rounded-2xl bg-moon-accent px-4 font-bold text-white">
-          Save entry
-        </button>
+    <section className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
+      <h2 className="text-2xl font-bold">{title}</h2>
+      <div className="mt-5 flex h-44 items-end gap-2 overflow-x-auto pb-2">
+        {rows.map((row) => {
+          const height = row.max ? Math.max(8, Math.round((row.value / row.max) * 100)) : 8;
+          return (
+            <div key={row.label} className="flex min-w-8 flex-1 flex-col items-center gap-2">
+              <div className="flex h-32 w-full items-end rounded-full bg-moon-bg dark:bg-[#1D1424]">
+                <div className="w-full rounded-full bg-moon-accent transition-all" style={{ height: `${height}%` }} />
+              </div>
+              <span className="text-xs font-bold text-moon-muted dark:text-[#EADDF7]">{row.label}</span>
+            </div>
+          );
+        })}
       </div>
-    </div>
+    </section>
+  );
+}
+
+function FeelingTrend({ rows }: { rows: Array<{ label: string; energy?: number; sleep?: number; soreness?: number; mood?: number }> }) {
+  const latest = rows[rows.length - 1];
+  const cards = [
+    { label: 'Energy', value: latest?.energy },
+    { label: 'Sleep', value: latest?.sleep },
+    { label: 'Soreness', value: latest?.soreness },
+    { label: 'Mood', value: latest?.mood }
+  ];
+
+  return (
+    <section className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
+      <h2 className="text-2xl font-bold">Latest check-in</h2>
+      <div className="mt-4 grid gap-3 sm:grid-cols-4">
+        {cards.map((card) => (
+          <div key={card.label} className="rounded-2xl bg-moon-bg p-4 dark:bg-[#1D1424]">
+            <p className="text-sm font-bold text-moon-muted dark:text-[#EADDF7]">{card.label}</p>
+            <p className="mt-2 text-3xl font-black">{card.value ?? '-'}</p>
+          </div>
+        ))}
+      </div>
+      {rows.length === 0 && <p className="mt-4 text-moon-muted dark:text-[#EADDF7]">Save a weekly check-in and this will start to show patterns.</p>}
+    </section>
   );
 }
 
 function ReflectionForm({ currentWeek, reflections, refresh }: { currentWeek: number; reflections: WeeklyReflection[]; refresh: () => void }) {
   const existing = reflections.find((reflection) => reflection.week === currentWeek);
+  const [energy, setEnergy] = useState(existing?.energy ?? 5);
+  const [sleep, setSleep] = useState(existing?.sleep ?? 5);
+  const [soreness, setSoreness] = useState(existing?.soreness ?? 3);
+  const [mood, setMood] = useState(existing?.mood ?? 5);
   const [win, setWin] = useState(existing?.biggestWin ?? '');
   const [hard, setHard] = useState(existing?.whatFeltHard ?? '');
   const [focus, setFocus] = useState(existing?.nextWeekFocus ?? '');
@@ -498,6 +645,10 @@ function ReflectionForm({ currentWeek, reflections, refresh }: { currentWeek: nu
     await db.reflections.put({
       id: existing?.id ?? `week-${currentWeek}`,
       week: currentWeek,
+      energy,
+      sleep,
+      soreness,
+      mood,
       biggestWin: win,
       whatFeltHard: hard,
       nextWeekFocus: focus
@@ -508,6 +659,10 @@ function ReflectionForm({ currentWeek, reflections, refresh }: { currentWeek: nu
     <div className="rounded-[2rem] border border-moon-border bg-white p-5 shadow-soft dark:border-[#5B456B] dark:bg-[#2A2033]">
       <h2 className="text-2xl font-bold">Week {currentWeek} reflection</h2>
       <div className="mt-4 grid gap-3">
+        <SliderInput label="Energy" value={energy} onChange={setEnergy} />
+        <SliderInput label="Sleep" value={sleep} onChange={setSleep} />
+        <SliderInput label="Soreness" value={soreness} onChange={setSoreness} />
+        <SliderInput label="Mood" value={mood} onChange={setMood} />
         <TextArea label="Biggest win" value={win} onChange={setWin} placeholder="Today’s win does not have to be dramatic." />
         <TextArea label="What felt hard" value={hard} onChange={setHard} placeholder="Name it without making it your personality." />
         <TextArea label="Next week focus" value={focus} onChange={setFocus} placeholder="Repeat, regress, or gently reach." />
@@ -656,6 +811,30 @@ function namesForIds(ids: string[]) {
   return ids.map((id) => exerciseById.get(id)?.name ?? id);
 }
 
+function checklistItems(workout: WorkoutDay): ChecklistItem[] {
+  if (workout.type === 'Rest') {
+    return [{ key: `${workout.id}-rest`, label: 'Complete rest day', section: 'Rest' }];
+  }
+  return [
+    ...(workout.warmUp ?? []).map((id, index) => checklistItem(workout.id, 'Warm-up', id, index)),
+    ...workout.exercises.map((id, index) => checklistItem(workout.id, 'Workout', id, index)),
+    ...(workout.coolDown ?? []).map((id, index) => checklistItem(workout.id, 'Cool-down', id, index))
+  ];
+}
+
+function checklistItem(workoutId: string, section: ChecklistItem['section'], exerciseId: string, index: number): ChecklistItem {
+  return {
+    key: `${workoutId}-${section.toLowerCase()}-${index}-${exerciseId}`,
+    label: exerciseById.get(exerciseId)?.name ?? exerciseId,
+    section,
+    exerciseId
+  };
+}
+
+function checkedCount(workout: WorkoutDay) {
+  return checklistItems(workout).filter((item) => workout.itemCompletions?.[item.key]).length;
+}
+
 function ElbowNote({ value }: { value?: number }) {
   const rule = value === undefined ? elbowRules[0] : value <= 2 ? elbowRules[0] : value <= 4 ? elbowRules[1] : elbowRules[2];
   return (
@@ -676,6 +855,25 @@ function NumberInput({ label, min, max, value, onChange }: { label: string; min:
         value={value ?? ''}
         onChange={(event) => onChange(event.target.value === '' ? undefined : Number(event.target.value))}
         className="mt-2 min-h-12 w-full rounded-2xl border border-moon-border bg-moon-bg px-4 text-base font-semibold dark:border-[#5B456B] dark:bg-[#1D1424]"
+      />
+    </label>
+  );
+}
+
+function SliderInput({ label, value, onChange }: { label: string; value: number; onChange: (value: number) => void }) {
+  return (
+    <label className="block rounded-2xl bg-moon-bg p-3 dark:bg-[#1D1424]">
+      <span className="flex items-center justify-between gap-3 text-sm font-bold text-moon-muted dark:text-[#EADDF7]">
+        {label}
+        <span className="rounded-full bg-white px-3 py-1 text-moon-text dark:bg-[#2A2033] dark:text-[#FFF8FD]">{value}/10</span>
+      </span>
+      <input
+        type="range"
+        min={1}
+        max={10}
+        value={value}
+        onChange={(event) => onChange(Number(event.target.value))}
+        className="mt-3 w-full accent-moon-accent"
       />
     </label>
   );

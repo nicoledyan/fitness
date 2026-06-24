@@ -2,7 +2,7 @@ import Dexie, { type Table } from 'dexie';
 import type { AppSettings, BackupPayload, Measurement, WeeklyReflection, WorkoutDay } from './types';
 import { generateWorkoutPlan } from './data/program';
 
-const PROGRAM_VERSION = 2;
+const PROGRAM_VERSION = 3;
 
 export class GrowStrongDb extends Dexie {
   workouts!: Table<WorkoutDay, string>;
@@ -53,6 +53,7 @@ export const seedIfNeeded = async () => {
         completed: current.completed,
         rpe: current.rpe,
         elbowPain: current.elbowPain,
+        itemCompletions: current.itemCompletions,
         notes: current.notes,
         completedAt: current.completedAt
       };
@@ -60,7 +61,7 @@ export const seedIfNeeded = async () => {
     await db.transaction('rw', db.workouts, db.settings, async () => {
       await db.workouts.clear();
       await db.workouts.bulkPut(migratedWorkouts);
-      await db.settings.put({ ...(settings ?? defaultSettings()), programVersion: PROGRAM_VERSION });
+      await db.settings.put({ ...(settings ?? defaultSettings()), darkMode: false, programVersion: PROGRAM_VERSION });
     });
   }
 };

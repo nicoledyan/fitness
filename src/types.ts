@@ -21,6 +21,7 @@ export type WorkoutDay = {
   effortTarget?: string;
   walkingTarget?: string;
   coachNote?: string;
+  itemCompletions?: Record<string, boolean>;
   completed: boolean;
   rpe?: number;
   elbowPain?: number;
