@@ -2,7 +2,7 @@ import Dexie, { type Table } from 'dexie';
 import type { AppSettings, BackupPayload, Measurement, WeeklyReflection, WorkoutDay } from './types';
 import { generateWorkoutPlan } from './data/program';
 
-const PROGRAM_VERSION = 4;
+const PROGRAM_VERSION = 5;
 
 export class GrowStrongDb extends Dexie {
   workouts!: Table<WorkoutDay, string>;

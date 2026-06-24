@@ -754,7 +754,19 @@ const coolDownLibrary = [
 ];
 
 const choose = (items: string[], start: number, count: number) =>
-  Array.from({ length: count }, (_, index) => items[(start + index) % items.length]);
+  chooseAvoiding(items, start, count);
+
+const chooseAvoiding = (items: string[], start: number, count: number, avoid: string[] = []) => {
+  const blocked = new Set(avoid);
+  const picked: string[] = [];
+  for (let offset = 0; picked.length < count && offset < items.length * 2; offset += 1) {
+    const item = items[(start + offset) % items.length];
+    if (!blocked.has(item) && !picked.includes(item)) {
+      picked.push(item);
+    }
+  }
+  return picked;
+};
 
 const isDeloadWeek = (week: number) => week % 4 === 0;
 
@@ -1048,9 +1060,9 @@ export const generateWorkoutPlan = (): WorkoutDay[] => {
       const warmUpStart = (week + schedule.findIndex((day) => day.day === item.day)) % warmUpLibrary.length;
       const coolDownStart = (week + schedule.findIndex((day) => day.day === item.day)) % coolDownLibrary.length;
 
-      const warmUpIds = item.type === 'Rest' ? [] : choose(warmUpLibrary, warmUpStart, 5);
-      const coolDownIds = item.type === 'Rest' ? [] : choose(coolDownLibrary, coolDownStart, 4);
       const exerciseIds = dayExercises(week, item.type);
+      const warmUpIds = item.type === 'Rest' ? [] : chooseAvoiding(warmUpLibrary, warmUpStart, 5, exerciseIds);
+      const coolDownIds = item.type === 'Rest' ? [] : chooseAvoiding(coolDownLibrary, coolDownStart, 4, [...exerciseIds, ...warmUpIds]);
 
       days.push({
         id: `week-${week}-${item.day.toLowerCase()}`,

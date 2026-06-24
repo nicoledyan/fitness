@@ -19,12 +19,26 @@ export const getTodayWorkout = (workouts: WorkoutDay[], settings: AppSettings) =
 export const weeklyProgress = (workouts: WorkoutDay[], week: number) => {
   const weekRows = workouts.filter((workout) => workout.week === week);
   const required = weekRows.filter((workout) => workout.type !== 'Optional' && workout.type !== 'Rest');
-  const completed = required.filter((workout) => workout.completed).length;
+  const completed = required.reduce((sum, workout) => sum + completedItemCount(workout), 0);
+  const total = required.reduce((sum, workout) => sum + plannedItemCount(workout), 0);
   return {
     completed,
-    total: required.length,
-    percent: required.length ? Math.round((completed / required.length) * 100) : 0
+    total,
+    percent: total ? Math.round((completed / total) * 100) : 0
   };
+};
+
+const plannedItemCount = (workout: WorkoutDay) => {
+  if (workout.type === 'Rest') return 1;
+  const hasWalkExercise = workout.exercises.includes('walking');
+  const walkItem = workout.walkingTarget && !hasWalkExercise ? 1 : 0;
+  return (workout.warmUp?.length ?? 0) + workout.exercises.length + walkItem + (workout.coolDown?.length ?? 0);
+};
+
+const completedItemCount = (workout: WorkoutDay) => {
+  const total = plannedItemCount(workout);
+  if (workout.completed) return total;
+  return Math.min(total, Object.values(workout.itemCompletions ?? {}).filter(Boolean).length);
 };
 
 export const streakCount = (workouts: WorkoutDay[]) => {

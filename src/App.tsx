@@ -54,23 +54,32 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHash);
   }, []);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [activeWorkoutId]);
+
   return (
     <div className="min-h-screen">
       <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 pb-28 pt-6 text-moon-text sm:px-6 lg:pb-8">
-        <Header route={route} />
-        <main className="mt-6 flex-1">
-          {route === 'dashboard' && <Dashboard {...data} currentWeek={week} openWorkout={setActiveWorkoutId} />}
-          {route === 'plan' && <Plan workouts={data.workouts} currentWeek={week} refresh={data.refresh} openWorkout={setActiveWorkoutId} />}
-          {route === 'exercises' && <ExerciseLibrary />}
-          {route === 'progress' && (
-            <Progress reflections={data.reflections} workouts={data.workouts} currentWeek={week} refresh={data.refresh} />
+        {!activeWorkout && <Header route={route} />}
+        <main className="mt-6 min-w-0 flex-1 overflow-x-hidden">
+          {activeWorkout ? (
+            <WorkoutDetail workout={activeWorkout} refresh={data.refresh} onClose={() => setActiveWorkoutId(null)} />
+          ) : (
+            <>
+              {route === 'dashboard' && <Dashboard {...data} currentWeek={week} openWorkout={setActiveWorkoutId} />}
+              {route === 'plan' && <Plan workouts={data.workouts} currentWeek={week} refresh={data.refresh} openWorkout={setActiveWorkoutId} />}
+              {route === 'exercises' && <ExerciseLibrary />}
+              {route === 'progress' && (
+                <Progress reflections={data.reflections} workouts={data.workouts} currentWeek={week} refresh={data.refresh} />
+              )}
+              {route === 'nutrition' && <Nutrition />}
+              {route === 'settings' && <SettingsPage settings={data.settings} refresh={data.refresh} />}
+            </>
           )}
-          {route === 'nutrition' && <Nutrition />}
-          {route === 'settings' && <SettingsPage settings={data.settings} refresh={data.refresh} />}
         </main>
       </div>
-      {activeWorkout && <WorkoutDetail workout={activeWorkout} refresh={data.refresh} onClose={() => setActiveWorkoutId(null)} />}
-      <BottomNav route={route} setRoute={setRoute} />
+      {!activeWorkout && <BottomNav route={route} setRoute={setRoute} />}
     </div>
   );
 }
@@ -192,7 +201,7 @@ function Dashboard({
 
       <section className="grid gap-4">
         <MetricCard icon={Flame} label="Streak" value={`${streak} day${streak === 1 ? '' : 's'}`} detail="Today's win does not have to be dramatic." />
-        <MetricCard icon={Activity} label="This week" value={`${progress.completed}/${progress.total}`} detail="A checked-off day means you showed up in some real way." />
+        <MetricCard icon={Activity} label="This week" value={`${progress.completed}/${progress.total}`} detail="Each checked item counts. Split it up however the day allows." />
         <div className="rounded-[2rem] border border-moon-border/35 bg-moon-surface/60 p-5 shadow-soft">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-moon-muted/55">Next action</p>
           <h3 className="mt-2.5 text-[17px] font-bold leading-snug">
@@ -270,6 +279,15 @@ function WorkoutCard({ workout, refresh, openWorkout }: { workout: WorkoutDay; r
     await db.workouts.update(workout.id, patch);
     refresh();
   };
+  const toggleWholeDay = async () => {
+    const items = checklistItems(workout);
+    const complete = !workout.completed;
+    await update({
+      itemCompletions: complete ? itemCompletionMap(items, true) : itemCompletionMap(items, false),
+      completed: complete,
+      completedAt: complete ? (workout.completedAt ?? new Date().toISOString()) : undefined
+    });
+  };
 
   return (
     <article className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft transition-shadow duration-200 hover:shadow-[0_20px_48px_rgba(71,44,89,0.11)]">
@@ -284,7 +302,7 @@ function WorkoutCard({ workout, refresh, openWorkout }: { workout: WorkoutDay; r
         </button>
         <button
           type="button"
-          onClick={() => update({ completed: !workout.completed, completedAt: workout.completed ? undefined : new Date().toISOString() })}
+          onClick={toggleWholeDay}
           className={`no-active-scale grid h-12 w-12 shrink-0 place-items-center rounded-2xl transition-all duration-200 ${
             workout.completed
               ? 'bg-moon-accent text-white'
@@ -311,7 +329,7 @@ function WorkoutCard({ workout, refresh, openWorkout }: { workout: WorkoutDay; r
 type ChecklistItem = {
   key: string;
   label: string;
-  section: 'Warm-up' | 'Workout' | 'Cool-down' | 'Rest';
+  section: 'Warm-up' | 'Workout' | 'Walk' | 'Cool-down' | 'Rest';
   exerciseId?: string;
 };
 
@@ -372,7 +390,8 @@ function TodayItemList({ workout, refresh }: { workout: WorkoutDay; refresh: () 
   const items = checklistItems(workout);
 
   const toggleItem = async (item: ChecklistItem) => {
-    const nextCompletions = { ...(workout.itemCompletions ?? {}), [item.key]: !workout.itemCompletions?.[item.key] };
+    const currentCompletions = workout.completed && !workout.itemCompletions ? itemCompletionMap(items, true) : (workout.itemCompletions ?? {});
+    const nextCompletions = { ...currentCompletions, [item.key]: !itemIsDone(workout, item) };
     const allDone = items.length > 0 && items.every((entry) => nextCompletions[entry.key]);
     await db.workouts.update(workout.id, {
       itemCompletions: nextCompletions,
@@ -393,7 +412,7 @@ function TodayItemList({ workout, refresh }: { workout: WorkoutDay; refresh: () 
       <p className="mt-1 text-[12px] leading-relaxed text-moon-muted/50">Pick anything when you feel like it. No required order.</p>
       <div className="mt-3 grid gap-2">
         {items.map((item) => {
-          const done = Boolean(workout.itemCompletions?.[item.key]);
+          const done = itemIsDone(workout, item);
           const exercise = item.exerciseId ? exerciseById.get(item.exerciseId) : undefined;
           return (
             <ChecklistRow
@@ -425,7 +444,8 @@ function WorkoutDetail({ workout, refresh, onClose }: { workout: WorkoutDay; ref
   };
 
   const toggleItem = async (item: ChecklistItem) => {
-    const nextCompletions = { ...(workout.itemCompletions ?? {}), [item.key]: !workout.itemCompletions?.[item.key] };
+    const currentCompletions = workout.completed && !workout.itemCompletions ? itemCompletionMap(items, true) : (workout.itemCompletions ?? {});
+    const nextCompletions = { ...currentCompletions, [item.key]: !itemIsDone(workout, item) };
     const allDone = items.length > 0 && items.every((entry) => nextCompletions[entry.key]);
     await updateWorkout({
       itemCompletions: nextCompletions,
@@ -444,15 +464,18 @@ function WorkoutDetail({ workout, refresh, onClose }: { workout: WorkoutDay; ref
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#2B2232]/28 p-2 backdrop-blur-sm"
-      role="dialog"
-      aria-modal="true"
-      aria-label={`${workout.day} ${workout.type}`}
-    >
-      <div
-        className="max-h-[94dvh] w-full max-w-3xl overflow-y-auto rounded-[2rem] border border-moon-border/30 bg-[#FFFCF4]"
-        style={{ boxShadow: '0 -24px 80px rgba(71, 44, 89, 0.16)' }}
+    <div className="mx-auto grid w-full max-w-3xl gap-4">
+      <button
+        type="button"
+        onClick={onClose}
+        className="no-active-scale inline-flex min-h-11 w-fit items-center justify-center rounded-2xl border border-moon-border/45 bg-white px-4 text-[13px] font-semibold text-moon-muted shadow-soft"
+      >
+        Back to plan
+      </button>
+
+      <section
+        className="overflow-hidden rounded-[2rem] border border-moon-border/30 bg-[#FFFCF4] shadow-soft"
+        aria-label={`${workout.day} ${workout.type}`}
       >
         <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-5 sm:p-6">
           <div className="flex items-start justify-between gap-3">
@@ -523,7 +546,7 @@ function WorkoutDetail({ workout, refresh, onClose }: { workout: WorkoutDay; ref
 
           <div className="mt-5 grid gap-2">
             {items.map((item) => {
-              const done = Boolean(workout.itemCompletions?.[item.key]);
+              const done = itemIsDone(workout, item);
               const exercise = item.exerciseId ? exerciseById.get(item.exerciseId) : undefined;
               return (
                 <ChecklistRow
@@ -556,7 +579,7 @@ function WorkoutDetail({ workout, refresh, onClose }: { workout: WorkoutDay; ref
             </button>
           </div>
         </div>
-      </div>
+      </section>
       {selectedExercise && <ExerciseModal exercise={selectedExercise} onClose={() => setSelectedExercise(null)} />}
     </div>
   );
@@ -612,13 +635,13 @@ function ExerciseLibrary() {
 function ExerciseModal({ exercise, onClose }: { exercise: Exercise; onClose: () => void }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#1D1424]/38 p-3 backdrop-blur-sm"
+      className="fixed inset-0 z-50 overflow-y-auto bg-[#FFFCF4] p-4 text-moon-text sm:bg-[#1D1424]/38 sm:p-6 sm:backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-label={exercise.name}
     >
       <div
-        className="max-h-[88dvh] w-full max-w-2xl overflow-y-auto rounded-[2rem] border border-moon-border/30 bg-white"
+        className="mx-auto min-h-[calc(100dvh-2rem)] w-full max-w-2xl overflow-hidden rounded-[2rem] border border-moon-border/30 bg-white sm:min-h-0"
         style={{ boxShadow: '0 32px 80px rgba(71, 44, 89, 0.18)' }}
       >
         <div className="bg-gradient-to-br from-[#F4EAFF] to-[#EDE0FA]/60 p-5">
@@ -2039,6 +2062,7 @@ function checklistItems(workout: WorkoutDay): ChecklistItem[] {
     return [{ key: `${workout.id}-rest`, label: 'Complete rest day', section: 'Rest' }];
   }
   const isStrength = workout.type.startsWith('Strength');
+  const hasWalkExercise = workout.exercises.includes('walking');
   return [
     ...(workout.warmUp ?? []).map((id, index) => checklistItem(workout.id, 'Warm-up', id, index, warmUpPrescriptionFor(id))),
     ...workout.exercises.map((id, index) =>
@@ -2046,6 +2070,9 @@ function checklistItems(workout: WorkoutDay): ChecklistItem[] {
         isStrength ? workoutPrescriptionFor(id, workout.week) : mobilityPrescriptionFor(id)
       )
     ),
+    ...(workout.walkingTarget && !hasWalkExercise
+      ? [{ key: `${workout.id}-walk`, label: `Walk — ${workout.walkingTarget}`, section: 'Walk' as const, exerciseId: 'walking' }]
+      : []),
     ...(workout.coolDown ?? []).map((id, index) => checklistItem(workout.id, 'Cool-down', id, index, coolDownPrescriptionFor(id)))
   ];
 }
@@ -2061,7 +2088,18 @@ function checklistItem(workoutId: string, section: ChecklistItem['section'], exe
 }
 
 function checkedCount(workout: WorkoutDay) {
-  return checklistItems(workout).filter((item) => workout.itemCompletions?.[item.key]).length;
+  const items = checklistItems(workout);
+  if (workout.completed && !workout.itemCompletions) return items.length;
+  return items.filter((item) => itemIsDone(workout, item)).length;
+}
+
+function itemCompletionMap(items: ChecklistItem[], value: boolean) {
+  return Object.fromEntries(items.map((item) => [item.key, value]));
+}
+
+function itemIsDone(workout: WorkoutDay, item: ChecklistItem) {
+  if (workout.completed && !workout.itemCompletions) return true;
+  return Boolean(workout.itemCompletions?.[item.key]);
 }
 
 function ElbowNote({ value }: { value?: number }) {
