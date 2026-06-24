@@ -686,11 +686,16 @@ function Progress({
   currentWeek: number;
   refresh: () => void;
 }) {
-  const completionData = Array.from({ length: 24 }, (_, index) => {
+  const currentProgress = weeklyProgress(workouts, currentWeek);
+  const dailyRows = dailyProgressRows(workouts, currentWeek);
+  const weeklyRows = Array.from({ length: 24 }, (_, index) => {
     const week = index + 1;
     const progress = weeklyProgress(workouts, week);
-    return { label: `W${week}`, value: progress.completed, max: progress.total || 5 };
+    return { label: `W${week}`, value: progress.percent, detail: `${progress.completed}/${progress.total}` };
   });
+  const exerciseTotals = movementTotals(workouts);
+  const walkCount = exerciseTotals.find((row) => row.id === 'walking')?.count ?? 0;
+  const checkedItems = workouts.reduce((sum, workout) => sum + completedItemsForWorkout(workout), 0);
   const feelingRows = reflections
     .filter((reflection) => reflection.energy || reflection.sleep || reflection.soreness || reflection.mood)
     .map((reflection) => ({
@@ -702,46 +707,135 @@ function Progress({
     }));
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1fr_22rem]">
-      <section className="grid gap-4">
-        <section className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
+    <div className="grid min-w-0 max-w-full gap-4 overflow-x-hidden lg:grid-cols-[minmax(0,1fr)_22rem]">
+      <section className="grid min-w-0 gap-4">
+        <section className="min-w-0 overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
           <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-5">
-            <Pill icon={Heart} text="Feel first" />
-            <h2 className="mt-4 font-display text-3xl leading-tight tracking-[-0.01em]">No weigh-ins required.</h2>
+            <Pill icon={Heart} text="Proof, not pressure" />
+            <h2 className="mt-4 font-display text-3xl leading-tight tracking-[-0.01em]">Your progress is showing.</h2>
             <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-moon-muted/70">
-              This page is for energy, sleep, soreness, mood, and the quiet evidence that movement is becoming part of your life.
+              No weigh-ins. No measurements. Just the daily receipts: checked items, walks, and moves you keep coming back to.
             </p>
           </div>
         </section>
-        <FeelingChart title="Weekly consistency" rows={completionData} />
+
+        <div className="grid min-w-0 gap-3 sm:grid-cols-3">
+          <ProgressStat label="This week" value={`${currentProgress.percent}%`} detail={`${currentProgress.completed}/${currentProgress.total} items checked`} />
+          <ProgressStat label="All checkoffs" value={`${checkedItems}`} detail="Every small box counts." />
+          <ProgressStat label="Walks" value={`${walkCount}`} detail="Logged from walk items." />
+        </div>
+
+        <DailyCompletionChart rows={dailyRows} />
+        <MovementTotals rows={exerciseTotals} />
+        <WeeklyProgressChart rows={weeklyRows} />
         <FeelingTrend rows={feelingRows} />
       </section>
-      <aside className="grid gap-4 self-start">
+      <aside className="grid min-w-0 gap-4 self-start">
         <ReflectionForm currentWeek={currentWeek} reflections={reflections} refresh={refresh} />
       </aside>
     </div>
   );
 }
 
-function FeelingChart({ title, rows }: { title: string; rows: Array<{ label: string; value: number; max: number }> }) {
+function ProgressStat({ label, value, detail }: { label: string; value: string; detail: string }) {
   return (
-    <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
-      <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">{title}</h2>
-      <div className="mt-5 flex h-44 items-end gap-1.5 overflow-x-auto pb-2">
+    <div className="min-w-0 rounded-[2rem] border border-moon-border/40 bg-white p-4 shadow-soft">
+      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-moon-muted/50">{label}</p>
+      <p className="mt-2 font-display text-3xl leading-none tracking-[-0.01em]">{value}</p>
+      <p className="mt-2 text-[12px] leading-relaxed text-moon-muted/60">{detail}</p>
+    </div>
+  );
+}
+
+function DailyCompletionChart({ rows }: { rows: Array<{ label: string; type: string; value: number; completed: number; total: number }> }) {
+  return (
+    <section className="min-w-0 rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Daily completion</h2>
+          <p className="mt-1 text-[12px] leading-relaxed text-moon-muted/55">Percentage of each day’s checklist you’ve actually checked off.</p>
+        </div>
+      </div>
+      <div className="mt-5 grid grid-cols-7 items-end gap-1.5">
         {rows.map((row) => {
-          const height = row.max ? Math.max(5, Math.round((row.value / row.max) * 100)) : 5;
+          const height = row.total ? Math.max(6, row.value) : 0;
           return (
-            <div key={row.label} className="flex min-w-7 flex-1 flex-col items-center gap-2">
-              <div className="flex h-32 w-full items-end overflow-hidden rounded-full bg-moon-bg">
+            <div key={row.label} className="min-w-0">
+              <div className="flex h-32 items-end overflow-hidden rounded-full bg-moon-bg">
                 <div
                   className="w-full rounded-full bg-gradient-to-t from-moon-accent to-[#D4B8F0]/65 transition-all duration-700 ease-out"
                   style={{ height: `${height}%` }}
                 />
               </div>
-              <span className="text-[9px] font-bold text-moon-muted/40">{row.label}</span>
+              <div className="mt-2 text-center">
+                <p className="text-[9px] font-black uppercase tracking-[0.08em] text-moon-muted/45">{row.label}</p>
+                <p className="mt-0.5 text-[10px] font-bold text-moon-text">{row.value}%</p>
+              </div>
             </div>
           );
         })}
+      </div>
+      <div className="mt-4 grid gap-1.5">
+        {rows.map((row) => (
+          <div key={`${row.label}-detail`} className="flex min-w-0 items-center justify-between gap-3 rounded-xl bg-moon-bg/55 px-3 py-2">
+            <span className="min-w-0 truncate text-[12px] font-semibold">{row.label} · {row.type}</span>
+            <span className="shrink-0 text-[12px] font-bold text-moon-accent">{row.completed}/{row.total}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function MovementTotals({ rows }: { rows: Array<{ id: string; name: string; count: number }> }) {
+  const topRows = rows.slice(0, 8);
+  const max = Math.max(1, ...topRows.map((row) => row.count));
+
+  return (
+    <section className="min-w-0 rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
+      <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Moves you’ve done</h2>
+      <p className="mt-1 text-[12px] leading-relaxed text-moon-muted/55">Counts checked items, including walks and mobility.</p>
+      <div className="mt-4 grid gap-2">
+        {topRows.map((row) => (
+          <div key={row.id} className="min-w-0 rounded-2xl bg-moon-bg/55 p-3">
+            <div className="flex items-center justify-between gap-3">
+              <p className="min-w-0 truncate text-[13px] font-bold">{row.name}</p>
+              <p className="shrink-0 rounded-full bg-white px-2.5 py-1 text-[11px] font-black text-moon-accent">{row.count}</p>
+            </div>
+            <div className="mt-2 h-2 overflow-hidden rounded-full bg-white">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-moon-accent to-[#D4B8F0]/70"
+                style={{ width: `${Math.max(8, Math.round((row.count / max) * 100))}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+      {topRows.length === 0 && (
+        <p className="mt-4 rounded-2xl bg-moon-bg/55 p-4 text-[13px] leading-relaxed text-moon-muted/60">
+          Check off a few items and your most repeated moves will show up here.
+        </p>
+      )}
+    </section>
+  );
+}
+
+function WeeklyProgressChart({ rows }: { rows: Array<{ label: string; value: number; detail: string }> }) {
+  return (
+    <section className="min-w-0 rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
+      <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Program progress</h2>
+      <div className="no-scrollbar -mx-2 mt-5 flex max-w-[calc(100vw-2rem)] items-end gap-1.5 overflow-x-auto px-2 pb-2 sm:mx-0 sm:max-w-full sm:px-0">
+        {rows.map((row) => (
+          <div key={row.label} className="flex w-7 shrink-0 flex-col items-center gap-2">
+            <div className="flex h-28 w-full items-end overflow-hidden rounded-full bg-moon-bg">
+              <div
+                className="w-full rounded-full bg-gradient-to-t from-moon-accent to-[#D4B8F0]/65 transition-all duration-700 ease-out"
+                style={{ height: `${Math.max(5, row.value)}%` }}
+              />
+            </div>
+            <span className="text-[9px] font-bold text-moon-muted/40">{row.label}</span>
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -757,11 +851,11 @@ function FeelingTrend({ rows }: { rows: Array<{ label: string; energy?: number; 
   ];
 
   return (
-    <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
+    <section className="min-w-0 rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
       <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Latest check-in</h2>
       <div className="mt-4 grid gap-3 sm:grid-cols-4">
         {cards.map((card) => (
-          <div key={card.label} className="rounded-2xl bg-moon-bg/60 p-4">
+          <div key={card.label} className="min-w-0 rounded-2xl bg-moon-bg/60 p-4">
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-moon-muted/50">{card.label}</p>
             <p className="mt-2 font-display text-4xl leading-none">{card.value ?? '–'}</p>
           </div>
@@ -798,7 +892,7 @@ function ReflectionForm({ currentWeek, reflections, refresh }: { currentWeek: nu
     refresh();
   };
   return (
-    <div className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
+    <div className="min-w-0 rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
       <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Week {currentWeek} reflection</h2>
       <div className="mt-4 grid gap-3">
         <SliderInput label="Energy" value={energy} onChange={setEnergy} />
@@ -2091,6 +2185,44 @@ function checkedCount(workout: WorkoutDay) {
   const items = checklistItems(workout);
   if (workout.completed && !workout.itemCompletions) return items.length;
   return items.filter((item) => itemIsDone(workout, item)).length;
+}
+
+function dailyProgressRows(workouts: WorkoutDay[], week: number) {
+  return workouts
+    .filter((workout) => workout.week === week)
+    .map((workout) => {
+      const total = checklistItems(workout).length;
+      const completed = completedItemsForWorkout(workout);
+      return {
+        label: workout.day.slice(0, 3),
+        type: workout.type,
+        completed,
+        total,
+        value: total ? Math.round((completed / total) * 100) : 0
+      };
+    });
+}
+
+function completedItemsForWorkout(workout: WorkoutDay) {
+  return checkedCount(workout);
+}
+
+function movementTotals(workouts: WorkoutDay[]) {
+  const totals = new Map<string, { id: string; name: string; count: number }>();
+  workouts.forEach((workout) => {
+    checklistItems(workout).forEach((item) => {
+      if (!item.exerciseId || !itemIsDone(workout, item)) return;
+      const exercise = exerciseById.get(item.exerciseId);
+      const current = totals.get(item.exerciseId) ?? {
+        id: item.exerciseId,
+        name: exercise?.name ?? item.exerciseId,
+        count: 0
+      };
+      current.count += 1;
+      totals.set(item.exerciseId, current);
+    });
+  });
+  return Array.from(totals.values()).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 }
 
 function itemCompletionMap(items: ChecklistItem[], value: boolean) {
