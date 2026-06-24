@@ -815,10 +815,13 @@ function ReflectionForm({ currentWeek, reflections, refresh }: { currentWeek: nu
 type MealTag = 'high-protein' | 'quick' | 'cozy' | 'fresh' | 'comfort' | 'vegetarian' | 'budget' | 'no-cook' | 'meal-prep' | 'takeout';
 type CravingTag = 'savory' | 'cozy' | 'fresh' | 'pasta' | 'mexican' | 'chicken' | 'beef' | 'sweet' | 'light' | 'hungry' | 'comfort';
 
+type MealCategory = 'breakfast' | 'lunch' | 'dinner' | 'snack';
+
 type Meal = {
   id: string;
   name: string;
   emoji: string;
+  category: MealCategory;
   protein: number;
   calories: number;
   fullness: number;
@@ -835,18 +838,42 @@ type PlateItem = { id: string; name: string; emoji: string; protein: number; cal
 type Restaurant = { name: string; emoji: string; best: string; balanced: string; treat: string };
 
 const MEALS: Meal[] = [
-  { id: 'chicken-rice-bowl', name: 'Chicken Rice Bowl', emoji: '🍚', protein: 40, calories: 550, fullness: 5, prepTime: '20 min', bestFor: 'Good after a workout', portions: { protein: 'Palm of chicken', carbs: 'Fist of rice', veg: 'Two handfuls of veggies', fat: 'Thumb of avocado' }, proteinBoost: 'Add Greek yogurt sauce', swap: 'Use potatoes instead of rice', tags: ['high-protein', 'meal-prep'], cravings: ['savory', 'chicken', 'hungry'] },
-  { id: 'greek-yogurt-bowl', name: 'Greek Yogurt Parfait', emoji: '🫙', protein: 25, calories: 320, fullness: 3, prepTime: '5 min', bestFor: 'Quick breakfast or snack', portions: { protein: 'Palm-sized cup of yogurt', carbs: 'Cupped hand of granola', fruit: 'Cupped hand of berries' }, proteinBoost: 'Add a scoop of protein powder', swap: 'Use cottage cheese instead of yogurt', tags: ['high-protein', 'quick', 'no-cook', 'vegetarian'], cravings: ['sweet', 'light', 'fresh'] },
-  { id: 'salmon-sweet-potato', name: 'Salmon + Sweet Potato', emoji: '🐟', protein: 38, calories: 520, fullness: 5, prepTime: '25 min', bestFor: 'Recovery dinner', portions: { protein: 'Palm of salmon', carbs: 'Fist of sweet potato', veg: 'Two handfuls greens', fat: 'Thumb of olive oil' }, proteinBoost: 'Add a boiled egg on the side', swap: 'Use tilapia or shrimp instead', tags: ['high-protein', 'fresh'], cravings: ['savory', 'fresh', 'hungry'] },
-  { id: 'turkey-wrap', name: 'Turkey Avocado Wrap', emoji: '🌯', protein: 32, calories: 440, fullness: 4, prepTime: '10 min', bestFor: 'Quick lunch', portions: { protein: 'Palm of turkey', carbs: 'One tortilla wrap', veg: 'Two handfuls lettuce + tomato', fat: 'Thumb of avocado' }, proteinBoost: 'Add a side of cottage cheese', swap: 'Use a lettuce wrap instead of tortilla', tags: ['high-protein', 'quick', 'no-cook'], cravings: ['savory', 'fresh', 'hungry'] },
-  { id: 'egg-oatmeal', name: 'Eggs + Oatmeal', emoji: '🍳', protein: 28, calories: 420, fullness: 4, prepTime: '15 min', bestFor: 'Before a workout', portions: { protein: 'Two or three eggs', carbs: 'Fist of oatmeal', fruit: 'Cupped hand of fruit' }, proteinBoost: 'Add a protein shake on the side', swap: 'Replace oatmeal with toast', tags: ['high-protein', 'cozy', 'budget', 'vegetarian'], cravings: ['cozy', 'savory', 'hungry'] },
-  { id: 'pasta-chicken', name: 'Pasta with Chicken', emoji: '🍝', protein: 42, calories: 620, fullness: 5, prepTime: '25 min', bestFor: 'Big dinner or meal prep', portions: { protein: 'Palm of chicken', carbs: 'Fist of pasta', veg: 'Two handfuls spinach or broccoli', fat: 'Thumb of olive oil' }, proteinBoost: 'Add parmesan or cottage cheese sauce', swap: 'Use chickpea pasta for more protein', tags: ['high-protein', 'meal-prep', 'cozy', 'comfort'], cravings: ['pasta', 'cozy', 'comfort', 'hungry'] },
-  { id: 'beef-stir-fry', name: 'Beef Stir-Fry', emoji: '🥩', protein: 44, calories: 580, fullness: 5, prepTime: '20 min', bestFor: 'High-protein dinner', portions: { protein: 'Palm of lean beef', carbs: 'Fist of rice or noodles', veg: 'Two handfuls mixed veggies', fat: 'Thumb of sesame oil' }, proteinBoost: 'Add edamame on the side', swap: 'Use tofu or chicken instead', tags: ['high-protein', 'meal-prep'], cravings: ['beef', 'savory', 'hungry'] },
-  { id: 'burrito-bowl', name: 'Burrito Bowl', emoji: '🫕', protein: 38, calories: 560, fullness: 5, prepTime: '15 min', bestFor: 'Filling lunch or dinner', portions: { protein: 'Palm of chicken or beef', carbs: 'Fist of rice or beans', veg: 'Two handfuls peppers + lettuce', fat: 'Thumb of guacamole' }, proteinBoost: 'Double the protein, skip some rice', swap: 'Use cauliflower rice to lower carbs', tags: ['high-protein', 'meal-prep', 'takeout'], cravings: ['mexican', 'savory', 'hungry', 'comfort'] },
-  { id: 'cottage-cheese-toast', name: 'Cottage Cheese Toast', emoji: '🍞', protein: 22, calories: 290, fullness: 3, prepTime: '5 min', bestFor: 'Light breakfast or snack', portions: { protein: 'Palm of cottage cheese', carbs: 'Two slices of toast', fruit: 'Cupped hand of berries' }, proteinBoost: 'Add smoked salmon or a boiled egg', swap: 'Use ricotta instead', tags: ['quick', 'no-cook', 'vegetarian', 'budget'], cravings: ['fresh', 'light', 'sweet'] },
-  { id: 'shrimp-tacos', name: 'Shrimp Tacos', emoji: '🌮', protein: 33, calories: 460, fullness: 4, prepTime: '20 min', bestFor: 'Fun weeknight dinner', portions: { protein: 'Palm of shrimp', carbs: 'Two small tortillas', veg: 'Two handfuls slaw', fat: 'Thumb of sauce' }, proteinBoost: 'Add black beans or extra shrimp', swap: 'Use fish or chicken instead', tags: ['fresh', 'quick'], cravings: ['mexican', 'fresh', 'savory', 'light'] },
-  { id: 'tuna-salad', name: 'Tuna Salad Bowl', emoji: '🥗', protein: 36, calories: 380, fullness: 3, prepTime: '5 min', bestFor: 'Fast protein, no cooking', portions: { protein: 'Palm of tuna', veg: 'Two handfuls greens', fat: 'Thumb of olive oil or avocado', fruit: 'Cupped hand of cherry tomatoes' }, proteinBoost: 'Add a boiled egg or white beans', swap: 'Use salmon or chicken instead', tags: ['high-protein', 'quick', 'no-cook', 'fresh'], cravings: ['fresh', 'light', 'savory'] },
-  { id: 'turkey-chili', name: 'Turkey Chili', emoji: '🥣', protein: 40, calories: 490, fullness: 5, prepTime: '35 min', bestFor: 'Cozy meal prep', portions: { protein: 'Palm of turkey', carbs: 'Fist of beans', veg: 'Two handfuls peppers + tomatoes' }, proteinBoost: 'Top with Greek yogurt instead of sour cream', swap: 'Use ground beef or lentils', tags: ['high-protein', 'meal-prep', 'cozy', 'comfort', 'budget'], cravings: ['cozy', 'comfort', 'savory', 'hungry', 'beef'] },
+  // ── BREAKFAST ──
+  { id: 'egg-oatmeal', name: 'Eggs + Oatmeal', emoji: '🍳', category: 'breakfast', protein: 28, calories: 420, fullness: 4, prepTime: '15 min', bestFor: 'Before a workout', portions: { protein: 'Two or three eggs', carbs: 'Fist of oatmeal', fruit: 'Cupped hand of fruit' }, proteinBoost: 'Add a protein shake on the side', swap: 'Replace oatmeal with toast', tags: ['high-protein', 'cozy', 'budget', 'vegetarian'], cravings: ['cozy', 'savory', 'hungry'] },
+  { id: 'greek-yogurt-bowl', name: 'Greek Yogurt Parfait', emoji: '🫙', category: 'breakfast', protein: 25, calories: 320, fullness: 3, prepTime: '5 min', bestFor: 'Quick breakfast', portions: { protein: 'Palm-sized cup of yogurt', carbs: 'Cupped hand of granola', fruit: 'Cupped hand of berries' }, proteinBoost: 'Add a scoop of protein powder', swap: 'Use cottage cheese instead of yogurt', tags: ['high-protein', 'quick', 'no-cook', 'vegetarian'], cravings: ['sweet', 'light', 'fresh'] },
+  { id: 'cottage-cheese-toast', name: 'Cottage Cheese Toast', emoji: '🍞', category: 'breakfast', protein: 22, calories: 290, fullness: 3, prepTime: '5 min', bestFor: 'Light and quick start', portions: { protein: 'Palm of cottage cheese', carbs: 'Two slices of toast', fruit: 'Cupped hand of berries' }, proteinBoost: 'Add smoked salmon or a boiled egg', swap: 'Use ricotta instead', tags: ['quick', 'no-cook', 'vegetarian', 'budget'], cravings: ['fresh', 'light', 'sweet'] },
+  { id: 'avocado-toast-eggs', name: 'Avocado Toast + Eggs', emoji: '🥚', category: 'breakfast', protein: 24, calories: 420, fullness: 4, prepTime: '10 min', bestFor: 'Relaxed weekend breakfast', portions: { protein: 'Two eggs', carbs: 'Two slices of toast', fat: 'Thumb of avocado', fruit: 'Cupped hand of cherry tomatoes' }, proteinBoost: 'Add smoked salmon or an extra egg', swap: 'Use cottage cheese instead of avocado', tags: ['fresh', 'quick', 'vegetarian'], cravings: ['savory', 'fresh', 'light'] },
+  { id: 'overnight-oats', name: 'Overnight Oats', emoji: '🌾', category: 'breakfast', protein: 22, calories: 380, fullness: 4, prepTime: '5 min + overnight', bestFor: 'Grab-and-go morning', portions: { protein: 'Palm-sized scoop of protein powder', carbs: 'Fist of oats', fruit: 'Cupped hand of berries', fat: 'Thumb of nut butter' }, proteinBoost: 'Spoon Greek yogurt on top', swap: 'Use chia seeds instead of oats', tags: ['high-protein', 'meal-prep', 'vegetarian', 'budget', 'no-cook'], cravings: ['sweet', 'cozy', 'fresh'] },
+  { id: 'protein-smoothie', name: 'Protein Smoothie', emoji: '🥤', category: 'breakfast', protein: 30, calories: 350, fullness: 3, prepTime: '5 min', bestFor: 'Quick breakfast on the go', portions: { protein: 'One scoop protein powder', carbs: 'Cupped hand of frozen banana', fruit: 'Cupped hand of berries', fat: 'Thumb of nut butter' }, proteinBoost: 'Blend in Greek yogurt or cottage cheese', swap: 'Use collagen peptides instead of protein powder', tags: ['high-protein', 'quick', 'no-cook', 'vegetarian', 'budget'], cravings: ['sweet', 'light', 'fresh'] },
+  { id: 'breakfast-burrito', name: 'Breakfast Burrito', emoji: '🌯', category: 'breakfast', protein: 34, calories: 520, fullness: 5, prepTime: '15 min', bestFor: 'Before a long day', portions: { protein: 'Three eggs + palm of turkey sausage', carbs: 'One large tortilla', veg: 'Two handfuls peppers and onion', fat: 'Thumb of cheese' }, proteinBoost: 'Add black beans inside', swap: 'Use a lettuce wrap for lower carbs', tags: ['high-protein', 'comfort', 'cozy'], cravings: ['savory', 'comfort', 'hungry', 'mexican'] },
+
+  // ── LUNCH ──
+  { id: 'turkey-wrap', name: 'Turkey Avocado Wrap', emoji: '🌯', category: 'lunch', protein: 32, calories: 440, fullness: 4, prepTime: '10 min', bestFor: 'Quick lunch', portions: { protein: 'Palm of turkey', carbs: 'One tortilla wrap', veg: 'Two handfuls lettuce + tomato', fat: 'Thumb of avocado' }, proteinBoost: 'Add a side of cottage cheese', swap: 'Use a lettuce wrap instead of tortilla', tags: ['high-protein', 'quick', 'no-cook'], cravings: ['savory', 'fresh', 'hungry'] },
+  { id: 'tuna-salad', name: 'Tuna Salad Bowl', emoji: '🥗', category: 'lunch', protein: 36, calories: 380, fullness: 3, prepTime: '5 min', bestFor: 'Fast protein, no cooking', portions: { protein: 'Palm of tuna', veg: 'Two handfuls greens', fat: 'Thumb of olive oil or avocado', fruit: 'Cupped hand of cherry tomatoes' }, proteinBoost: 'Add a boiled egg or white beans', swap: 'Use salmon or chicken instead', tags: ['high-protein', 'quick', 'no-cook', 'fresh'], cravings: ['fresh', 'light', 'savory'] },
+  { id: 'burrito-bowl', name: 'Burrito Bowl', emoji: '🫕', category: 'lunch', protein: 38, calories: 560, fullness: 5, prepTime: '15 min', bestFor: 'Filling lunch', portions: { protein: 'Palm of chicken or beef', carbs: 'Fist of rice or beans', veg: 'Two handfuls peppers + lettuce', fat: 'Thumb of guacamole' }, proteinBoost: 'Double the protein, skip some rice', swap: 'Use cauliflower rice to lower carbs', tags: ['high-protein', 'meal-prep', 'takeout'], cravings: ['mexican', 'savory', 'hungry', 'comfort'] },
+  { id: 'chicken-caesar', name: 'Chicken Caesar Salad', emoji: '🥗', category: 'lunch', protein: 38, calories: 430, fullness: 4, prepTime: '10 min', bestFor: 'Light but filling lunch', portions: { protein: 'Palm of grilled chicken', veg: 'Two handfuls romaine', carbs: 'Cupped hand of croutons', fat: 'Thumb of dressing' }, proteinBoost: 'Add a boiled egg or extra chicken', swap: 'Skip croutons, add chickpeas', tags: ['high-protein', 'fresh', 'quick'], cravings: ['fresh', 'savory', 'light', 'chicken'] },
+  { id: 'turkey-soup', name: 'Turkey Veggie Soup', emoji: '🍲', category: 'lunch', protein: 30, calories: 320, fullness: 4, prepTime: '30 min', bestFor: 'Cozy and light', portions: { protein: 'Palm of turkey or chicken', veg: 'Two handfuls mixed veggies', carbs: 'Fist of beans or barley' }, proteinBoost: 'Add a boiled egg on the side', swap: 'Use lentils instead of turkey', tags: ['cozy', 'meal-prep', 'budget', 'comfort'], cravings: ['cozy', 'savory', 'light', 'comfort'] },
+  { id: 'protein-sandwich', name: 'Turkey Club Sandwich', emoji: '🥪', category: 'lunch', protein: 35, calories: 480, fullness: 4, prepTime: '10 min', bestFor: 'Classic quick lunch', portions: { protein: 'Palm of turkey + two slices of bacon', carbs: 'Two slices whole grain bread', veg: 'Two handfuls lettuce + tomato', fat: 'Thumb of avocado or mayo' }, proteinBoost: 'Add string cheese or a cottage cheese side', swap: 'Use a lettuce wrap for lower carbs', tags: ['high-protein', 'quick', 'no-cook'], cravings: ['savory', 'hungry', 'fresh'] },
+  { id: 'grain-bowl', name: 'Falafel Grain Bowl', emoji: '🫙', category: 'lunch', protein: 22, calories: 490, fullness: 4, prepTime: '15 min', bestFor: 'Plant-based and filling', portions: { protein: 'Palm of falafel or chickpeas', carbs: 'Fist of quinoa or farro', veg: 'Two handfuls cucumber + tomato + greens', fat: 'Thumb of hummus or tahini' }, proteinBoost: 'Add Greek yogurt sauce or a soft egg', swap: 'Add grilled chicken for more protein', tags: ['vegetarian', 'fresh', 'meal-prep'], cravings: ['fresh', 'savory', 'light'] },
+
+  // ── DINNER ──
+  { id: 'chicken-rice-bowl', name: 'Chicken Rice Bowl', emoji: '🍚', category: 'dinner', protein: 40, calories: 550, fullness: 5, prepTime: '20 min', bestFor: 'Good after a workout', portions: { protein: 'Palm of chicken', carbs: 'Fist of rice', veg: 'Two handfuls of veggies', fat: 'Thumb of avocado' }, proteinBoost: 'Add Greek yogurt sauce', swap: 'Use potatoes instead of rice', tags: ['high-protein', 'meal-prep'], cravings: ['savory', 'chicken', 'hungry'] },
+  { id: 'salmon-sweet-potato', name: 'Salmon + Sweet Potato', emoji: '🐟', category: 'dinner', protein: 38, calories: 520, fullness: 5, prepTime: '25 min', bestFor: 'Recovery dinner', portions: { protein: 'Palm of salmon', carbs: 'Fist of sweet potato', veg: 'Two handfuls greens', fat: 'Thumb of olive oil' }, proteinBoost: 'Add a boiled egg on the side', swap: 'Use tilapia or shrimp instead', tags: ['high-protein', 'fresh'], cravings: ['savory', 'fresh', 'hungry'] },
+  { id: 'pasta-chicken', name: 'Pasta with Chicken', emoji: '🍝', category: 'dinner', protein: 42, calories: 620, fullness: 5, prepTime: '25 min', bestFor: 'Big dinner or meal prep', portions: { protein: 'Palm of chicken', carbs: 'Fist of pasta', veg: 'Two handfuls spinach or broccoli', fat: 'Thumb of olive oil' }, proteinBoost: 'Add parmesan or cottage cheese sauce', swap: 'Use chickpea pasta for more protein', tags: ['high-protein', 'meal-prep', 'cozy', 'comfort'], cravings: ['pasta', 'cozy', 'comfort', 'hungry'] },
+  { id: 'beef-stir-fry', name: 'Beef Stir-Fry', emoji: '🥩', category: 'dinner', protein: 44, calories: 580, fullness: 5, prepTime: '20 min', bestFor: 'High-protein weeknight dinner', portions: { protein: 'Palm of lean beef', carbs: 'Fist of rice or noodles', veg: 'Two handfuls mixed veggies', fat: 'Thumb of sesame oil' }, proteinBoost: 'Add edamame on the side', swap: 'Use tofu or chicken instead', tags: ['high-protein', 'meal-prep'], cravings: ['beef', 'savory', 'hungry'] },
+  { id: 'shrimp-tacos', name: 'Shrimp Tacos', emoji: '🌮', category: 'dinner', protein: 33, calories: 460, fullness: 4, prepTime: '20 min', bestFor: 'Fun weeknight dinner', portions: { protein: 'Palm of shrimp', carbs: 'Two small tortillas', veg: 'Two handfuls slaw', fat: 'Thumb of sauce' }, proteinBoost: 'Add black beans or extra shrimp', swap: 'Use fish or chicken instead', tags: ['fresh', 'quick'], cravings: ['mexican', 'fresh', 'savory', 'light'] },
+  { id: 'turkey-chili', name: 'Turkey Chili', emoji: '🥣', category: 'dinner', protein: 40, calories: 490, fullness: 5, prepTime: '35 min', bestFor: 'Cozy meal prep dinner', portions: { protein: 'Palm of turkey', carbs: 'Fist of beans', veg: 'Two handfuls peppers + tomatoes' }, proteinBoost: 'Top with Greek yogurt instead of sour cream', swap: 'Use ground beef or lentils', tags: ['high-protein', 'meal-prep', 'cozy', 'comfort', 'budget'], cravings: ['cozy', 'comfort', 'savory', 'hungry', 'beef'] },
+  { id: 'steak-veggies', name: 'Steak + Roasted Veggies', emoji: '🥩', category: 'dinner', protein: 48, calories: 560, fullness: 5, prepTime: '25 min', bestFor: 'High-protein dinner', portions: { protein: 'Palm of lean steak', veg: 'Two handfuls roasted veggies', fat: 'Thumb of butter or olive oil', carbs: 'Fist of potatoes (optional)' }, proteinBoost: 'Add a side salad with cottage cheese dressing', swap: 'Use chicken thighs instead', tags: ['high-protein', 'comfort'], cravings: ['beef', 'savory', 'hungry', 'cozy'] },
+  { id: 'lemon-chicken', name: 'Lemon Herb Chicken', emoji: '🍋', category: 'dinner', protein: 40, calories: 420, fullness: 4, prepTime: '25 min', bestFor: 'Clean and satisfying dinner', portions: { protein: 'Palm of chicken breast', veg: 'Two handfuls asparagus or zucchini', fat: 'Thumb of olive oil', carbs: 'Fist of rice or quinoa' }, proteinBoost: 'Add a Greek yogurt dipping sauce', swap: 'Use pork tenderloin instead', tags: ['high-protein', 'fresh', 'meal-prep'], cravings: ['fresh', 'savory', 'chicken', 'light'] },
+  { id: 'sheet-pan-salmon', name: 'Sheet Pan Salmon', emoji: '🐠', category: 'dinner', protein: 36, calories: 480, fullness: 5, prepTime: '30 min', bestFor: 'Easy hands-off dinner', portions: { protein: 'Palm of salmon', veg: 'Two handfuls broccoli or green beans', fat: 'Thumb of olive oil', carbs: 'Fist of potatoes or rice' }, proteinBoost: 'Add a soft-boiled egg on the side', swap: 'Use chicken thighs instead', tags: ['high-protein', 'fresh', 'meal-prep'], cravings: ['fresh', 'savory', 'hungry'] },
+
+  // ── SNACKS ──
+  { id: 'apple-pb', name: 'Apple + Peanut Butter', emoji: '🍎', category: 'snack', protein: 8, calories: 220, fullness: 2, prepTime: '2 min', bestFor: 'Between meals or pre-workout', portions: { fruit: 'One apple', fat: 'Thumb of peanut butter' }, proteinBoost: 'Add string cheese or Greek yogurt on the side', swap: 'Use almond butter or sunflower butter', tags: ['quick', 'no-cook', 'vegetarian', 'budget', 'fresh'], cravings: ['sweet', 'light', 'fresh'] },
+  { id: 'protein-shake', name: 'Protein Shake', emoji: '🥛', category: 'snack', protein: 30, calories: 220, fullness: 2, prepTime: '3 min', bestFor: 'Right after a workout', portions: { protein: 'One scoop protein powder', fruit: 'Cupped hand of frozen fruit (optional)' }, proteinBoost: 'Blend with Greek yogurt for extra protein', swap: 'Use collagen peptides instead', tags: ['high-protein', 'quick', 'no-cook', 'budget'], cravings: ['sweet', 'light'] },
+  { id: 'hummus-veggies', name: 'Hummus + Veggies', emoji: '🥕', category: 'snack', protein: 8, calories: 180, fullness: 2, prepTime: '2 min', bestFor: 'Light snack, no prep needed', portions: { protein: 'Palm of hummus', veg: 'Two handfuls carrots, cucumber, peppers' }, proteinBoost: 'Add a hard-boiled egg or string cheese', swap: 'Use Greek yogurt dip instead of hummus', tags: ['quick', 'no-cook', 'vegetarian', 'fresh', 'budget'], cravings: ['fresh', 'light', 'savory'] },
+  { id: 'cottage-cheese-fruit', name: 'Cottage Cheese + Fruit', emoji: '🍑', category: 'snack', protein: 24, calories: 240, fullness: 3, prepTime: '2 min', bestFor: 'High-protein snack', portions: { protein: 'Palm-sized cup of cottage cheese', fruit: 'Cupped hand of fruit' }, proteinBoost: 'Add a drizzle of honey and some nuts', swap: 'Use Greek yogurt instead', tags: ['high-protein', 'quick', 'no-cook', 'vegetarian', 'budget'], cravings: ['sweet', 'light', 'fresh'] },
+  { id: 'edamame-cheese', name: 'Edamame + String Cheese', emoji: '🫛', category: 'snack', protein: 18, calories: 200, fullness: 2, prepTime: '5 min', bestFor: 'Satisfying between-meal snack', portions: { protein: 'Two string cheeses + palm of edamame' }, proteinBoost: 'Add a boiled egg', swap: 'Use roasted chickpeas instead of edamame', tags: ['high-protein', 'quick', 'vegetarian', 'no-cook'], cravings: ['savory', 'light'] },
+  { id: 'trail-mix', name: 'DIY Trail Mix', emoji: '🥜', category: 'snack', protein: 10, calories: 250, fullness: 2, prepTime: '2 min', bestFor: 'On the go or desk snack', portions: { fat: 'Thumb of mixed nuts', fruit: 'Cupped hand of dried fruit or dark chocolate chips', protein: 'Small handful of pumpkin seeds' }, proteinBoost: 'Add protein granola or roasted chickpeas', swap: 'Skip dried fruit, use dark chocolate chips only', tags: ['quick', 'no-cook', 'vegetarian', 'budget'], cravings: ['sweet', 'light'] },
 ];
 
 const PLATE_PROTEINS: PlateItem[] = [
@@ -946,6 +973,7 @@ const PORTION_LABELS: Record<string, string> = {
 };
 
 function Nutrition() {
+  const [activeCategory, setActiveCategory] = useState<MealCategory | 'all'>('all');
   const [activeFilter, setActiveFilter] = useState<MealTag | null>(null);
   const [activeCraving, setActiveCraving] = useState<CravingTag | null>(null);
   const [expandedMeal, setExpandedMeal] = useState<string | null>(null);
@@ -957,6 +985,7 @@ function Nutrition() {
   const [plateExtra, setPlateExtra] = useState<PlateItem | null>(null);
 
   const filteredMeals = MEALS.filter((meal) => {
+    if (activeCategory !== 'all' && meal.category !== activeCategory) return false;
     if (activeFilter && !meal.tags.includes(activeFilter)) return false;
     if (activeCraving && !meal.cravings.includes(activeCraving)) return false;
     return true;
@@ -1005,6 +1034,24 @@ function Nutrition() {
 
       {activeTab === 'browse' && (
         <>
+          {/* Meal-time category filter */}
+          <div className="flex gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {(['all', 'breakfast', 'lunch', 'dinner', 'snack'] as const).map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setActiveCategory(cat)}
+                className={`no-active-scale min-h-11 shrink-0 rounded-2xl border px-4 text-[13px] font-semibold transition-all duration-200 ${
+                  activeCategory === cat
+                    ? 'border-moon-text bg-moon-text text-white'
+                    : 'border-moon-border/40 bg-white text-moon-muted/70'
+                }`}
+              >
+                {cat === 'all' ? 'All' : cat.charAt(0).toUpperCase() + cat.slice(1)}
+              </button>
+            ))}
+          </div>
+
           <section>
             <h2 className="font-display text-xl leading-tight tracking-[-0.01em] sm:text-2xl">What are you craving?</h2>
             <div className="mt-2.5 flex gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -1028,13 +1075,13 @@ function Nutrition() {
 
           <section>
             <h2 className="font-display text-xl leading-tight tracking-[-0.01em] sm:text-2xl">Browse by</h2>
-            <div className="mt-2.5 flex flex-wrap gap-2">
+            <div className="mt-2.5 flex gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {FILTER_TAGS.map((tag) => (
                 <button
                   key={tag.id}
                   type="button"
                   onClick={() => { setActiveFilter(activeFilter === tag.id ? null : tag.id); setActiveCraving(null); }}
-                  className={`no-active-scale flex min-h-11 items-center gap-1.5 rounded-2xl border px-3.5 text-[12px] font-semibold transition-all duration-200 ${
+                  className={`no-active-scale flex min-h-11 shrink-0 items-center gap-1.5 rounded-2xl border px-3.5 text-[12px] font-semibold transition-all duration-200 ${
                     activeFilter === tag.id
                       ? 'border-moon-accent bg-moon-accent text-white'
                       : 'border-moon-border/40 bg-white text-moon-muted/70'
@@ -1048,31 +1095,10 @@ function Nutrition() {
           </section>
 
           <section>
-            {(activeFilter || activeCraving) && (
-              <p className="mb-2 text-[13px] text-moon-muted/55">
-                {filteredMeals.length} idea{filteredMeals.length !== 1 ? 's' : ''} found
-              </p>
-            )}
-            {/* Mobile: horizontal swipe carousel */}
-            <div className="flex gap-3 overflow-x-auto pb-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:hidden">
-              {filteredMeals.map((meal) => (
-                <div key={meal.id} className="w-[300px] shrink-0">
-                  <MealCard
-                    meal={meal}
-                    expanded={expandedMeal === meal.id}
-                    onToggle={() => setExpandedMeal(expandedMeal === meal.id ? null : meal.id)}
-                  />
-                </div>
-              ))}
-              {filteredMeals.length === 0 && (
-                <div className="w-full rounded-[2rem] border border-moon-border/35 bg-moon-surface/40 p-8 text-center">
-                  <p className="font-display text-xl">No matches</p>
-                  <p className="mt-2 text-[13px] text-moon-muted/60">Try a different filter or craving.</p>
-                </div>
-              )}
-            </div>
-            {/* Desktop: grid */}
-            <div className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
+            <p className="mb-3 text-[12px] text-moon-muted/50">
+              {filteredMeals.length} idea{filteredMeals.length !== 1 ? 's' : ''}
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {filteredMeals.map((meal) => (
                 <MealCard
                   key={meal.id}
