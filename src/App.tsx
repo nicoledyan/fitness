@@ -446,13 +446,13 @@ function WorkoutDetail({ workout, refresh, onClose }: { workout: WorkoutDay; ref
 
   return (
     <div
-      className="fixed inset-0 z-50 grid place-items-end bg-[#2B2232]/28 p-2 backdrop-blur-sm sm:place-items-center"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-[#2B2232]/28 p-2 backdrop-blur-sm sm:items-center"
       role="dialog"
       aria-modal="true"
       aria-label={`${workout.day} ${workout.type}`}
     >
       <div
-        className="max-h-[94vh] w-full max-w-3xl overflow-y-auto rounded-t-[2rem] border border-moon-border/30 bg-[#FFFCF4] sm:rounded-[2rem]"
+        className="max-h-[94dvh] w-full max-w-3xl overflow-y-auto rounded-t-[2rem] border border-moon-border/30 bg-[#FFFCF4] sm:rounded-[2rem]"
         style={{ boxShadow: '0 -24px 80px rgba(71, 44, 89, 0.16)' }}
       >
         <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-5 sm:p-6">
@@ -624,13 +624,13 @@ function ExerciseLibrary() {
 function ExerciseModal({ exercise, onClose }: { exercise: Exercise; onClose: () => void }) {
   return (
     <div
-      className="fixed inset-0 z-50 grid place-items-end bg-[#1D1424]/38 p-3 backdrop-blur-sm sm:place-items-center"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-[#1D1424]/38 p-3 backdrop-blur-sm sm:items-center"
       role="dialog"
       aria-modal="true"
       aria-label={exercise.name}
     >
       <div
-        className="max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-[2rem] border border-moon-border/30 bg-white"
+        className="max-h-[88dvh] w-full max-w-2xl overflow-y-auto rounded-[2rem] border border-moon-border/30 bg-white"
         style={{ boxShadow: '0 32px 80px rgba(71, 44, 89, 0.18)' }}
       >
         <div className="bg-gradient-to-br from-[#F4EAFF] to-[#EDE0FA]/60 p-5">
@@ -2051,16 +2051,17 @@ function checklistItems(workout: WorkoutDay): ChecklistItem[] {
     return [{ key: `${workout.id}-rest`, label: 'Complete rest day', section: 'Rest' }];
   }
   return [
-    ...(workout.warmUp ?? []).map((id, index) => checklistItem(workout.id, 'Warm-up', id, index)),
-    ...workout.exercises.map((id, index) => checklistItem(workout.id, 'Workout', id, index)),
-    ...(workout.coolDown ?? []).map((id, index) => checklistItem(workout.id, 'Cool-down', id, index))
+    ...(workout.warmUp ?? []).map((id, index) => checklistItem(workout.id, 'Warm-up', id, index, workout.warmUpPrescriptions?.[index])),
+    ...workout.exercises.map((id, index) => checklistItem(workout.id, 'Workout', id, index, workout.workoutPrescriptions?.[index])),
+    ...(workout.coolDown ?? []).map((id, index) => checklistItem(workout.id, 'Cool-down', id, index, workout.coolDownPrescriptions?.[index]))
   ];
 }
 
-function checklistItem(workoutId: string, section: ChecklistItem['section'], exerciseId: string, index: number): ChecklistItem {
+function checklistItem(workoutId: string, section: ChecklistItem['section'], exerciseId: string, index: number, prescription?: string): ChecklistItem {
+  const name = exerciseById.get(exerciseId)?.name ?? exerciseId;
   return {
     key: `${workoutId}-${section.toLowerCase()}-${index}-${exerciseId}`,
-    label: exerciseById.get(exerciseId)?.name ?? exerciseId,
+    label: prescription ? `${name} — ${prescription}` : name,
     section,
     exerciseId
   };
