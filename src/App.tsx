@@ -58,7 +58,7 @@ export default function App() {
     <div className="min-h-screen">
       <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 pb-28 pt-6 text-moon-text sm:px-6 lg:pb-8">
         <Header route={route} />
-        <main className="mt-6 flex-1">
+        <main className="mt-6 min-w-0 flex-1 overflow-x-hidden">
           {route === 'dashboard' && <Dashboard {...data} currentWeek={week} openWorkout={setActiveWorkoutId} />}
           {route === 'plan' && <Plan workouts={data.workouts} currentWeek={week} refresh={data.refresh} openWorkout={setActiveWorkoutId} />}
           {route === 'exercises' && <ExerciseLibrary />}
