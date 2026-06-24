@@ -55,8 +55,8 @@ export default function App() {
   }, []);
 
   return (
-    <div className={data.settings.darkMode ? 'dark min-h-screen' : 'min-h-screen'}>
-      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 pb-28 pt-6 text-moon-text dark:text-[#FFF8FD] sm:px-6 lg:pb-8">
+    <div className="min-h-screen">
+      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 pb-28 pt-6 text-moon-text sm:px-6 lg:pb-8">
         <Header route={route} />
         <main className="mt-6 flex-1">
           {route === 'dashboard' && <Dashboard {...data} currentWeek={week} openWorkout={setActiveWorkoutId} />}
@@ -90,7 +90,7 @@ function Header({ route }: { route: Route }) {
   return (
     <header className="flex items-start justify-between gap-4">
       <div>
-        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-moon-muted/60 dark:text-[#EADDF7]/50">
+        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-moon-muted/60">
           <Moon size={13} aria-hidden="true" />
           <span>Grow Strong</span>
           <span className="opacity-30">·</span>
@@ -99,7 +99,7 @@ function Header({ route }: { route: Route }) {
         <h1 className="mt-2.5 font-display text-[2.6rem] leading-[1.08] tracking-[-0.01em] sm:text-5xl">
           {route === 'dashboard' ? 'Today' : titleForRoute(route)}
         </h1>
-        <p className="mt-2 text-[15px] leading-relaxed text-moon-muted/75 dark:text-[#EADDF7]/60">{subtitles[route]}</p>
+        <p className="mt-2 text-[15px] leading-relaxed text-moon-muted/75">{subtitles[route]}</p>
       </div>
     </header>
   );
@@ -107,7 +107,10 @@ function Header({ route }: { route: Route }) {
 
 function BottomNav({ route, setRoute }: { route: Route; setRoute: (route: Route) => void }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-moon-border/50 bg-[#FFFCF4]/93 px-2 pb-[env(safe-area-inset-bottom)] pt-1.5 backdrop-blur-xl dark:border-[#5B456B]/40 dark:bg-[#21182A]/93 lg:left-1/2 lg:max-w-3xl lg:-translate-x-1/2 lg:rounded-t-3xl lg:border-x" style={{ boxShadow: '0 -6px 32px rgba(71, 44, 89, 0.06)' }}>
+    <nav
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-moon-border/50 bg-[#FFFCF4]/93 px-2 pb-[env(safe-area-inset-bottom)] pt-1.5 backdrop-blur-xl lg:left-1/2 lg:max-w-3xl lg:-translate-x-1/2 lg:rounded-t-3xl lg:border-x"
+      style={{ boxShadow: '0 -6px 32px rgba(71, 44, 89, 0.06)' }}
+    >
       <div className="flex items-start justify-around">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -122,9 +125,7 @@ function BottomNav({ route, setRoute }: { route: Route; setRoute: (route: Route)
             >
               <span
                 className={`flex h-11 w-11 items-center justify-center rounded-2xl transition-all duration-200 ${
-                  active
-                    ? 'bg-moon-surface/80 text-[#8B6AAF] dark:bg-[#3A2A46]/80 dark:text-[#D4B8F0]'
-                    : 'text-moon-muted/45 dark:text-[#EADDF7]/35'
+                  active ? 'bg-moon-surface/80 text-[#8B6AAF]' : 'text-moon-muted/45'
                 }`}
                 style={active ? { boxShadow: '0 2px 12px rgba(191, 162, 220, 0.18)' } : undefined}
               >
@@ -132,7 +133,7 @@ function BottomNav({ route, setRoute }: { route: Route; setRoute: (route: Route)
               </span>
               <span
                 className={`text-[10px] font-semibold leading-none transition-colors duration-200 ${
-                  active ? 'text-[#8B6AAF] dark:text-[#D4B8F0]' : 'text-moon-muted/40 dark:text-[#EADDF7]/30'
+                  active ? 'text-[#8B6AAF]' : 'text-moon-muted/40'
                 }`}
               >
                 {item.label}
@@ -160,27 +161,26 @@ function Dashboard({
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1.25fr_0.75fr]">
-      {/* Today hero card */}
-      <section className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
-        <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-5 dark:from-[#2D2040] dark:via-[#3A2A46] dark:to-[#4A3558]/50">
+      <section className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
+        <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-5">
           <div className="flex items-center justify-between gap-3">
             <Pill icon={Sparkles} text={`Week ${currentWeek} · ${phase.name}`} />
             <ProgressRing percent={progress.percent} />
           </div>
           <h2 className="mt-4 font-display text-3xl leading-tight tracking-[-0.01em]">{today?.type ?? 'Plan loading'}</h2>
-          <p className="mt-1.5 text-[13px] leading-relaxed text-moon-muted/75 dark:text-[#EADDF7]/60">{today?.focus}</p>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-moon-muted/75">{today?.focus}</p>
         </div>
         {today && (
           <div className="p-5">
-            <div className="rounded-[1.5rem] border border-moon-border/35 bg-moon-bg/50 p-4 dark:border-[#5B456B]/25 dark:bg-[#1D1424]/60">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-moon-muted/55 dark:text-[#EADDF7]/40">{today.day}</p>
+            <div className="rounded-[1.5rem] border border-moon-border/35 bg-moon-bg/50 p-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-moon-muted/55">{today.day}</p>
               <p className="mt-2 text-[15px] font-semibold leading-snug">{today.setsReps}</p>
-              {today.effortTarget && <p className="mt-1.5 text-[13px] text-moon-muted/65 dark:text-[#EADDF7]/50">{today.effortTarget}</p>}
+              {today.effortTarget && <p className="mt-1.5 text-[13px] text-moon-muted/65">{today.effortTarget}</p>}
               <TodayItemList workout={today} refresh={refresh} />
               <button
                 type="button"
                 onClick={() => openWorkout(today.id)}
-                className="mt-4 min-h-12 w-full rounded-2xl bg-white/80 px-4 text-[13px] font-semibold text-moon-text transition hover:bg-white dark:bg-[#2A2033]/80 dark:text-[#FFF8FD] dark:hover:bg-[#2A2033]"
+                className="mt-4 min-h-12 w-full rounded-2xl bg-white/80 px-4 text-[13px] font-semibold text-moon-text transition hover:bg-white"
                 style={{ boxShadow: '0 2px 10px rgba(71, 44, 89, 0.06)' }}
               >
                 Notes, pain, and details
@@ -190,19 +190,18 @@ function Dashboard({
         )}
       </section>
 
-      {/* Sidebar */}
       <section className="grid gap-4">
         <MetricCard icon={Flame} label="Streak" value={`${streak} day${streak === 1 ? '' : 's'}`} detail="Today's win does not have to be dramatic." />
         <MetricCard icon={Activity} label="This week" value={`${progress.completed}/${progress.total}`} detail="A checked-off day means you showed up in some real way." />
-        <div className="rounded-[2rem] border border-moon-border/35 bg-moon-surface/60 p-5 shadow-soft dark:border-[#5B456B]/35 dark:bg-[#3A2A46]/60">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-moon-muted/55 dark:text-[#EADDF7]/40">Next action</p>
+        <div className="rounded-[2rem] border border-moon-border/35 bg-moon-surface/60 p-5 shadow-soft">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-moon-muted/55">Next action</p>
           <h3 className="mt-2.5 text-[17px] font-bold leading-snug">
             {progress.percent === 100 ? 'Let recovery do its work.' : today?.completed ? 'Write how it felt.' : 'Pick one item that feels doable.'}
           </h3>
-          <p className="mt-2 text-[13px] leading-relaxed text-moon-muted/60 dark:text-[#F3E9FB]/50">No sharp elbow pain. We are building strength, not collecting injuries.</p>
+          <p className="mt-2 text-[13px] leading-relaxed text-moon-muted/60">No sharp elbow pain. We are building strength, not collecting injuries.</p>
         </div>
         {milestone && (
-          <div className="rounded-[2rem] border border-moon-border/35 bg-white p-5 shadow-soft dark:border-[#5B456B]/35 dark:bg-[#2A2033]">
+          <div className="rounded-[2rem] border border-moon-border/35 bg-white p-5 shadow-soft">
             <Pill icon={Moon} text="Milestone earned" />
             <h3 className="mt-3 font-display text-2xl leading-tight">{milestone.label}</h3>
           </div>
@@ -230,8 +229,8 @@ function Plan({
 
   return (
     <div className="grid gap-4 lg:grid-cols-[20rem_1fr]">
-      <aside className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033] lg:sticky lg:top-4 lg:self-start">
-        <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-moon-muted/55 dark:text-[#EADDF7]/45" htmlFor="week-select">
+      <aside className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft lg:sticky lg:top-4 lg:self-start">
+        <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-moon-muted/55" htmlFor="week-select">
           Week
         </label>
         <div className="relative mt-2">
@@ -239,7 +238,7 @@ function Plan({
             id="week-select"
             value={week}
             onChange={(event) => setWeek(Number(event.target.value))}
-            className="min-h-12 w-full appearance-none rounded-2xl border border-moon-border/40 bg-moon-bg px-4 text-[15px] font-semibold dark:border-[#5B456B]/40 dark:bg-[#1D1424]"
+            className="min-h-12 w-full appearance-none rounded-2xl border border-moon-border/40 bg-moon-bg px-4 text-[15px] font-semibold"
           >
             {Array.from({ length: 24 }, (_, index) => index + 1).map((weekNumber) => (
               <option key={weekNumber} value={weekNumber}>
@@ -253,7 +252,7 @@ function Plan({
           <ProgressRing percent={progress.percent} />
           <div className="min-w-0">
             <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">{phase.name}</h2>
-            <p className="mt-1 text-[13px] leading-relaxed text-moon-muted/65 dark:text-[#EADDF7]/50">{phase.focus}</p>
+            <p className="mt-1 text-[13px] leading-relaxed text-moon-muted/65">{phase.focus}</p>
           </div>
         </div>
       </aside>
@@ -273,13 +272,13 @@ function WorkoutCard({ workout, refresh, openWorkout }: { workout: WorkoutDay; r
   };
 
   return (
-    <article className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft transition-shadow duration-200 hover:shadow-[0_20px_48px_rgba(71,44,89,0.11)] dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+    <article className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft transition-shadow duration-200 hover:shadow-[0_20px_48px_rgba(71,44,89,0.11)]">
       <div className="flex items-start justify-between gap-3">
         <button type="button" onClick={() => openWorkout(workout.id)} className="no-active-scale min-w-0 flex-1 text-left">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-moon-muted/50 dark:text-[#EADDF7]/40">{workout.day}</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-moon-muted/50">{workout.day}</p>
           <h3 className="mt-1.5 font-display text-2xl leading-tight tracking-[-0.01em]">{workout.type}</h3>
-          <p className="mt-1.5 text-[13px] leading-relaxed text-moon-muted/65 dark:text-[#EADDF7]/55">{workout.focus}</p>
-          <p className="mt-3 text-[11px] font-semibold text-moon-muted/45 dark:text-[#EADDF7]/35">
+          <p className="mt-1.5 text-[13px] leading-relaxed text-moon-muted/65">{workout.focus}</p>
+          <p className="mt-3 text-[11px] font-semibold text-moon-muted/45">
             {checkedCount(workout)} of {checklistItems(workout).length} done
           </p>
         </button>
@@ -289,7 +288,7 @@ function WorkoutCard({ workout, refresh, openWorkout }: { workout: WorkoutDay; r
           className={`no-active-scale grid h-12 w-12 shrink-0 place-items-center rounded-2xl transition-all duration-200 ${
             workout.completed
               ? 'bg-moon-accent text-white'
-              : 'border border-moon-border/55 bg-moon-bg text-transparent dark:border-[#5B456B]/45 dark:bg-[#1D1424]'
+              : 'border border-moon-border/55 bg-moon-bg text-transparent'
           }`}
           style={workout.completed ? { boxShadow: '0 4px 16px rgba(191, 162, 220, 0.42)' } : undefined}
           aria-label={workout.completed ? 'Mark incomplete' : 'Mark complete'}
@@ -300,10 +299,10 @@ function WorkoutCard({ workout, refresh, openWorkout }: { workout: WorkoutDay; r
       <button
         type="button"
         onClick={() => openWorkout(workout.id)}
-        className="no-active-scale mt-4 w-full rounded-2xl bg-moon-bg/60 p-4 text-left transition hover:bg-moon-bg dark:bg-[#1D1424]/60 dark:hover:bg-[#1D1424]"
+        className="no-active-scale mt-4 w-full rounded-2xl bg-moon-bg/60 p-4 text-left transition hover:bg-moon-bg"
       >
         <p className="text-[13px] font-semibold leading-snug">{workout.setsReps}</p>
-        <p className="mt-1.5 text-[11px] text-moon-muted/50 dark:text-[#EADDF7]/35">Tap for warm-up, item checkoffs, and instructions.</p>
+        <p className="mt-1.5 text-[11px] text-moon-muted/50">Tap for warm-up, item checkoffs, and instructions.</p>
       </button>
     </article>
   );
@@ -333,8 +332,8 @@ function ChecklistRow({
     <div
       className={`flex items-center gap-3 rounded-2xl border p-2.5 transition-all duration-200 ${
         done
-          ? 'border-moon-accent/20 bg-moon-surface/25 dark:border-[#BFA2DC]/15 dark:bg-[#3A2A46]/25'
-          : 'border-moon-border/35 bg-white/55 dark:border-[#5B456B]/25 dark:bg-[#2A2033]/50'
+          ? 'border-moon-accent/20 bg-moon-surface/25'
+          : 'border-moon-border/35 bg-white/55'
       }`}
     >
       <button
@@ -342,8 +341,8 @@ function ChecklistRow({
         onClick={onToggle}
         className={`no-active-scale grid h-10 w-10 shrink-0 place-items-center rounded-xl transition-all duration-200 ${
           done
-            ? 'bg-moon-accent text-white dark:bg-[#BFA2DC]'
-            : 'border border-moon-border/55 bg-white text-transparent dark:border-[#5B456B]/45 dark:bg-[#1D1424]'
+            ? 'bg-moon-accent text-white'
+            : 'border border-moon-border/55 bg-white text-transparent'
         }`}
         style={done ? { boxShadow: '0 2px 10px rgba(191, 162, 220, 0.38)' } : undefined}
         aria-label={done ? `Uncheck ${item.label}` : `Check off ${item.label}`}
@@ -358,12 +357,12 @@ function ChecklistRow({
       >
         <span
           className={`block text-[13px] font-semibold transition-all duration-200 ${
-            done ? 'text-moon-muted/45 line-through decoration-moon-accent/35 dark:text-[#EADDF7]/35' : ''
+            done ? 'text-moon-muted/45 line-through decoration-moon-accent/35' : ''
           }`}
         >
           {item.label}
         </span>
-        <span className="mt-0.5 block text-[11px] text-moon-muted/40 dark:text-[#EADDF7]/30">{item.section}</span>
+        <span className="mt-0.5 block text-[11px] text-moon-muted/40">{item.section}</span>
       </button>
     </div>
   );
@@ -387,12 +386,12 @@ function TodayItemList({ workout, refresh }: { workout: WorkoutDay; refresh: () 
   return (
     <div className="mt-4">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-moon-muted/55 dark:text-[#EADDF7]/40">Today's list</p>
-        <span className="rounded-full bg-white/70 px-2.5 py-1 text-[11px] font-bold text-moon-muted/60 dark:bg-[#2A2033]/70 dark:text-[#EADDF7]/45">
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-moon-muted/55">Today's list</p>
+        <span className="rounded-full bg-white/70 px-2.5 py-1 text-[11px] font-bold text-moon-muted/60">
           {checkedCount(workout)}/{items.length}
         </span>
       </div>
-      <p className="mt-1 text-[12px] leading-relaxed text-moon-muted/50 dark:text-[#EADDF7]/35">Pick anything when you feel like it. No required order.</p>
+      <p className="mt-1 text-[12px] leading-relaxed text-moon-muted/50">Pick anything when you feel like it. No required order.</p>
       <div className="mt-3 grid gap-2">
         {items.map((item) => {
           const done = Boolean(workout.itemCompletions?.[item.key]);
@@ -453,23 +452,22 @@ function WorkoutDetail({ workout, refresh, onClose }: { workout: WorkoutDay; ref
       aria-label={`${workout.day} ${workout.type}`}
     >
       <div
-        className="max-h-[94vh] w-full max-w-3xl overflow-y-auto rounded-t-[2rem] border border-moon-border/30 bg-[#FFFCF4] dark:border-[#5B456B]/30 dark:bg-[#21182A] sm:rounded-[2rem]"
+        className="max-h-[94vh] w-full max-w-3xl overflow-y-auto rounded-t-[2rem] border border-moon-border/30 bg-[#FFFCF4] sm:rounded-[2rem]"
         style={{ boxShadow: '0 -24px 80px rgba(71, 44, 89, 0.16)' }}
       >
-        {/* Gradient modal header */}
-        <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-5 dark:from-[#2D2040] dark:via-[#3A2A46] dark:to-[#4A3558]/50 sm:p-6">
+        <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-5 sm:p-6">
           <div className="flex items-start justify-between gap-3">
             <div>
               <Pill icon={Sparkles} text={`Week ${workout.week} · ${workout.phase}`} />
               <h2 className="mt-3 font-display text-3xl leading-tight tracking-[-0.01em] sm:text-4xl">{workout.type}</h2>
-              <p className="mt-1.5 text-[13px] text-moon-muted/65 dark:text-[#EADDF7]/55">
+              <p className="mt-1.5 text-[13px] text-moon-muted/65">
                 {workout.day} · Use this as a running checklist throughout the day.
               </p>
             </div>
             <button
               type="button"
               onClick={onClose}
-              className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white/70 text-moon-muted transition hover:bg-white dark:bg-[#1D1424]/60 dark:text-[#FFF8FD] dark:hover:bg-[#1D1424]"
+              className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white/70 text-moon-muted transition hover:bg-white"
               style={{ boxShadow: '0 2px 8px rgba(71, 44, 89, 0.08)' }}
               aria-label="Close workout"
             >
@@ -479,16 +477,15 @@ function WorkoutDetail({ workout, refresh, onClose }: { workout: WorkoutDay; ref
         </div>
 
         <div className="p-5 sm:p-6">
-          {/* Progress bar */}
           <div
-            className="rounded-2xl border border-moon-border/25 bg-white p-4 dark:border-[#5B456B]/20 dark:bg-[#2A2033]"
+            className="rounded-2xl border border-moon-border/25 bg-white p-4"
             style={{ boxShadow: '0 2px 10px rgba(71, 44, 89, 0.05)' }}
           >
             <div className="flex items-center justify-between gap-3">
               <p className="text-[13px] font-semibold">{completeCount} of {items.length} items checked</p>
-              <p className="text-[13px] font-bold text-moon-accent dark:text-[#D4B8F0]">{percent}%</p>
+              <p className="text-[13px] font-bold text-moon-accent">{percent}%</p>
             </div>
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-moon-surface dark:bg-[#3A2A46]">
+            <div className="mt-3 h-2 overflow-hidden rounded-full bg-moon-surface">
               <div
                 className="h-full rounded-full bg-gradient-to-r from-moon-accent to-[#D4B8F0] transition-all duration-700 ease-out"
                 style={{ width: `${percent}%` }}
@@ -503,7 +500,7 @@ function WorkoutDetail({ workout, refresh, onClose }: { workout: WorkoutDay; ref
           </div>
 
           <div
-            className="mt-4 grid gap-3 rounded-2xl border border-moon-border/25 bg-white p-4 dark:border-[#5B456B]/20 dark:bg-[#2A2033] sm:grid-cols-2"
+            className="mt-4 grid gap-3 rounded-2xl border border-moon-border/25 bg-white p-4 sm:grid-cols-2"
             style={{ boxShadow: '0 2px 10px rgba(71, 44, 89, 0.05)' }}
           >
             <NumberInput label="Effort rating" min={1} max={10} value={workout.rpe} onChange={(value) => updateWorkout({ rpe: value })} />
@@ -512,14 +509,14 @@ function WorkoutDetail({ workout, refresh, onClose }: { workout: WorkoutDay; ref
               <ElbowNote value={workout.elbowPain} />
             </div>
             <label className="block sm:col-span-2" htmlFor={`${workout.id}-detail-notes`}>
-              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55 dark:text-[#EADDF7]/45">Notes</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55">Notes</span>
               <textarea
                 id={`${workout.id}-detail-notes`}
                 value={notes}
                 onChange={(event) => setNotes(event.target.value)}
                 onBlur={() => updateWorkout({ notes })}
                 rows={3}
-                className="mt-2 w-full rounded-2xl border border-moon-border/35 bg-moon-bg p-3 text-[13px] leading-relaxed dark:border-[#5B456B]/35 dark:bg-[#1D1424]"
+                className="mt-2 w-full rounded-2xl border border-moon-border/35 bg-moon-bg p-3 text-[13px] leading-relaxed"
                 placeholder="Use this for split-up sessions, swaps, or what felt different."
               />
             </label>
@@ -531,7 +528,7 @@ function WorkoutDetail({ workout, refresh, onClose }: { workout: WorkoutDay; ref
               if (sectionItems.length === 0) return null;
               return (
                 <section key={section}>
-                  <h3 className="px-1 text-[10px] font-black uppercase tracking-[0.22em] text-moon-muted/50 dark:text-[#EADDF7]/40">{section}</h3>
+                  <h3 className="px-1 text-[10px] font-black uppercase tracking-[0.22em] text-moon-muted/50">{section}</h3>
                   <div className="mt-2 grid gap-2">
                     {sectionItems.map((item) => {
                       const done = Boolean(workout.itemCompletions?.[item.key]);
@@ -565,7 +562,7 @@ function WorkoutDetail({ workout, refresh, onClose }: { workout: WorkoutDay; ref
             <button
               type="button"
               onClick={onClose}
-              className="min-h-12 rounded-2xl border border-moon-border/50 bg-white px-4 text-[13px] font-semibold text-moon-muted transition hover:border-moon-border dark:border-[#5B456B]/40 dark:bg-[#2A2033] dark:text-[#EADDF7]"
+              className="min-h-12 rounded-2xl border border-moon-border/50 bg-white px-4 text-[13px] font-semibold text-moon-muted transition hover:border-moon-border"
             >
               Done for now
             </button>
@@ -591,14 +588,14 @@ function ExerciseLibrary() {
 
   return (
     <>
-      <div className="grid gap-3 rounded-[2rem] border border-moon-border/40 bg-white p-4 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033] sm:grid-cols-3">
+      <div className="grid gap-3 rounded-[2rem] border border-moon-border/40 bg-white p-4 shadow-soft sm:grid-cols-3">
         <label className="relative sm:col-span-1">
           <span className="sr-only">Search exercises</span>
           <Search className="absolute left-4 top-3.5 text-moon-muted/35" size={17} aria-hidden="true" />
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            className="min-h-12 w-full rounded-2xl border border-moon-border/40 bg-moon-bg pl-11 pr-4 text-[13px] dark:border-[#5B456B]/40 dark:bg-[#1D1424]"
+            className="min-h-12 w-full rounded-2xl border border-moon-border/40 bg-moon-bg pl-11 pr-4 text-[13px]"
             placeholder="Search moves"
           />
         </label>
@@ -611,11 +608,11 @@ function ExerciseLibrary() {
             key={exercise.id}
             type="button"
             onClick={() => setSelected(exercise)}
-            className="no-active-scale min-h-40 rounded-[2rem] border border-moon-border/40 bg-white p-5 text-left shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_20px_48px_rgba(71,44,89,0.12)] dark:border-[#5B456B]/40 dark:bg-[#2A2033]"
+            className="no-active-scale min-h-40 rounded-[2rem] border border-moon-border/40 bg-white p-5 text-left shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_20px_48px_rgba(71,44,89,0.12)]"
           >
             <Pill icon={HeartPulse} text={exercise.elbowLoad} />
             <h2 className="mt-4 font-display text-xl leading-tight tracking-[-0.01em]">{exercise.name}</h2>
-            <p className="mt-2 text-[13px] text-moon-muted/60 dark:text-[#EADDF7]/50">{exercise.category} · {exercise.difficulty}</p>
+            <p className="mt-2 text-[13px] text-moon-muted/60">{exercise.category} · {exercise.difficulty}</p>
           </button>
         ))}
       </div>
@@ -633,10 +630,10 @@ function ExerciseModal({ exercise, onClose }: { exercise: Exercise; onClose: () 
       aria-label={exercise.name}
     >
       <div
-        className="max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-[2rem] border border-moon-border/30 bg-white dark:border-[#5B456B]/30 dark:bg-[#2A2033]"
+        className="max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-[2rem] border border-moon-border/30 bg-white"
         style={{ boxShadow: '0 32px 80px rgba(71, 44, 89, 0.18)' }}
       >
-        <div className="bg-gradient-to-br from-[#F4EAFF] to-[#EDE0FA]/60 p-5 dark:from-[#2D2040] dark:to-[#3A2A46]/60">
+        <div className="bg-gradient-to-br from-[#F4EAFF] to-[#EDE0FA]/60 p-5">
           <div className="flex items-start justify-between gap-3">
             <div>
               <Pill icon={HeartPulse} text={`Elbow load: ${exercise.elbowLoad}`} />
@@ -645,7 +642,7 @@ function ExerciseModal({ exercise, onClose }: { exercise: Exercise; onClose: () 
             <button
               type="button"
               onClick={onClose}
-              className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white/70 text-moon-muted transition hover:bg-white dark:bg-[#1D1424]/60 dark:text-[#FFF8FD] dark:hover:bg-[#1D1424]"
+              className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white/70 text-moon-muted transition hover:bg-white"
               aria-label="Close"
             >
               <X size={17} aria-hidden="true" />
@@ -696,11 +693,11 @@ function Progress({
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_22rem]">
       <section className="grid gap-4">
-        <section className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
-          <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-5 dark:from-[#2D2040] dark:via-[#3A2A46] dark:to-[#4A3558]/50">
+        <section className="overflow-hidden rounded-[2rem] border border-moon-border/40 bg-white shadow-soft">
+          <div className="bg-gradient-to-br from-[#F4EAFF] via-[#EDE0FA] to-[#D8C8F5]/50 p-5">
             <Pill icon={Heart} text="Feel first" />
             <h2 className="mt-4 font-display text-3xl leading-tight tracking-[-0.01em]">No weigh-ins required.</h2>
-            <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-moon-muted/70 dark:text-[#EADDF7]/55">
+            <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-moon-muted/70">
               This page is for energy, sleep, soreness, mood, and the quiet evidence that movement is becoming part of your life.
             </p>
           </div>
@@ -717,20 +714,20 @@ function Progress({
 
 function FeelingChart({ title, rows }: { title: string; rows: Array<{ label: string; value: number; max: number }> }) {
   return (
-    <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+    <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
       <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">{title}</h2>
       <div className="mt-5 flex h-44 items-end gap-1.5 overflow-x-auto pb-2">
         {rows.map((row) => {
           const height = row.max ? Math.max(5, Math.round((row.value / row.max) * 100)) : 5;
           return (
             <div key={row.label} className="flex min-w-7 flex-1 flex-col items-center gap-2">
-              <div className="flex h-32 w-full items-end overflow-hidden rounded-full bg-moon-bg dark:bg-[#1D1424]">
+              <div className="flex h-32 w-full items-end overflow-hidden rounded-full bg-moon-bg">
                 <div
                   className="w-full rounded-full bg-gradient-to-t from-moon-accent to-[#D4B8F0]/65 transition-all duration-700 ease-out"
                   style={{ height: `${height}%` }}
                 />
               </div>
-              <span className="text-[9px] font-bold text-moon-muted/40 dark:text-[#EADDF7]/30">{row.label}</span>
+              <span className="text-[9px] font-bold text-moon-muted/40">{row.label}</span>
             </div>
           );
         })}
@@ -749,18 +746,18 @@ function FeelingTrend({ rows }: { rows: Array<{ label: string; energy?: number; 
   ];
 
   return (
-    <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+    <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
       <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Latest check-in</h2>
       <div className="mt-4 grid gap-3 sm:grid-cols-4">
         {cards.map((card) => (
-          <div key={card.label} className="rounded-2xl bg-moon-bg/60 p-4 dark:bg-[#1D1424]/60">
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-moon-muted/50 dark:text-[#EADDF7]/40">{card.label}</p>
+          <div key={card.label} className="rounded-2xl bg-moon-bg/60 p-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-moon-muted/50">{card.label}</p>
             <p className="mt-2 font-display text-4xl leading-none">{card.value ?? '–'}</p>
           </div>
         ))}
       </div>
       {rows.length === 0 && (
-        <p className="mt-4 text-[13px] text-moon-muted/60 dark:text-[#EADDF7]/50">Save a weekly check-in and this will start to show patterns.</p>
+        <p className="mt-4 text-[13px] text-moon-muted/60">Save a weekly check-in and this will start to show patterns.</p>
       )}
     </section>
   );
@@ -790,7 +787,7 @@ function ReflectionForm({ currentWeek, reflections, refresh }: { currentWeek: nu
     refresh();
   };
   return (
-    <div className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+    <div className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
       <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Week {currentWeek} reflection</h2>
       <div className="mt-4 grid gap-3">
         <SliderInput label="Energy" value={energy} onChange={setEnergy} />
@@ -816,7 +813,7 @@ function ReflectionForm({ currentWeek, reflections, refresh }: { currentWeek: nu
 function Nutrition() {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+      <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
         <Pill icon={Utensils} text="Starting targets" />
         <h2 className="mt-3 font-display text-3xl leading-tight tracking-[-0.01em]">Enough protein. Enough life.</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -828,11 +825,11 @@ function Nutrition() {
       <GuideCard title="Grocery list" items={nutritionGuide.groceries} />
       <GuideCard title="Snack ideas" items={nutritionGuide.snacks} />
       <GuideCard title="Restaurant tips" items={nutritionGuide.restaurants} />
-      <section className="rounded-[2rem] border border-moon-border/35 bg-moon-surface/55 p-5 shadow-soft dark:border-[#5B456B]/35 dark:bg-[#3A2A46]/55">
+      <section className="rounded-[2rem] border border-moon-border/35 bg-moon-surface/55 p-5 shadow-soft">
         <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Simple checklist</h2>
         <div className="mt-4 grid gap-2.5">
           {['Protein at breakfast', 'Protein at lunch', 'Protein at dinner', 'One fruit or vegetable before scrolling', 'Water bottle visible'].map((item) => (
-            <label key={item} className="flex min-h-12 cursor-pointer items-center gap-3 rounded-2xl bg-white/70 px-4 transition hover:bg-white/90 dark:bg-[#1D1424]/70 dark:hover:bg-[#1D1424]/90">
+            <label key={item} className="flex min-h-12 cursor-pointer items-center gap-3 rounded-2xl bg-white/70 px-4 transition hover:bg-white/90">
               <input type="checkbox" className="h-4 w-4 accent-moon-accent" />
               <span className="text-[13px] font-semibold">{item}</span>
             </label>
@@ -876,7 +873,7 @@ function SettingsPage({ settings, refresh }: { settings: ReturnType<typeof useLi
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+      <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
         <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Plan start</h2>
         <TextInput label="Start date" type="date" value={startDate} onChange={setStartDate} />
         <button
@@ -888,45 +885,35 @@ function SettingsPage({ settings, refresh }: { settings: ReturnType<typeof useLi
           Save start date
         </button>
       </section>
-      <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+      <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
         <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">Local data</h2>
         <div className="mt-4 grid gap-3">
           <button
             type="button"
             onClick={handleExport}
-            className="flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-moon-bg/70 px-4 text-[13px] font-semibold transition hover:bg-moon-bg dark:bg-[#1D1424]/70 dark:hover:bg-[#1D1424]"
+            className="flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-moon-bg/70 px-4 text-[13px] font-semibold transition hover:bg-moon-bg"
           >
             <Download size={17} aria-hidden="true" /> Export JSON backup
           </button>
-          <label className="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-moon-bg/70 px-4 text-[13px] font-semibold transition hover:bg-moon-bg dark:bg-[#1D1424]/70 dark:hover:bg-[#1D1424]">
+          <label className="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-moon-bg/70 px-4 text-[13px] font-semibold transition hover:bg-moon-bg">
             <Upload size={17} aria-hidden="true" /> Import JSON backup
             <input type="file" accept="application/json" className="sr-only" onChange={(event) => handleImport(event.target.files?.[0])} />
           </label>
           <button
             type="button"
             onClick={handleReset}
-            className="flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-moon-border/50 px-4 text-[13px] font-semibold text-moon-muted/70 transition hover:border-moon-border dark:border-[#5B456B]/40 dark:text-[#EADDF7]/65"
+            className="flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-moon-border/50 px-4 text-[13px] font-semibold text-moon-muted/70 transition hover:border-moon-border"
           >
             <RotateCcw size={17} aria-hidden="true" /> Reset data
           </button>
-          <button
-            type="button"
-            onClick={async () => {
-              await db.settings.put({ ...settings, darkMode: !settings.darkMode });
-              refresh();
-            }}
-            className="flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-moon-border/50 px-4 text-[13px] font-semibold text-moon-muted/70 transition hover:border-moon-border dark:border-[#5B456B]/40 dark:text-[#EADDF7]/65"
-          >
-            <Moon size={17} aria-hidden="true" /> {settings.darkMode ? 'Use light theme' : 'Use dark theme'}
-          </button>
         </div>
         {message && (
-          <p className="mt-4 rounded-2xl bg-moon-surface/50 p-3 text-[13px] font-semibold dark:bg-[#3A2A46]/50">{message}</p>
+          <p className="mt-4 rounded-2xl bg-moon-surface/50 p-3 text-[13px] font-semibold">{message}</p>
         )}
       </section>
-      <section className="rounded-[2rem] border border-moon-border/35 bg-moon-surface/50 p-5 shadow-soft dark:border-[#5B456B]/35 dark:bg-[#3A2A46]/50 lg:col-span-2">
+      <section className="rounded-[2rem] border border-moon-border/35 bg-moon-surface/50 p-5 shadow-soft lg:col-span-2">
         <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">GitHub Pages note</h2>
-        <p className="mt-2 text-[13px] leading-relaxed text-moon-muted/60 dark:text-[#F3E9FB]/50">
+        <p className="mt-2 text-[13px] leading-relaxed text-moon-muted/60">
           This repo publishes with GitHub Actions. In GitHub, choose Settings, Pages, then GitHub Actions as the source.
         </p>
       </section>
@@ -953,10 +940,7 @@ function ExerciseChips({ ids }: { ids: string[] }) {
   return (
     <div className="mt-4 flex flex-wrap gap-2">
       {ids.map((id) => (
-        <span
-          key={id}
-          className="rounded-full border border-moon-border/40 bg-white px-3 py-1.5 text-[11px] font-semibold text-moon-muted/60 dark:border-[#5B456B]/40 dark:bg-[#1D1424] dark:text-[#EADDF7]/50"
-        >
+        <span key={id} className="rounded-full border border-moon-border/40 bg-white px-3 py-1.5 text-[11px] font-semibold text-moon-muted/60">
           {exerciseById.get(id)?.name ?? id}
         </span>
       ))}
@@ -995,7 +979,7 @@ function checkedCount(workout: WorkoutDay) {
 function ElbowNote({ value }: { value?: number }) {
   const rule = value === undefined ? elbowRules[0] : value <= 2 ? elbowRules[0] : value <= 4 ? elbowRules[1] : elbowRules[2];
   return (
-    <div className="mt-3 rounded-2xl bg-moon-surface/45 p-3 text-[13px] leading-relaxed text-moon-text dark:bg-[#3A2A46]/45 dark:text-[#FFF8FD]">
+    <div className="mt-3 rounded-2xl bg-moon-surface/45 p-3 text-[13px] leading-relaxed text-moon-text">
       {rule}
     </div>
   );
@@ -1004,14 +988,14 @@ function ElbowNote({ value }: { value?: number }) {
 function NumberInput({ label, min, max, value, onChange }: { label: string; min: number; max: number; value?: number; onChange: (value?: number) => void }) {
   return (
     <label className="block">
-      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55 dark:text-[#EADDF7]/45">{label}</span>
+      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55">{label}</span>
       <input
         type="number"
         min={min}
         max={max}
         value={value ?? ''}
         onChange={(event) => onChange(event.target.value === '' ? undefined : Number(event.target.value))}
-        className="mt-2 min-h-12 w-full rounded-2xl border border-moon-border/40 bg-moon-bg px-4 text-base font-semibold dark:border-[#5B456B]/40 dark:bg-[#1D1424]"
+        className="mt-2 min-h-12 w-full rounded-2xl border border-moon-border/40 bg-moon-bg px-4 text-base font-semibold"
       />
     </label>
   );
@@ -1019,10 +1003,13 @@ function NumberInput({ label, min, max, value, onChange }: { label: string; min:
 
 function SliderInput({ label, value, onChange }: { label: string; value: number; onChange: (value: number) => void }) {
   return (
-    <label className="block rounded-2xl bg-moon-bg/50 px-3 py-3 dark:bg-[#1D1424]/50">
+    <label className="block rounded-2xl bg-moon-bg/50 px-3 py-3">
       <span className="flex items-center justify-between gap-3">
-        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55 dark:text-[#EADDF7]/45">{label}</span>
-        <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-moon-text dark:bg-[#2A2033] dark:text-[#FFF8FD]" style={{ boxShadow: '0 1px 4px rgba(71,44,89,0.07)' }}>
+        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55">{label}</span>
+        <span
+          className="rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-moon-text"
+          style={{ boxShadow: '0 1px 4px rgba(71,44,89,0.07)' }}
+        >
           {value}/10
         </span>
       </span>
@@ -1041,12 +1028,12 @@ function SliderInput({ label, value, onChange }: { label: string; value: number;
 function TextInput({ label, type, value, onChange }: { label: string; type: string; value: string; onChange: (value: string) => void }) {
   return (
     <label className="block">
-      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55 dark:text-[#EADDF7]/45">{label}</span>
+      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55">{label}</span>
       <input
         type={type}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="mt-2 min-h-12 w-full rounded-2xl border border-moon-border/40 bg-moon-bg px-4 text-base dark:border-[#5B456B]/40 dark:bg-[#1D1424]"
+        className="mt-2 min-h-12 w-full rounded-2xl border border-moon-border/40 bg-moon-bg px-4 text-base"
       />
     </label>
   );
@@ -1055,13 +1042,13 @@ function TextInput({ label, type, value, onChange }: { label: string; type: stri
 function TextArea({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (value: string) => void; placeholder: string }) {
   return (
     <label className="block">
-      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55 dark:text-[#EADDF7]/45">{label}</span>
+      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55">{label}</span>
       <textarea
         value={value}
         onChange={(event) => onChange(event.target.value)}
         rows={3}
         placeholder={placeholder}
-        className="mt-2 w-full rounded-2xl border border-moon-border/40 bg-moon-bg p-3 text-[13px] leading-relaxed dark:border-[#5B456B]/40 dark:bg-[#1D1424]"
+        className="mt-2 w-full rounded-2xl border border-moon-border/40 bg-moon-bg p-3 text-[13px] leading-relaxed"
       />
     </label>
   );
@@ -1074,7 +1061,7 @@ function Select({ label, value, options, onChange }: { label: string; value: str
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="min-h-12 w-full appearance-none rounded-2xl border border-moon-border/40 bg-moon-bg px-4 pr-9 text-[13px] font-semibold dark:border-[#5B456B]/40 dark:bg-[#1D1424]"
+        className="min-h-12 w-full appearance-none rounded-2xl border border-moon-border/40 bg-moon-bg px-4 pr-9 text-[13px] font-semibold"
       >
         {options.map((option) => (
           <option key={option}>{option}</option>
@@ -1088,7 +1075,7 @@ function Select({ label, value, options, onChange }: { label: string; value: str
 function Pill({ icon: Icon, text }: { icon: typeof Sparkles; text: string }) {
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full bg-white/68 px-3 py-1.5 text-[11px] font-semibold tracking-wide text-moon-muted/70 dark:bg-[#1D1424]/55 dark:text-[#D4B8F0]/75"
+      className="inline-flex items-center gap-1.5 rounded-full bg-white/68 px-3 py-1.5 text-[11px] font-semibold tracking-wide text-moon-muted/70"
       style={{ boxShadow: '0 1px 4px rgba(71, 44, 89, 0.07)' }}
     >
       <Icon size={12} aria-hidden="true" className="opacity-55" />
@@ -1105,7 +1092,7 @@ function ProgressRing({ percent }: { percent: number }) {
   return (
     <div className="relative h-14 w-14 shrink-0" aria-label={`${percent}% complete`} role="img">
       <svg className="h-full w-full -rotate-90" viewBox="0 0 56 56">
-        <circle cx="28" cy="28" r={radius} fill="none" stroke="#EFE3FA" strokeWidth="4.5" className="dark:stroke-[#3A2A46]" />
+        <circle cx="28" cy="28" r={radius} fill="none" stroke="#EFE3FA" strokeWidth="4.5" />
         <circle
           cx="28"
           cy="28"
@@ -1116,11 +1103,11 @@ function ProgressRing({ percent }: { percent: number }) {
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
-          className="transition-all duration-700 ease-out dark:stroke-[#D4B8F0]"
+          className="transition-all duration-700 ease-out"
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-[11px] font-black text-moon-text dark:text-[#FFF8FD]">{percent}%</span>
+        <span className="text-[11px] font-black text-moon-text">{percent}%</span>
       </div>
     </div>
   );
@@ -1128,22 +1115,22 @@ function ProgressRing({ percent }: { percent: number }) {
 
 function MetricCard({ icon: Icon, label, value, detail }: { icon: typeof Flame; label: string; value: string; detail: string }) {
   return (
-    <div className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+    <div className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-moon-muted/50 dark:text-[#EADDF7]/40">{label}</span>
-        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-moon-surface/55 dark:bg-[#3A2A46]/55">
-          <Icon size={14} className="text-moon-accent dark:text-[#BFA2DC]" aria-hidden="true" />
+        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-moon-muted/50">{label}</span>
+        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-moon-surface/55">
+          <Icon size={14} className="text-moon-accent" aria-hidden="true" />
         </span>
       </div>
       <p className="mt-2.5 font-display text-4xl leading-none tracking-[-0.02em]">{value}</p>
-      <p className="mt-2 text-[12px] leading-relaxed text-moon-muted/55 dark:text-[#EADDF7]/45">{detail}</p>
+      <p className="mt-2 text-[12px] leading-relaxed text-moon-muted/55">{detail}</p>
     </div>
   );
 }
 
 function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+    <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
       <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">{title}</h2>
       <div className="mt-4 h-[240px] w-full">{children}</div>
     </section>
@@ -1152,11 +1139,11 @@ function ChartCard({ title, children }: { title: string; children: React.ReactNo
 
 function GuideCard({ title, items }: { title: string; items: string[] }) {
   return (
-    <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft dark:border-[#5B456B]/40 dark:bg-[#2A2033]">
+    <section className="rounded-[2rem] border border-moon-border/40 bg-white p-5 shadow-soft">
       <h2 className="font-display text-2xl leading-tight tracking-[-0.01em]">{title}</h2>
       <ul className="mt-4 grid gap-2">
         {items.map((item) => (
-          <li key={item} className="rounded-2xl bg-moon-bg/55 px-4 py-3 text-[13px] font-medium leading-relaxed text-moon-muted/70 dark:bg-[#1D1424]/55 dark:text-[#EADDF7]/55">
+          <li key={item} className="rounded-2xl bg-moon-bg/55 px-4 py-3 text-[13px] font-medium leading-relaxed text-moon-muted/70">
             {item}
           </li>
         ))}
@@ -1168,8 +1155,8 @@ function GuideCard({ title, items }: { title: string; items: string[] }) {
 function DetailBlock({ title, body }: { title: string; body: string }) {
   return (
     <section className="mt-5">
-      <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55 dark:text-[#EADDF7]/45">{title}</h3>
-      <p className="mt-2 text-[13px] leading-relaxed text-moon-muted/70 dark:text-[#EADDF7]/60">{body}</p>
+      <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55">{title}</h3>
+      <p className="mt-2 text-[13px] leading-relaxed text-moon-muted/70">{body}</p>
     </section>
   );
 }
@@ -1177,10 +1164,10 @@ function DetailBlock({ title, body }: { title: string; body: string }) {
 function DetailList({ title, items }: { title: string; items: string[] }) {
   return (
     <section className="mt-5">
-      <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55 dark:text-[#EADDF7]/45">{title}</h3>
+      <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/55">{title}</h3>
       <ul className="mt-2 grid gap-2">
         {items.map((item) => (
-          <li key={item} className="rounded-2xl bg-moon-bg/55 px-4 py-3 text-[13px] leading-relaxed text-moon-muted/65 dark:bg-[#1D1424]/55 dark:text-[#EADDF7]/55">
+          <li key={item} className="rounded-2xl bg-moon-bg/55 px-4 py-3 text-[13px] leading-relaxed text-moon-muted/65">
             {item}
           </li>
         ))}
@@ -1191,8 +1178,8 @@ function DetailList({ title, items }: { title: string; items: string[] }) {
 
 function MiniBlock({ title, body }: { title: string; body: string }) {
   return (
-    <div className="rounded-2xl bg-moon-bg/55 px-4 py-3 dark:bg-[#1D1424]/55">
-      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/50 dark:text-[#EADDF7]/40">{title}</p>
+    <div className="rounded-2xl bg-moon-bg/55 px-4 py-3">
+      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-moon-muted/50">{title}</p>
       <p className="mt-1.5 text-[13px] font-semibold leading-snug">{body}</p>
     </div>
   );

@@ -49,18 +49,6 @@ a:focus-visible {
   border-radius: 6px;
 }
 
-.dark {
-  color: #fff8fd;
-  background: #1d1424;
-}
-
-.dark body,
-.dark #root {
-  background:
-    radial-gradient(ellipse 70% 40% at 10% 0%, rgba(191, 162, 220, 0.14), transparent),
-    linear-gradient(180deg, #1d1424 0%, #21182a 100%);
-}
-
 /* Check mark entrance animation */
 .check-icon {
   animation: check-in 0.22s ease-out forwards;
